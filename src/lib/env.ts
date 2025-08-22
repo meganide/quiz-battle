@@ -8,7 +8,6 @@ export const env = createEnv({
    */
   server: {
     CONVEX_DEPLOYMENT: z.string().min(1),
-    CONVEX_URL: z.string().min(1),
   },
   /*
    * Environment variables available on the client (and server).
@@ -20,15 +19,12 @@ export const env = createEnv({
   },
   /*
    * Specify what values should be validated by your schemas above.
-   * 
+   *
    * If you're using Next.js < 13.4.4, you'll need to specify the runtimeEnv manually
    * For Next.js >= 13.4.4, you can use the experimental__runtimeEnv option and
    * only specify client-side variables.
    */
-  runtimeEnv: {
-    CONVEX_DEPLOYMENT: process.env.CONVEX_DEPLOYMENT,
-    CONVEX_URL: process.env.CONVEX_URL,
+  experimental__runtimeEnv: {
     NEXT_PUBLIC_CONVEX_URL: process.env.NEXT_PUBLIC_CONVEX_URL,
   },
-
 });
