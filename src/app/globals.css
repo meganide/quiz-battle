@@ -99,7 +99,7 @@
   --primary: var(--primary-400);
   --primary-foreground: var(--primary-900);
   --secondary: var(--secondary-400);
-  --secondary-foreground: var(--secondary-900);
+  --secondary-foreground: var(--secondary-200);
   --muted: var(--neutral-500);
   --muted-foreground: var(--neutral-200);
   --accent: var(--neutral-500);
