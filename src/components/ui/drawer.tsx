@@ -1,6 +1,7 @@
 "use client"
 
-import * as React from "react"
+import type * as React from "react"
+
 import { Drawer as DrawerPrimitive } from "vaul"
 
 import { cn } from "@/lib/utils"
@@ -88,8 +89,8 @@ function DrawerHeader({ className, ...props }: React.ComponentProps<"div">) {
 function DrawerFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
-      data-slot="drawer-footer"
       className={cn("mt-auto flex flex-col gap-2 p-4", className)}
+      data-slot="drawer-footer"
       {...props}
     />
   )
@@ -101,8 +102,8 @@ function DrawerTitle({
 }: React.ComponentProps<typeof DrawerPrimitive.Title>) {
   return (
     <DrawerPrimitive.Title
-      data-slot="drawer-title"
       className={cn("text-foreground font-semibold", className)}
+      data-slot="drawer-title"
       {...props}
     />
   )
@@ -114,8 +115,8 @@ function DrawerDescription({
 }: React.ComponentProps<typeof DrawerPrimitive.Description>) {
   return (
     <DrawerPrimitive.Description
-      data-slot="drawer-description"
       className={cn("text-muted-foreground text-sm", className)}
+      data-slot="drawer-description"
       {...props}
     />
   )

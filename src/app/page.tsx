@@ -1,6 +1,7 @@
-import Link from "next/link";
-import { Container } from "@/components/container";
-import { Button } from "@/components/ui/button";
+import Link from "next/link"
+
+import { Container } from "@/components/container"
+import { Button } from "@/components/ui/button"
 
 export default function Home() {
   return (
@@ -10,5 +11,5 @@ export default function Home() {
         <Button>Sign In</Button>
       </Link>
     </Container>
-  );
+  )
 }

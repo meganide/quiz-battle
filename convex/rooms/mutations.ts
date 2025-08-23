@@ -1,8 +1,9 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
-import { v } from "convex/values";
-import { mutation } from "../_generated/server";
-import { ROOM_ERRORS } from "./errors";
-import { generateInviteCode } from "./utils";
+import { getAuthUserId } from "@convex-dev/auth/server"
+import { v } from "convex/values"
+
+import { ROOM_ERRORS } from "./errors"
+import { generateInviteCode } from "./utils"
+import { mutation } from "../_generated/server"
 
 export const create = mutation({
   args: {
@@ -13,14 +14,14 @@ export const create = mutation({
     difficulty: v.union(
       v.literal("easy"),
       v.literal("medium"),
-      v.literal("hard"),
+      v.literal("hard")
     ),
     timePerQuestion: v.number(),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
+    const userId = await getAuthUserId(ctx)
     if (!userId) {
-      throw new Error("Not authenticated");
+      throw new Error("Not authenticated")
     }
 
     // Check if user already has an active room
@@ -28,35 +29,36 @@ export const create = mutation({
       .query("rooms")
       .withIndex("by_host", (q) => q.eq("hostId", userId))
       .filter((q) => q.neq(q.field("status"), "completed"))
-      .first();
+      .first()
 
     if (existingActiveRoom) {
-      throw ROOM_ERRORS.ACTIVE_ROOM_EXISTS;
+      throw ROOM_ERRORS.ACTIVE_ROOM_EXISTS
     }
 
     // Validate timePerQuestion is between 10 and 60
     if (args.timePerQuestion < 10 || args.timePerQuestion > 60) {
-      throw new Error("Time per question must be between 10 and 60 seconds");
+      throw new Error("Time per question must be between 10 and 60 seconds")
     }
 
     // Validate numQuestions is positive
     if (args.numQuestions < 1) {
-      throw new Error("Number of questions must be positive");
+      throw new Error("Number of questions must be positive")
     }
 
-    let inviteCode = generateInviteCode();
+    let inviteCode = generateInviteCode()
 
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, no-constant-condition
     while (true) {
       const existingRoom = await ctx.db
         .query("rooms")
         .withIndex("by_invite_code", (q) => q.eq("inviteCode", inviteCode))
-        .first();
+        .first()
 
       if (!existingRoom) {
-        break;
+        break
       }
 
-      inviteCode = generateInviteCode();
+      inviteCode = generateInviteCode()
     }
 
     await ctx.db.insert("rooms", {
@@ -72,46 +74,46 @@ export const create = mutation({
       onlinePlayerIds: [userId],
       createdAt: Date.now(),
       inviteCode,
-    });
+    })
 
     return {
       inviteCode,
-    };
+    }
   },
-});
+})
 
 export const join = mutation({
   args: {
     inviteCode: v.string(),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
+    const userId = await getAuthUserId(ctx)
 
     if (!userId) {
-      throw new Error("Not authenticated");
+      throw new Error("Not authenticated")
     }
 
     const room = await ctx.db
       .query("rooms")
       .withIndex("by_invite_code", (q) => q.eq("inviteCode", args.inviteCode))
-      .first();
+      .first()
 
     if (!room) {
-      throw new Error("Room not found");
+      throw new Error("Room not found")
     }
 
     if (room.status !== "lobby") {
-      throw new Error("Room is not accepting new players");
+      throw new Error("Room is not accepting new players")
     }
 
     if (room.playerIds.includes(userId)) {
-      throw new Error("Already in this room");
+      throw new Error("Already in this room")
     }
 
     await ctx.db.patch(room._id, {
       playerIds: [...room.playerIds, userId],
-    });
+    })
 
-    return room._id;
+    return room._id
   },
-});
+})

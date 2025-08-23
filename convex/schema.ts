@@ -1,6 +1,7 @@
-import { authTables } from "@convex-dev/auth/server";
-import { defineSchema, defineTable } from "convex/server";
-import { v } from "convex/values";
+/* eslint-disable import/no-default-export */
+import { authTables } from "@convex-dev/auth/server"
+import { defineSchema, defineTable } from "convex/server"
+import { v } from "convex/values"
 
 export default defineSchema({
   ...authTables,
@@ -13,13 +14,13 @@ export default defineSchema({
     difficulty: v.union(
       v.literal("easy"),
       v.literal("medium"),
-      v.literal("hard"),
+      v.literal("hard")
     ),
     timePerQuestion: v.number(),
     status: v.union(
       v.literal("lobby"),
       v.literal("active"),
-      v.literal("completed"),
+      v.literal("completed")
     ),
     playerIds: v.array(v.id("users")),
     onlinePlayerIds: v.array(v.id("users")),
@@ -31,4 +32,4 @@ export default defineSchema({
     .index("by_host", ["hostId"])
     .index("by_status", ["status"])
     .index("by_invite_code", ["inviteCode"]),
-});
+})

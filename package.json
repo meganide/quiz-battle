@@ -6,8 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "biome check",
-    "format": "biome format --write"
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives",
+    "format": "eslint . --ext ts,tsx --fix"
   },
   "dependencies": {
     "@auth/core": "0.37.0",
@@ -63,7 +63,23 @@
     "zod": "^4.0.17"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.2.0",
+    "@eslint/eslintrc": "^3",
+    "@next/eslint-plugin-next": "^14.2.30",
+    "@types/eslint": "^8.56.12",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "@vercel/style-guide": "^5.2.0",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "^14.2.30",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-only-warn": "^1.1.0",
+    "eslint-plugin-prettier": "^5.5.1",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "prettier": "^3.6.1",
+    "prettier-eslint": "^16.4.2",
+    "prettier-plugin-tailwindcss": "^0.6.13",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

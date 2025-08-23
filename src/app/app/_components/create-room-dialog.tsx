@@ -1,16 +1,15 @@
-"use client";
+"use client"
 
+import { Plus } from "lucide-react"
 
-import { Plus } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@/components/ui/dialog"
 import {
   Form,
   FormControl,
@@ -18,18 +17,19 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
-import { Switch } from "@/components/ui/switch";
-import { useCreateRoom } from "../_hooks/use-create-room";
+} from "@/components/ui/select"
+import { Slider } from "@/components/ui/slider"
+import { Switch } from "@/components/ui/switch"
+
+import { useCreateRoom } from "../_hooks/use-create-room"
 
 export function CreateRoomDialog() {
   const {
@@ -38,10 +38,13 @@ export function CreateRoomDialog() {
     isCreating,
     form,
     createRoom,
-  } = useCreateRoom();
+  } = useCreateRoom()
 
   return (
-    <Dialog open={isCreateRoomDialogOpen} onOpenChange={setIsCreateRoomDialogOpen}>
+    <Dialog
+      open={isCreateRoomDialogOpen}
+      onOpenChange={setIsCreateRoomDialogOpen}
+    >
       <DialogTrigger asChild>
         <Button className="gap-2">
           <Plus className="h-4 w-4" />
@@ -54,7 +57,7 @@ export function CreateRoomDialog() {
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(createRoom)} className="space-y-8">
+          <form className="space-y-8" onSubmit={form.handleSubmit(createRoom)}>
             <div className="space-y-6">
               <FormField
                 control={form.control}
@@ -78,7 +81,7 @@ export function CreateRoomDialog() {
                     <div className="flex items-center justify-between space-y-0">
                       <div>
                         <FormLabel>Private Room</FormLabel>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-muted-foreground text-sm">
                           {field.value ? "Invite-only access" : "Public access"}
                         </p>
                       </div>
@@ -115,8 +118,8 @@ export function CreateRoomDialog() {
                     <FormItem>
                       <FormLabel>Difficulty</FormLabel>
                       <Select
-                        onValueChange={field.onChange}
                         defaultValue={field.value}
+                        onValueChange={field.onChange}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -143,18 +146,18 @@ export function CreateRoomDialog() {
                     <FormItem>
                       <FormLabel className="flex items-center justify-between">
                         Questions
-                        <span className="text-sm text-muted-foreground">
+                        <span className="text-muted-foreground text-sm">
                           {field.value}
                         </span>
                       </FormLabel>
                       <FormControl>
                         <Slider
-                          min={5}
+                          className="w-full"
                           max={50}
+                          min={5}
                           step={5}
                           value={[field.value]}
                           onValueChange={(value) => field.onChange(value[0])}
-                          className="w-full"
                         />
                       </FormControl>
                       <FormMessage />
@@ -169,18 +172,18 @@ export function CreateRoomDialog() {
                     <FormItem>
                       <FormLabel className="flex items-center justify-between">
                         Time Per Question
-                        <span className="text-sm text-muted-foreground">
+                        <span className="text-muted-foreground text-sm">
                           {field.value}s
                         </span>
                       </FormLabel>
                       <FormControl>
                         <Slider
-                          min={10}
+                          className="w-full"
                           max={60}
+                          min={10}
                           step={5}
                           value={[field.value]}
                           onValueChange={(value) => field.onChange(value[0])}
-                          className="w-full"
                         />
                       </FormControl>
                       <FormMessage />
@@ -189,12 +192,12 @@ export function CreateRoomDialog() {
                 />
               </div>
             </div>
-            <Button type="submit" disabled={isCreating} className="flex-1">
+            <Button className="flex-1" disabled={isCreating} type="submit">
               {isCreating ? "Creating..." : "Create Room"}
             </Button>
           </form>
         </Form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

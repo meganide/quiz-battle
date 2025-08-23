@@ -1,4 +1,4 @@
-import z from "zod";
+import { z } from "zod"
 
 export const createRoomSchema = z.object({
   name: z
@@ -16,6 +16,6 @@ export const createRoomSchema = z.object({
     .number()
     .min(10, "Minimum 10 seconds")
     .max(60, "Maximum 60 seconds"),
-});
+})
 
-export type CreateRoom = z.infer<typeof createRoomSchema>;
+export type CreateRoom = z.infer<typeof createRoomSchema>

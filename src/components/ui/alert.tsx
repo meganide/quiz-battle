@@ -1,4 +1,5 @@
-import * as React from "react"
+import type * as React from "react"
+
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
@@ -26,9 +27,9 @@ function Alert({
 }: React.ComponentProps<"div"> & VariantProps<typeof alertVariants>) {
   return (
     <div
+      className={cn(alertVariants({ variant }), className)}
       data-slot="alert"
       role="alert"
-      className={cn(alertVariants({ variant }), className)}
       {...props}
     />
   )
