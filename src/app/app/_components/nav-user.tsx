@@ -2,14 +2,7 @@
 
 import { useAuthActions } from "@convex-dev/auth/react"
 import { useQuery } from "convex/react"
-import {
-  BadgeCheck,
-  Bell,
-  ChevronsUpDown,
-  CreditCard,
-  LogOut,
-  Sparkles,
-} from "lucide-react"
+import { BadgeCheck, Bell, CreditCard, LogOut, Sparkles } from "lucide-react"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"

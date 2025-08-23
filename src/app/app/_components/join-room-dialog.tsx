@@ -36,7 +36,7 @@ export function JoinRoomDialog() {
       </DialogTrigger>
       <DialogContent className="gap-8 sm:max-w-[480px]">
         <DialogHeader>
-          <DialogTitle>Create Quiz Battle</DialogTitle>
+          <DialogTitle>Join Quiz Battle</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
