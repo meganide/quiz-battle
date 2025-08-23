@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "convex/react";
+import { ConvexError } from "convex/values";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -35,7 +36,6 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { api } from "../../../../convex/_generated/api";
-import { ErrorWithCode } from "../../../../convex/error";
 
 const formSchema = z.object({
   name: z
@@ -93,8 +93,8 @@ export function CreateRoom() {
       // Navigate to the room
       router.push(`/app/room/${result.inviteCode}`);
     } catch (error) {
-      if (error instanceof ErrorWithCode) {
-        toast.error(error.message);
+      if (error instanceof ConvexError) {
+        toast.error(error.data.message);
       } else {
         toast.error("Failed to create room");
       }

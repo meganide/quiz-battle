@@ -1,7 +1,6 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation } from "../_generated/server";
-import { ErrorWithCode } from "../error";
 import { ROOM_ERRORS } from "./errors";
 import { generateInviteCode } from "./utils";
 

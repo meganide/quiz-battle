@@ -13,7 +13,7 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <ConvexAuthNextjsProvider client={convex}>
       {children}
-      <Toaster />
+      <Toaster  position="top-center" />
     </ConvexAuthNextjsProvider>
   );
 }
