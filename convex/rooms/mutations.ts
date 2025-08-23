@@ -1,7 +1,8 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import type { Doc } from "../_generated/dataModel";
 import { mutation } from "../_generated/server";
+import { ErrorWithCode } from "../error";
+import { ROOM_ERRORS } from "./errors";
 import { generateInviteCode } from "./utils";
 
 export const create = mutation({
@@ -21,6 +22,17 @@ export const create = mutation({
     const userId = await getAuthUserId(ctx);
     if (!userId) {
       throw new Error("Not authenticated");
+    }
+
+    // Check if user already has an active room
+    const existingActiveRoom = await ctx.db
+      .query("rooms")
+      .withIndex("by_host", (q) => q.eq("hostId", userId))
+      .filter((q) => q.neq(q.field("status"), "completed"))
+      .first();
+
+    if (existingActiveRoom) {
+      throw ROOM_ERRORS.ACTIVE_ROOM_EXISTS;
     }
 
     // Validate timePerQuestion is between 10 and 60

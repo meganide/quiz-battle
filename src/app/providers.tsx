@@ -2,12 +2,18 @@
 
 import { ConvexAuthNextjsProvider } from "@convex-dev/auth/nextjs";
 
-import {  ConvexReactClient } from "convex/react";
+import { ConvexReactClient } from "convex/react";
 import type { ReactNode } from "react";
+import { Toaster } from "@/components/ui/sonner";
 import { env } from "@/lib/env";
 
 const convex = new ConvexReactClient(env.NEXT_PUBLIC_CONVEX_URL);
 
 export function Providers({ children }: { children: ReactNode }) {
-  return <ConvexAuthNextjsProvider client={convex}>{children}</ConvexAuthNextjsProvider>;
+  return (
+    <ConvexAuthNextjsProvider client={convex}>
+      {children}
+      <Toaster />
+    </ConvexAuthNextjsProvider>
+  );
 }

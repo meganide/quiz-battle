@@ -6,6 +6,7 @@ import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,6 +35,7 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { api } from "../../../../convex/_generated/api";
+import { ErrorWithCode } from "../../../../convex/error";
 
 const formSchema = z.object({
   name: z
@@ -54,10 +56,6 @@ const formSchema = z.object({
 });
 
 type FormValues = z.infer<typeof formSchema>;
-
-
-
-
 
 export function CreateRoom() {
   const [open, setOpen] = useState(false);
@@ -95,8 +93,11 @@ export function CreateRoom() {
       // Navigate to the room
       router.push(`/app/room/${result.inviteCode}`);
     } catch (error) {
-      console.error("Failed to create room:", error);
-      // You could show an error toast here
+      if (error instanceof ErrorWithCode) {
+        toast.error(error.message);
+      } else {
+        toast.error("Failed to create room");
+      }
     } finally {
       setIsCreating(false);
     }
