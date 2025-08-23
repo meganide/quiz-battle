@@ -5,9 +5,12 @@ import { Button } from "@/components/ui/button";
 
 export default function QuizBattlesPage() {
   return (
-    <Container>
+    <Container className="flex flex-col gap-4">
       <HeaderTitle title="Quiz Battles" Icon={Swords} />
       <section className="flex justify-end items-center">
+        <aside>
+          <article><span>Live Games</span></article>
+        </aside>
         <Button>Create Quiz Battle</Button>
       </section>
     </Container>
