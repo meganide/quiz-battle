@@ -7,6 +7,7 @@ export enum RoomErrorCodes {
   ROOM_NOT_FOUND = "ROOM_NOT_FOUND",
   ROOM_NOT_ACCEPTING_PLAYERS = "ROOM_NOT_ACCEPTING_PLAYERS",
   ALREADY_IN_ROOM = "ALREADY_IN_ROOM",
+  NOT_IN_ROOM = "NOT_IN_ROOM",
 }
 
 export const ROOM_ERRORS = {
@@ -34,5 +35,9 @@ export const ROOM_ERRORS = {
   ALREADY_IN_ROOM: new ConvexError({
     code: RoomErrorCodes.ALREADY_IN_ROOM,
     message: "Already in this room",
+  }),
+  NOT_IN_ROOM: new ConvexError({
+    code: RoomErrorCodes.NOT_IN_ROOM,
+    message: "Not in this room",
   }),
 } as const

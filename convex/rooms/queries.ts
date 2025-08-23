@@ -1,4 +1,5 @@
 import { getAuthUserId } from "@convex-dev/auth/server"
+import { v } from "convex/values"
 
 import { query } from "../_generated/server"
 import { USER_ERRORS } from "../users/errors"
@@ -23,5 +24,17 @@ export const getPublicRooms = query({
       )
       .order("desc")
       .collect()
+  },
+})
+
+export const getByInviteCode = query({
+  args: {
+    inviteCode: v.string(),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("rooms")
+      .withIndex("by_invite_code", (q) => q.eq("inviteCode", args.inviteCode))
+      .unique()
   },
 })

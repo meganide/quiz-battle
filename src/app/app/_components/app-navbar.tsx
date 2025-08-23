@@ -11,8 +11,8 @@ export function AppNavbar() {
       <section className="flex items-center gap-4">
         <span className="mr-12">Quiz Battle</span>
         <Link href="/app">
-          <Button variant="link">
-            <Swords /> Battles
+          <Button className="text-base" variant="link">
+            <Swords className="size-4" /> Battles
           </Button>
         </Link>
       </section>

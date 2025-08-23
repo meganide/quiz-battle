@@ -119,3 +119,50 @@ export const join = mutation({
     return room._id
   },
 })
+
+export const leave = mutation({
+  args: {
+    roomId: v.id("rooms"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx)
+
+    if (!userId) {
+      throw USER_ERRORS.NOT_AUTHENTICATED
+    }
+
+    const room = await ctx.db.get(args.roomId)
+
+    if (!room) {
+      throw ROOM_ERRORS.ROOM_NOT_FOUND
+    }
+
+    if (!room.playerIds.includes(userId)) {
+      throw ROOM_ERRORS.NOT_IN_ROOM
+    }
+
+    const playerIds = room.playerIds.filter((id) => id !== userId)
+    const onlinePlayerIds = room.onlinePlayerIds.filter((id) => id !== userId)
+
+    if (room.hostId === userId) {
+      if (onlinePlayerIds.length === 0) {
+        await ctx.db.delete(room._id)
+        return
+      }
+
+      const nextHost = onlinePlayerIds[0]
+
+      await ctx.db.patch(room._id, {
+        hostId: nextHost,
+        playerIds,
+        onlinePlayerIds,
+      })
+      return
+    }
+
+    await ctx.db.patch(room._id, {
+      playerIds,
+      onlinePlayerIds,
+    })
+  },
+})
