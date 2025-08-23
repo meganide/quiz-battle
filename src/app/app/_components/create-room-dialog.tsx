@@ -52,7 +52,7 @@ export function CreateRoomDialog() {
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[480px]">
-        <DialogHeader className="space-y-3">
+        <DialogHeader>
           <DialogTitle>Create Quiz Battle</DialogTitle>
         </DialogHeader>
 
@@ -72,30 +72,6 @@ export function CreateRoomDialog() {
                       <Input placeholder="Enter room name..." {...field} />
                     </FormControl>
                     <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="isPrivate"
-                render={({ field }) => (
-                  <FormItem>
-                    <div className="flex items-center justify-between space-y-0">
-                      <div className="flex flex-col gap-1">
-                        <FormLabel htmlFor="isPrivate">Visibility</FormLabel>
-                        <p className="text-muted-foreground text-sm">
-                          {field.value ? "Invite-only access" : "Public access"}
-                        </p>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          id="isPrivate"
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                    </div>
                   </FormItem>
                 )}
               />
@@ -188,6 +164,29 @@ export function CreateRoomDialog() {
                       />
                     </FormControl>
                     <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="isPrivate"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex items-center justify-between space-y-0">
+                      <div className="flex flex-col gap-1">
+                        <FormLabel htmlFor="isPrivate">Visibility</FormLabel>
+                        <p className="text-muted-foreground text-sm">
+                          {field.value ? "Invite-only access" : "Public access"}
+                        </p>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          id="isPrivate"
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </div>
                   </FormItem>
                 )}
               />
