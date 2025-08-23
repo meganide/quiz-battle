@@ -1,8 +1,22 @@
-import { Eye } from "lucide-react"
+import { formatDistanceToNow } from "date-fns"
+import {
+  Calendar,
+  CircleQuestionMark,
+  Clock,
+  Eye,
+  ListStart,
+  Users,
+} from "lucide-react"
 
 import type { Doc } from "~/convex/_generated/dataModel"
 
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 type QuizRoomPreviewProps = {
   room: Doc<"rooms">
@@ -10,20 +24,96 @@ type QuizRoomPreviewProps = {
 
 export function QuizRoomPreview({ room }: QuizRoomPreviewProps) {
   return (
-    <article className="flex items-center justify-between gap-4 rounded-sm bg-gradient-to-b from-neutral-400 to-neutral-500 px-3 py-6">
-      <header className="flex flex-col">
-        <span className="text-neutral-050 font-bold">{room.name}</span>
-        <span className="text-neutral-050 font-semibold">
-          {room.playerIds.length} players
-        </span>
-      </header>
-
-      <aside className="flex items-center gap-2">
-        <Button variant="secondary">
-          <Eye className="size-5" />
-        </Button>
-        <Button>Join</Button>
-      </aside>
+    <article className="flex items-center justify-between gap-4 rounded-sm bg-gradient-to-b from-neutral-400 to-neutral-500 px-4 py-6">
+      <section className="flex w-full flex-col gap-1">
+        <section className="flex w-full items-center justify-between">
+          <span className="text-neutral-050 font-bold">{room.name}</span>
+          <Badge className="bg-secondary-800 text-secondary-200 font-semibold tracking-wider">
+            {room.status.toUpperCase()}
+          </Badge>
+        </section>
+        <section className="flex items-center justify-between gap-4">
+          <section className="flex w-full flex-col gap-4">
+            <header className="flex w-full min-w-0 flex-col">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <p className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
+                    {room.topic}
+                  </p>
+                </TooltipTrigger>
+                <TooltipContent>Topic</TooltipContent>
+              </Tooltip>
+            </header>
+            <article className="flex items-center gap-10">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center gap-1">
+                    <Users className="size-4 stroke-3 text-neutral-200" />
+                    <span className="font-semibold">
+                      {room.onlinePlayerIds.length}
+                    </span>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>Players</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center gap-1">
+                    <CircleQuestionMark className="size-4 stroke-3 text-neutral-200" />
+                    <span className="font-semibold">{room.numQuestions}</span>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>Questions</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center gap-1">
+                    <Clock className="size-4 stroke-3 text-neutral-200" />
+                    <span className="font-semibold">
+                      {room.timePerQuestion}s
+                    </span>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>Time per question</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center gap-1">
+                    <ListStart className="size-4 stroke-3 text-neutral-200" />
+                    <span className="font-semibold">
+                      {room.difficulty.charAt(0).toUpperCase() +
+                        room.difficulty.slice(1)}
+                    </span>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>Difficulty</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center gap-1">
+                    <Calendar className="size-4 stroke-3 text-neutral-200" />
+                    <span className="font-semibold">
+                      {formatDistanceToNow(room.createdAt)} ago
+                    </span>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>Time since creation</TooltipContent>
+              </Tooltip>
+            </article>
+          </section>
+          <aside className="flex items-center gap-2">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="secondary">
+                  <Eye className="size-5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Spectate</TooltipContent>
+            </Tooltip>
+            <Button>Join</Button>
+          </aside>
+        </section>
+      </section>
     </article>
   )
 }

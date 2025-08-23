@@ -12,10 +12,10 @@ export function QuizRoomsList() {
   if (!publicRooms) return <p>No public rooms found</p>
 
   return (
-    <div className="flex flex-col gap-3">
+    <section className="flex flex-col gap-3">
       {publicRooms.map((room) => (
         <QuizRoomPreview key={room._id} room={room} />
       ))}
-    </div>
+    </section>
   )
 }

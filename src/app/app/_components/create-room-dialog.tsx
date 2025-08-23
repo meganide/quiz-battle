@@ -51,14 +51,14 @@ export function CreateRoomDialog() {
           Create Quiz Battle
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[480px]">
+      <DialogContent className="gap-8 sm:max-w-[480px]">
         <DialogHeader>
           <DialogTitle>Create Quiz Battle</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
           <form
-            className="flex flex-col gap-8"
+            className="flex flex-col gap-6"
             onSubmit={form.handleSubmit(createRoom)}
           >
             <div className="flex flex-col gap-6">
