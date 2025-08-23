@@ -31,5 +31,7 @@ export default defineSchema({
   })
     .index("by_host", ["hostId"])
     .index("by_status", ["status"])
-    .index("by_invite_code", ["inviteCode"]),
+    .index("by_invite_code", ["inviteCode"])
+    .index("by_player", ["playerIds"])
+    .index("by_online_player", ["onlinePlayerIds"]),
 })

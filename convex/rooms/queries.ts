@@ -18,8 +18,7 @@ export const getPublicRooms = query({
       .filter((q) =>
         q.and(
           q.eq(q.field("isPrivate"), false),
-          q.eq(q.field("status"), "lobby"),
-          q.neq(q.field("hostId"), userId)
+          q.eq(q.field("status"), "lobby")
         )
       )
       .order("desc")

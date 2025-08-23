@@ -26,26 +26,51 @@ export const create = mutation({
       throw USER_ERRORS.NOT_AUTHENTICATED
     }
 
-    // Check if user already has an active room
-    const existingActiveRoom = await ctx.db
-      .query("rooms")
-      .withIndex("by_host", (q) => q.eq("hostId", userId))
-      .filter((q) => q.neq(q.field("status"), "completed"))
-      .first()
-
-    if (existingActiveRoom) {
-      throw ROOM_ERRORS.ACTIVE_ROOM_EXISTS
-    }
-
-    // Validate timePerQuestion is between 10 and 60
     if (args.timePerQuestion < 10 || args.timePerQuestion > 60) {
       throw ROOM_ERRORS.INVALID_TIME_PER_QUESTION
     }
 
-    // Validate numQuestions is positive
     if (args.numQuestions < 1) {
       throw ROOM_ERRORS.INVALID_NUMBER_OF_QUESTIONS
     }
+
+    const activeRooms = await ctx.db
+      .query("rooms")
+      .withIndex(
+        "by_status",
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        (q) => q.eq("status", "active") || q.eq("status", "lobby")
+      )
+      .collect()
+
+    const joinedRooms = activeRooms.filter((room) =>
+      room.onlinePlayerIds.includes(userId)
+    )
+
+    await Promise.all(
+      joinedRooms.map(async (room) => {
+        const onlinePlayerIds = room.onlinePlayerIds.filter(
+          (id) => id !== userId
+        )
+
+        if (onlinePlayerIds.length === 0) {
+          await ctx.db.delete(room._id)
+          return
+        }
+
+        if (room.hostId === userId) {
+          await ctx.db.patch(room._id, {
+            hostId: onlinePlayerIds[0],
+            onlinePlayerIds,
+          })
+          return
+        }
+
+        await ctx.db.patch(room._id, {
+          onlinePlayerIds,
+        })
+      })
+    )
 
     let inviteCode = generateInviteCode()
 
@@ -114,6 +139,7 @@ export const join = mutation({
 
     await ctx.db.patch(room._id, {
       playerIds: [...room.playerIds, userId],
+      onlinePlayerIds: [...room.onlinePlayerIds, userId],
     })
 
     return room._id
@@ -141,7 +167,6 @@ export const leave = mutation({
       throw ROOM_ERRORS.NOT_IN_ROOM
     }
 
-    const playerIds = room.playerIds.filter((id) => id !== userId)
     const onlinePlayerIds = room.onlinePlayerIds.filter((id) => id !== userId)
 
     if (room.hostId === userId) {
@@ -154,14 +179,12 @@ export const leave = mutation({
 
       await ctx.db.patch(room._id, {
         hostId: nextHost,
-        playerIds,
         onlinePlayerIds,
       })
       return
     }
 
     await ctx.db.patch(room._id, {
-      playerIds,
       onlinePlayerIds,
     })
   },
