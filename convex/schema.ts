@@ -22,6 +22,7 @@ export default defineSchema({
       v.literal("completed"),
     ),
     playerIds: v.array(v.id("users")),
+    onlinePlayerIds: v.array(v.id("users")),
     createdAt: v.number(),
     startedAt: v.optional(v.number()),
     completedAt: v.optional(v.number()),

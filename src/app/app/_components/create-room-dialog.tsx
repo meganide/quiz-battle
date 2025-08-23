@@ -1,14 +1,8 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "convex/react";
-import { ConvexError } from "convex/values";
+
 import { Plus } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -35,76 +29,19 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
-import { api } from "../../../../convex/_generated/api";
+import { useCreateRoom } from "../_hooks/use-create-room";
 
-const formSchema = z.object({
-  name: z
-    .string()
-    .min(3, "Room name must be at least 3 characters")
-    .max(50, "Room name must be less than 50 characters"),
-  isPrivate: z.boolean(),
-  topic: z.string().min(1, "Please enter a topic"),
-  numQuestions: z
-    .number()
-    .min(5, "Minimum 5 questions")
-    .max(50, "Maximum 50 questions"),
-  difficulty: z.enum(["easy", "medium", "hard"]),
-  timePerQuestion: z
-    .number()
-    .min(10, "Minimum 10 seconds")
-    .max(60, "Maximum 60 seconds"),
-});
-
-type FormValues = z.infer<typeof formSchema>;
-
-export function CreateRoom() {
-  const [open, setOpen] = useState(false);
-  const [isCreating, setIsCreating] = useState(false);
-  const createRoom = useMutation(api.rooms.mutations.create);
-  const router = useRouter();
-
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      isPrivate: false,
-      topic: "",
-      numQuestions: 10,
-      difficulty: "medium" as const,
-      timePerQuestion: 30,
-    },
-  });
-
-  async function onSubmit(values: FormValues) {
-    try {
-      setIsCreating(true);
-      const result = await createRoom(values);
-
-      // Close dialog and redirect to room
-      setOpen(false);
-      form.reset();
-
-      // Show success message with invite code if private
-      if (values.isPrivate && result.inviteCode) {
-        // You could show a toast here with the invite code
-        console.log("Invite code:", result.inviteCode);
-      }
-
-      // Navigate to the room
-      router.push(`/app/room/${result.inviteCode}`);
-    } catch (error) {
-      if (error instanceof ConvexError) {
-        toast.error(error.data.message);
-      } else {
-        toast.error("Failed to create room");
-      }
-    } finally {
-      setIsCreating(false);
-    }
-  }
+export function CreateRoomDialog() {
+  const {
+    isCreateRoomDialogOpen,
+    setIsCreateRoomDialogOpen,
+    isCreating,
+    form,
+    createRoom,
+  } = useCreateRoom();
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={isCreateRoomDialogOpen} onOpenChange={setIsCreateRoomDialogOpen}>
       <DialogTrigger asChild>
         <Button className="gap-2">
           <Plus className="h-4 w-4" />
@@ -117,7 +54,7 @@ export function CreateRoom() {
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form onSubmit={form.handleSubmit(createRoom)} className="space-y-8">
             <div className="space-y-6">
               <FormField
                 control={form.control}
@@ -252,20 +189,9 @@ export function CreateRoom() {
                 />
               </div>
             </div>
-
-            <div className="flex gap-3">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setOpen(false)}
-                className="flex-1"
-              >
-                Cancel
-              </Button>
-              <Button type="submit" disabled={isCreating} className="flex-1">
-                {isCreating ? "Creating..." : "Create Room"}
-              </Button>
-            </div>
+            <Button type="submit" disabled={isCreating} className="flex-1">
+              {isCreating ? "Creating..." : "Create Room"}
+            </Button>
           </form>
         </Form>
       </DialogContent>

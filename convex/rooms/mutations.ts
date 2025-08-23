@@ -69,6 +69,7 @@ export const create = mutation({
       timePerQuestion: args.timePerQuestion,
       status: "lobby",
       playerIds: [userId],
+      onlinePlayerIds: [userId],
       createdAt: Date.now(),
       inviteCode,
     });
@@ -79,7 +80,7 @@ export const create = mutation({
   },
 });
 
-export const joinLobby = mutation({
+export const join = mutation({
   args: {
     inviteCode: v.string(),
   },
