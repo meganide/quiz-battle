@@ -1,6 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server"
 
 import { query } from "../_generated/server"
+import { USER_ERRORS } from "../users/errors"
 
 export const getPublicRooms = query({
   args: {},
@@ -8,7 +9,7 @@ export const getPublicRooms = query({
     const userId = await getAuthUserId(ctx)
 
     if (!userId) {
-      throw new Error("User not authenticated")
+      throw USER_ERRORS.NOT_AUTHENTICATED
     }
 
     return await ctx.db

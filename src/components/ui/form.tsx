@@ -17,6 +17,7 @@ import type * as LabelPrimitive from "@radix-ui/react-label"
 
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
+import { UI_ERRORS } from "@/lib/errors"
 
 const Form = FormProvider
 
@@ -51,7 +52,7 @@ const useFormField = () => {
 
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!fieldContext) {
-    throw new Error("useFormField should be used within <FormField>")
+    throw UI_ERRORS.FORM_FIELD_REQUIRED
   }
 
   const { id } = itemContext

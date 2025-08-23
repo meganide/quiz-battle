@@ -1,3 +1,5 @@
+import { useMutation } from "convex/react"
+import { ConvexError } from "convex/values"
 import { formatDistanceToNow } from "date-fns"
 import {
   Calendar,
@@ -7,6 +9,8 @@ import {
   ListStart,
   Users,
 } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 import type { Doc } from "~/convex/_generated/dataModel"
 
@@ -17,12 +21,37 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { api } from "~/convex/_generated/api"
+import { RoomErrorCodes } from "~/convex/rooms/errors"
 
 type QuizRoomPreviewProps = {
   room: Doc<"rooms">
 }
 
 export function QuizRoomPreview({ room }: QuizRoomPreviewProps) {
+  const joinRoomMutation = useMutation(api.rooms.mutations.join)
+  const router = useRouter()
+
+  async function joinRoom() {
+    try {
+      await joinRoomMutation({
+        inviteCode: room.inviteCode,
+      })
+      router.push(`/app/room/${room.inviteCode}`)
+    } catch (error) {
+      if (error instanceof ConvexError) {
+        if (error.data.code === RoomErrorCodes.ALREADY_IN_ROOM) {
+          router.push(`/app/room/${room.inviteCode}`)
+          return
+        }
+
+        toast.error(error.data.message)
+      } else {
+        toast.error("Failed to join room")
+      }
+    }
+  }
+
   return (
     <article className="flex items-center justify-between gap-4 rounded-sm bg-gradient-to-b from-neutral-400 to-neutral-500 px-4 py-6">
       <section className="flex w-full flex-col gap-1">
@@ -104,7 +133,7 @@ export function QuizRoomPreview({ room }: QuizRoomPreviewProps) {
               </TooltipTrigger>
               <TooltipContent>Spectate</TooltipContent>
             </Tooltip>
-            <Button>Join</Button>
+            <Button onClick={joinRoom}>Join</Button>
           </aside>
         </section>
       </section>

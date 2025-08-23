@@ -4,6 +4,7 @@ import { v } from "convex/values"
 import { ROOM_ERRORS } from "./errors"
 import { generateInviteCode } from "./utils"
 import { mutation } from "../_generated/server"
+import { USER_ERRORS } from "../users/errors"
 
 export const create = mutation({
   args: {
@@ -20,8 +21,9 @@ export const create = mutation({
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx)
+
     if (!userId) {
-      throw new Error("Not authenticated")
+      throw USER_ERRORS.NOT_AUTHENTICATED
     }
 
     // Check if user already has an active room
@@ -37,12 +39,12 @@ export const create = mutation({
 
     // Validate timePerQuestion is between 10 and 60
     if (args.timePerQuestion < 10 || args.timePerQuestion > 60) {
-      throw new Error("Time per question must be between 10 and 60 seconds")
+      throw ROOM_ERRORS.INVALID_TIME_PER_QUESTION
     }
 
     // Validate numQuestions is positive
     if (args.numQuestions < 1) {
-      throw new Error("Number of questions must be positive")
+      throw ROOM_ERRORS.INVALID_NUMBER_OF_QUESTIONS
     }
 
     let inviteCode = generateInviteCode()
@@ -90,7 +92,7 @@ export const join = mutation({
     const userId = await getAuthUserId(ctx)
 
     if (!userId) {
-      throw new Error("Not authenticated")
+      throw USER_ERRORS.NOT_AUTHENTICATED
     }
 
     const room = await ctx.db
@@ -99,15 +101,15 @@ export const join = mutation({
       .first()
 
     if (!room) {
-      throw new Error("Room not found")
+      throw ROOM_ERRORS.ROOM_NOT_FOUND
     }
 
     if (room.status !== "lobby") {
-      throw new Error("Room is not accepting new players")
+      throw ROOM_ERRORS.ROOM_NOT_ACCEPTING_PLAYERS
     }
 
     if (room.playerIds.includes(userId)) {
-      throw new Error("Already in this room")
+      throw ROOM_ERRORS.ALREADY_IN_ROOM
     }
 
     await ctx.db.patch(room._id, {
