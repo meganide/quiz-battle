@@ -89,7 +89,7 @@
 }
 
 :root {
-  --radius: 1rem;
+  --radius: 0.60rem;
   --background: var(--neutral-600);
   --foreground: var(--neutral-100);
   --card: var(--neutral-600);
@@ -101,10 +101,10 @@
   --secondary: var(--secondary-400);
   --secondary-foreground: var(--secondary-900);
   --muted: var(--neutral-500);
-  --muted-foreground: var(--neutral-300);
+  --muted-foreground: var(--neutral-200);
   --accent: var(--neutral-500);
   --accent-foreground: var(--neutral-100);
-  --destructive: var(--yellow-400);
+  --destructive: hsl(0, 60%, 50%);
   --border: var(--neutral-500);
   --input: var(--neutral-500);
   --ring: var(--primary-600);

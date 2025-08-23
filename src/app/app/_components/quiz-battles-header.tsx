@@ -2,8 +2,9 @@
 
 import { useQuery } from "convex/react"
 
-import { Button } from "@/components/ui/button"
 import { api } from "~/convex/_generated/api"
+
+import { CreateRoomDialog } from "./create-room-dialog"
 
 export function QuizBattlesHeader() {
   const publicRooms = useQuery(api.rooms.queries.getPublicRooms)
@@ -18,7 +19,7 @@ export function QuizBattlesHeader() {
           </span>
         </article>
       </aside>
-      <Button>Create Quiz Battle</Button>
+      <CreateRoomDialog />
     </section>
   )
 }
