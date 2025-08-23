@@ -32,16 +32,11 @@ export function NavUser() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button className="flex items-center" size="lg" variant="ghost">
-          <Avatar className="h-8 w-8 rounded-lg">
+        <Button className="p-2" variant="ghost">
+          <Avatar className="size-7 rounded-sm">
             <AvatarImage alt={user?.name} src={user?.image} />
             <AvatarFallback className="rounded-lg">CN</AvatarFallback>
           </Avatar>
-          <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="truncate font-medium">{user?.name}</span>
-            <span className="truncate text-xs">{user?.email}</span>
-          </div>
-          <ChevronsUpDown className="ml-auto size-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent

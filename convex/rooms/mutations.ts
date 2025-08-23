@@ -133,7 +133,7 @@ export const join = mutation({
       throw ROOM_ERRORS.ROOM_NOT_ACCEPTING_PLAYERS
     }
 
-    if (room.playerIds.includes(userId)) {
+    if (room.onlinePlayerIds.includes(userId)) {
       throw ROOM_ERRORS.ALREADY_IN_ROOM
     }
 
