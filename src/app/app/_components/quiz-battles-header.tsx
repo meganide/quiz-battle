@@ -5,6 +5,7 @@ import { useQuery } from "convex/react"
 import { api } from "~/convex/_generated/api"
 
 import { CreateRoomDialog } from "./create-room-dialog"
+import { JoinRoomDialog } from "./join-room-dialog"
 
 export function QuizBattlesHeader() {
   const publicRooms = useQuery(api.rooms.queries.getPublicRooms)
@@ -19,7 +20,10 @@ export function QuizBattlesHeader() {
           </span>
         </article>
       </aside>
-      <CreateRoomDialog />
+      <div className="flex items-center gap-4">
+        <JoinRoomDialog />
+        <CreateRoomDialog />
+      </div>
     </section>
   )
 }
