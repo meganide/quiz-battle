@@ -9,6 +9,7 @@ import {
   ListStart,
   Users,
 } from "lucide-react"
+import { motion } from "motion/react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
@@ -53,7 +54,17 @@ export function QuizRoomPreview({ room }: QuizRoomPreviewProps) {
   }
 
   return (
-    <article className="flex items-center justify-between gap-4 rounded-sm bg-gradient-to-b from-neutral-400 to-neutral-500 px-4 py-6">
+    <motion.article
+      layout
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      className="flex items-center justify-between gap-4 rounded-sm bg-gradient-to-b from-neutral-400 to-neutral-500 px-4 py-6"
+      exit={{ opacity: 0, y: -20, scale: 0.95 }}
+      initial={{ opacity: 0, y: 20, scale: 0.95 }}
+      transition={{
+        duration: 0.3,
+        ease: "easeOut",
+      }}
+    >
       <section className="flex w-full flex-col gap-1">
         <section className="flex w-full items-center justify-between">
           <span className="text-neutral-050 text-lg font-bold">
@@ -137,6 +148,6 @@ export function QuizRoomPreview({ room }: QuizRoomPreviewProps) {
           </aside>
         </section>
       </section>
-    </article>
+    </motion.article>
   )
 }

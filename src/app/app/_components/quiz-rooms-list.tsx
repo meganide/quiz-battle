@@ -1,6 +1,7 @@
 "use client"
 
 import { useQuery } from "convex/react"
+import { AnimatePresence } from "motion/react"
 
 import { api } from "~/convex/_generated/api"
 
@@ -13,9 +14,11 @@ export function QuizRoomsList() {
 
   return (
     <section className="flex flex-col gap-3">
-      {publicRooms.map((room) => (
-        <QuizRoomPreview key={room._id} room={room} />
-      ))}
+      <AnimatePresence mode="popLayout">
+        {publicRooms.map((room) => (
+          <QuizRoomPreview key={room._id} room={room} />
+        ))}
+      </AnimatePresence>
     </section>
   )
 }
