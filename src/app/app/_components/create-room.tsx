@@ -93,7 +93,7 @@ export function CreateRoom() {
       }
 
       // Navigate to the room
-      router.push(`/app/room/${result.roomId}`);
+      router.push(`/app/room/${result.inviteCode}`);
     } catch (error) {
       console.error("Failed to create room:", error);
       // You could show an error toast here

@@ -38,7 +38,7 @@ function RoomCard({
           </div>
           <div className="flex items-center gap-2">
             <Badge
-              variant={room.status === "waiting" ? "default" : "secondary"}
+              variant={room.status === "lobby" ? "default" : "secondary"}
               className="capitalize text-xs"
             >
               {room.status}

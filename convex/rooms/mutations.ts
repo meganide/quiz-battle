@@ -33,10 +33,22 @@ export const create = mutation({
       throw new Error("Number of questions must be positive");
     }
 
-    // Generate invite code for private rooms
-    const inviteCode = args.isPrivate ? generateInviteCode() : undefined;
+    let inviteCode = generateInviteCode();
 
-    const roomId = await ctx.db.insert("rooms", {
+    while (true) {
+      const existingRoom = await ctx.db
+        .query("rooms")
+        .withIndex("by_invite_code", (q) => q.eq("inviteCode", inviteCode))
+        .first();
+
+      if (!existingRoom) {
+        break;
+      }
+
+      inviteCode = generateInviteCode();
+    }
+
+    await ctx.db.insert("rooms", {
       name: args.name,
       hostId: userId,
       isPrivate: args.isPrivate,
@@ -44,45 +56,39 @@ export const create = mutation({
       numQuestions: args.numQuestions,
       difficulty: args.difficulty,
       timePerQuestion: args.timePerQuestion,
-      status: "waiting",
+      status: "lobby",
       playerIds: [userId],
       createdAt: Date.now(),
       inviteCode,
     });
 
     return {
-      roomId,
       inviteCode,
     };
   },
 });
 
-export const joinRoom = mutation({
+export const joinLobby = mutation({
   args: {
-    roomId: v.optional(v.id("rooms")),
-    inviteCode: v.optional(v.string()),
+    inviteCode: v.string(),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
+
     if (!userId) {
       throw new Error("Not authenticated");
     }
 
-    let room: Doc<"rooms"> | null = null;
-    if (args.roomId) {
-      room = await ctx.db.get(args.roomId);
-    } else if (args.inviteCode) {
-      room = await ctx.db
-        .query("rooms")
-        .withIndex("by_invite_code", (q) => q.eq("inviteCode", args.inviteCode))
-        .first();
-    }
+    const room = await ctx.db
+      .query("rooms")
+      .withIndex("by_invite_code", (q) => q.eq("inviteCode", args.inviteCode))
+      .first();
 
     if (!room) {
       throw new Error("Room not found");
     }
 
-    if (room.status !== "waiting") {
+    if (room.status !== "lobby") {
       throw new Error("Room is not accepting new players");
     }
 

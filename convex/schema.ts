@@ -17,7 +17,7 @@ export default defineSchema({
     ),
     timePerQuestion: v.number(),
     status: v.union(
-      v.literal("waiting"),
+      v.literal("lobby"),
       v.literal("active"),
       v.literal("completed"),
     ),
@@ -25,7 +25,7 @@ export default defineSchema({
     createdAt: v.number(),
     startedAt: v.optional(v.number()),
     completedAt: v.optional(v.number()),
-    inviteCode: v.optional(v.string()),
+    inviteCode: v.string(),
   })
     .index("by_host", ["hostId"])
     .index("by_status", ["status"])

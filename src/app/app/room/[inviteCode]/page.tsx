@@ -2,14 +2,14 @@ import { Container } from "@/components/container";
 
 type RoomPageProps = {
   params: {
-    roomId: string;
+    inviteCode: string;
   };
 };
 
 export default function RoomPage({ params }: RoomPageProps) {
-  const { roomId } = params;
+  const { inviteCode } = params;
 
   return (
-    <Container>RoomPage {roomId}</Container>
+    <Container>RoomPage {inviteCode}</Container>
   )
 }
