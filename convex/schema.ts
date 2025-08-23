@@ -8,4 +8,31 @@ export default defineSchema({
     text: v.string(),
     isCompleted: v.boolean(),
   }),
+  rooms: defineTable({
+    name: v.string(),
+    hostId: v.id("users"),
+    isPrivate: v.boolean(),
+    topic: v.string(),
+    numQuestions: v.number(),
+    difficulty: v.union(
+      v.literal("easy"),
+      v.literal("medium"),
+      v.literal("hard"),
+    ),
+    maxPlayers: v.number(),
+    currentPlayers: v.number(),
+    status: v.union(
+      v.literal("waiting"),
+      v.literal("active"),
+      v.literal("completed"),
+    ),
+    playerIds: v.array(v.id("users")),
+    createdAt: v.number(),
+    startedAt: v.optional(v.number()),
+    completedAt: v.optional(v.number()),
+    inviteCode: v.optional(v.string()),
+  })
+    .index("by_host", ["hostId"])
+    .index("by_status", ["status"])
+    .index("by_invite_code", ["inviteCode"]),
 });
