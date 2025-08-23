@@ -1,205 +1,178 @@
 "use client";
 
-import { useAuthActions } from "@convex-dev/auth/react";
 import { useQuery } from "convex/react";
-import { Clock, Settings, Trophy, Users } from "lucide-react";
+import {  Users2 } from "lucide-react";
 import { CreateRoom } from "@/app/app/_components/create-room";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { api } from "../../../convex/_generated/api";
 
+type Room = {
+  _id: string;
+  name: string;
+  currentPlayers: number;
+  maxPlayers: number;
+  topic: string;
+  difficulty: string;
+  status: string;
+};
+
+function RoomCard({ room, showJoinButton = false }: { room: Room; showJoinButton?: boolean }) {
+  return (
+    <Card className="group hover:shadow-sm transition-all duration-200 border-border/50">
+      <CardHeader className="space-y-4">
+        <div className="flex items-start justify-between">
+          <div className="space-y-2">
+            <CardTitle className="text-base font-medium leading-none">
+              {room.name}
+            </CardTitle>
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+              <span className="flex items-center gap-1.5">
+                <Users2 className="h-3.5 w-3.5" />
+                {room.currentPlayers}/{room.maxPlayers}
+              </span>
+              <span>{room.topic}</span>
+              <Badge variant="outline" className="text-xs capitalize">
+                {room.difficulty}
+              </Badge>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Badge 
+              variant={room.status === "waiting" ? "default" : "secondary"}
+              className="capitalize text-xs"
+            >
+              {room.status}
+            </Badge>
+            {showJoinButton && (
+              <Button size="sm" variant="outline" className="opacity-0 group-hover:opacity-100 transition-opacity">
+                Join
+              </Button>
+            )}
+          </div>
+        </div>
+      </CardHeader>
+    </Card>
+  );
+}
+
+function EmptyState({ type }: { type: 'myRooms' | 'publicRooms' }) {
+  const content = type === 'myRooms' 
+    ? {
+        title: "No rooms created yet",
+        description: "Create your first quiz room to get started"
+      }
+    : {
+        title: "No public rooms available", 
+        description: "Be the first to create a public room"
+      };
+
+  return (
+    <Card className="border-dashed">
+      <CardContent className="py-12 text-center">
+        <div className="space-y-3">
+          <p className="text-sm font-medium text-muted-foreground">
+            {content.title}
+          </p>
+          <p className="text-xs text-muted-foreground">
+            {content.description}
+          </p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function LoadingSkeleton() {
+  const skeletons = ['skeleton-1', 'skeleton-2'];
+  
+  return (
+    <div className="space-y-4">
+      {skeletons.map((id) => (
+        <Card key={id} className="animate-pulse">
+          <CardHeader>
+            <div className="space-y-3">
+              <div className="h-4 bg-muted rounded w-2/3"></div>
+              <div className="flex gap-4">
+                <div className="h-3 bg-muted rounded w-16"></div>
+                <div className="h-3 bg-muted rounded w-20"></div>
+                <div className="h-3 bg-muted rounded w-12"></div>
+              </div>
+            </div>
+          </CardHeader>
+        </Card>
+      ))}
+    </div>
+  );
+}
+
 export default function AppPage() {
-  const { signOut } = useAuthActions();
   const myRooms = useQuery(api.rooms.queries.getMyRooms);
   const publicRooms = useQuery(api.rooms.queries.getPublicRooms);
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <section className="container flex h-16 items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Trophy className="h-8 w-8 text-primary" />
-            <h1 className="text-2xl font-bold">Quiz Battle</h1>
-          </div>
-          <nav className="flex items-center gap-4">
-            <Button variant="ghost" size="icon">
-              <Settings className="h-5 w-5" />
-            </Button>
-            <Button variant="outline" onClick={() => void signOut()}>
-              Sign out
-            </Button>
-          </nav>
-        </section>
-      </header>
-
-      <section className="container py-8">
-        <div className="grid gap-8">
-          <section>
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-3xl font-bold">Welcome back!</h2>
+    <main className="container mx-auto flex flex-1">
+      <div className="container py-12">
+        <div className="space-y-12">
+          <section className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <h2 className="text-2xl font-semibold tracking-tight">Welcome back</h2>
                 <p className="text-muted-foreground">
-                  Ready to challenge your friends to a quiz battle?
+                  Manage your quiz rooms and join challenges
                 </p>
               </div>
               <CreateRoom />
             </div>
           </section>
 
-          <div className="grid gap-6 lg:grid-cols-2">
-            <section>
-              <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                <Users className="h-5 w-5" />
-                My Rooms
-              </h3>
-              <div className="space-y-3">
+          <div className="grid gap-12 lg:grid-cols-2">
+            <section className="space-y-6">
+              <div className="space-y-2">
+                <h3 className="text-lg font-medium">My Rooms</h3>
+                <p className="text-sm text-muted-foreground">Rooms you've created</p>
+              </div>
+              
+              <div className="space-y-4">
                 {myRooms === undefined ? (
-                  <div className="space-y-3">
-                    {[...Array(3)].map((_, i) => (
-                      <Card
-                        key={`my-rooms-skeleton-${i}`}
-                        className="animate-pulse"
-                      >
-                        <CardHeader className="pb-3">
-                          <div className="h-4 bg-muted rounded w-3/4"></div>
-                          <div className="h-3 bg-muted rounded w-1/2"></div>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="flex gap-2">
-                            <div className="h-6 bg-muted rounded w-16"></div>
-                            <div className="h-6 bg-muted rounded w-20"></div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
+                  <LoadingSkeleton />
                 ) : myRooms.length === 0 ? (
-                  <Card>
-                    <CardContent className="py-8 text-center">
-                      <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                      <p className="text-muted-foreground">
-                        You haven't created any rooms yet.
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Click "Create Room" to get started!
-                      </p>
-                    </CardContent>
-                  </Card>
+                  <EmptyState type="myRooms" />
                 ) : (
                   myRooms.map((room) => (
-                    <Card
-                      key={room._id}
-                      className="hover:shadow-md transition-shadow cursor-pointer"
-                    >
-                      <CardHeader className="pb-3">
-                        <div className="flex items-center justify-between">
-                          <CardTitle className="text-lg">{room.name}</CardTitle>
-                          <Badge
-                            variant={
-                              room.status === "waiting"
-                                ? "default"
-                                : room.status === "active"
-                                  ? "destructive"
-                                  : "secondary"
-                            }
-                          >
-                            {room.status}
-                          </Badge>
-                        </div>
-                        <CardDescription className="flex items-center gap-4">
-                          <span className="flex items-center gap-1">
-                            <Users className="h-4 w-4" />
-                            {room.currentPlayers}/{room.maxPlayers}
-                          </span>
-                          <span>{room.topic}</span>
-                          <Badge variant="outline" className="text-xs">
-                            {room.difficulty}
-                          </Badge>
-                        </CardDescription>
-                      </CardHeader>
-                    </Card>
+                    <RoomCard key={room._id} room={room} />
                   ))
                 )}
               </div>
             </section>
 
-            <section>
-              <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                <Clock className="h-5 w-5" />
-                Public Rooms
-              </h3>
-              <div className="space-y-3">
+            <section className="space-y-6">
+              <div className="space-y-2">
+                <h3 className="text-lg font-medium">Public Rooms</h3>
+                <p className="text-sm text-muted-foreground">Join active quiz battles</p>
+              </div>
+              
+              <div className="space-y-4">
                 {publicRooms === undefined ? (
-                  <div className="space-y-3">
-                    {[...Array(3)].map((_, i) => (
-                      <Card
-                        key={`public-rooms-skeleton-${i}`}
-                        className="animate-pulse"
-                      >
-                        <CardHeader className="pb-3">
-                          <div className="h-4 bg-muted rounded w-3/4"></div>
-                          <div className="h-3 bg-muted rounded w-1/2"></div>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="flex gap-2">
-                            <div className="h-6 bg-muted rounded w-16"></div>
-                            <div className="h-6 bg-muted rounded w-20"></div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
+                  <LoadingSkeleton />
                 ) : publicRooms.length === 0 ? (
-                  <Card>
-                    <CardContent className="py-8 text-center">
-                      <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                      <p className="text-muted-foreground">
-                        No public rooms available.
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Be the first to create one!
-                      </p>
-                    </CardContent>
-                  </Card>
+                  <EmptyState type="publicRooms" />
                 ) : (
                   publicRooms.map((room) => (
-                    <Card
-                      key={room._id}
-                      className="hover:shadow-md transition-shadow cursor-pointer"
-                    >
-                      <CardHeader className="pb-3">
-                        <div className="flex items-center justify-between">
-                          <CardTitle className="text-lg">{room.name}</CardTitle>
-                          <Button size="sm" variant="outline">
-                            Join
-                          </Button>
-                        </div>
-                        <CardDescription className="flex items-center gap-4">
-                          <span className="flex items-center gap-1">
-                            <Users className="h-4 w-4" />
-                            {room.currentPlayers}/{room.maxPlayers}
-                          </span>
-                          <span>{room.topic}</span>
-                          <Badge variant="outline" className="text-xs">
-                            {room.difficulty}
-                          </Badge>
-                        </CardDescription>
-                      </CardHeader>
-                    </Card>
+                    <RoomCard key={room._id} room={room} showJoinButton />
                   ))
                 )}
               </div>
             </section>
           </div>
         </div>
-      </section>
+      </div>
     </main>
   );
 }

@@ -2,25 +2,15 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "convex/react";
-import {
-  BarChart3,
-  Brain,
-  Gamepad2,
-  Globe,
-  Hash,
-  Lock,
-  Users,
-} from "lucide-react";
+import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -28,7 +18,6 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -44,7 +33,6 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
-import { cn } from "@/lib/utils";
 import { api } from "../../../../convex/_generated/api";
 
 const formSchema = z.object({
@@ -52,8 +40,8 @@ const formSchema = z.object({
     .string()
     .min(3, "Room name must be at least 3 characters")
     .max(50, "Room name must be less than 50 characters"),
-  isPrivate: z.boolean().default(false),
-  topic: z.string().min(1, "Please select a topic"),
+  isPrivate: z.boolean(),
+  topic: z.string().min(1, "Please enter a topic"),
   numQuestions: z
     .number()
     .min(5, "Minimum 5 questions")
@@ -67,27 +55,9 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-const topics = [
-  "General Knowledge",
-  "Science & Technology",
-  "History",
-  "Geography",
-  "Sports",
-  "Entertainment",
-  "Literature",
-  "Art & Culture",
-  "Mathematics",
-  "Politics",
-  "Nature",
-  "Food & Cooking",
-];
 
-const difficultyColors = {
-  easy: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
-  medium:
-    "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
-  hard: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
-};
+
+
 
 export function CreateRoom() {
   const [open, setOpen] = useState(false);
@@ -102,7 +72,7 @@ export function CreateRoom() {
       isPrivate: false,
       topic: "",
       numQuestions: 10,
-      difficulty: "medium",
+      difficulty: "medium" as const,
       maxPlayers: 6,
     },
   });
@@ -135,119 +105,66 @@ export function CreateRoom() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="lg" className="gap-2">
-          <Gamepad2 className="h-5 w-5" />
+        <Button className="gap-2">
+          <Plus className="h-4 w-4" />
           Create Room
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-2xl">
-            <Gamepad2 className="h-6 w-6" />
-            Create Quiz Room
-          </DialogTitle>
-          <DialogDescription>
-            Set up your quiz room and invite friends to compete!
-          </DialogDescription>
+      <DialogContent className="sm:max-w-[480px]">
+        <DialogHeader className="space-y-3">
+          <DialogTitle>Create Quiz Room</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <section className="space-y-4">
-              <header>
-                <h3 className="text-lg font-semibold">Room Settings</h3>
-                <p className="text-sm text-muted-foreground">
-                  Configure your quiz room details
-                </p>
-              </header>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <div className="space-y-6">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Room Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter room name..." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-              <div className="grid grid-cols-1 gap-4">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center gap-2">
-                        <Hash className="h-4 w-4" />
-                        Room Name
-                      </FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter room name..." {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="isPrivate"
-                  render={({ field }) => (
-                    <FormItem>
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                          <FormLabel className="flex items-center gap-2">
-                            {field.value ? (
-                              <Lock className="h-4 w-4" />
-                            ) : (
-                              <Globe className="h-4 w-4" />
-                            )}
-                            {field.value ? "Private Room" : "Public Room"}
-                          </FormLabel>
-                          <FormDescription>
-                            {field.value
-                              ? "Only people with the invite code can join"
-                              : "Anyone can discover and join this room"}
-                          </FormDescription>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
+              <FormField
+                control={form.control}
+                name="isPrivate"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex items-center justify-between space-y-0">
+                      <div>
+                        <FormLabel>Private Room</FormLabel>
+                        <p className="text-sm text-muted-foreground">
+                          {field.value ? "Invite-only access" : "Public access"}
+                        </p>
                       </div>
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </section>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </div>
+                  </FormItem>
+                )}
+              />
 
-            <section className="space-y-4">
-              <header>
-                <h3 className="text-lg font-semibold">Quiz Configuration</h3>
-                <p className="text-sm text-muted-foreground">
-                  Customize your quiz experience
-                </p>
-              </header>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="topic"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="flex items-center gap-2">
-                        <Brain className="h-4 w-4" />
-                        Topic
-                      </FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a topic" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {topics.map((topic) => (
-                            <SelectItem key={topic} value={topic}>
-                              {topic}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <FormLabel>Topic</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter quiz topic..." {...field} />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -258,10 +175,7 @@ export function CreateRoom() {
                   name="difficulty"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="flex items-center gap-2">
-                        <BarChart3 className="h-4 w-4" />
-                        Difficulty
-                      </FormLabel>
+                      <FormLabel>Difficulty</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
@@ -272,42 +186,9 @@ export function CreateRoom() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="easy">
-                            <div className="flex items-center gap-2">
-                              <Badge
-                                variant="secondary"
-                                className={cn("text-xs", difficultyColors.easy)}
-                              >
-                                Easy
-                              </Badge>
-                              <span>Perfect for beginners</span>
-                            </div>
-                          </SelectItem>
-                          <SelectItem value="medium">
-                            <div className="flex items-center gap-2">
-                              <Badge
-                                variant="secondary"
-                                className={cn(
-                                  "text-xs",
-                                  difficultyColors.medium,
-                                )}
-                              >
-                                Medium
-                              </Badge>
-                              <span>Balanced challenge</span>
-                            </div>
-                          </SelectItem>
-                          <SelectItem value="hard">
-                            <div className="flex items-center gap-2">
-                              <Badge
-                                variant="secondary"
-                                className={cn("text-xs", difficultyColors.hard)}
-                              >
-                                Hard
-                              </Badge>
-                              <span>Expert level</span>
-                            </div>
-                          </SelectItem>
+                          <SelectItem value="easy">Easy</SelectItem>
+                          <SelectItem value="medium">Medium</SelectItem>
+                          <SelectItem value="hard">Hard</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -315,28 +196,18 @@ export function CreateRoom() {
                   )}
                 />
               </div>
-            </section>
 
-            <section className="space-y-4">
-              <header>
-                <h3 className="text-lg font-semibold">Game Parameters</h3>
-                <p className="text-sm text-muted-foreground">
-                  Fine-tune your quiz settings
-                </p>
-              </header>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="numQuestions"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="flex items-center justify-between">
-                        <span className="flex items-center gap-2">
-                          <Hash className="h-4 w-4" />
-                          Number of Questions
+                        Questions
+                        <span className="text-sm text-muted-foreground">
+                          {field.value}
                         </span>
-                        <Badge variant="outline">{field.value}</Badge>
                       </FormLabel>
                       <FormControl>
                         <Slider
@@ -348,9 +219,6 @@ export function CreateRoom() {
                           className="w-full"
                         />
                       </FormControl>
-                      <FormDescription>
-                        Choose between 5-50 questions
-                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -362,11 +230,10 @@ export function CreateRoom() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="flex items-center justify-between">
-                        <span className="flex items-center gap-2">
-                          <Users className="h-4 w-4" />
-                          Max Players
+                        Max Players
+                        <span className="text-sm text-muted-foreground">
+                          {field.value}
                         </span>
-                        <Badge variant="outline">{field.value}</Badge>
                       </FormLabel>
                       <FormControl>
                         <Slider
@@ -378,17 +245,14 @@ export function CreateRoom() {
                           className="w-full"
                         />
                       </FormControl>
-                      <FormDescription>
-                        Room capacity (2-20 players)
-                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
-            </section>
+            </div>
 
-            <footer className="flex gap-3 pt-4">
+            <div className="flex gap-3">
               <Button
                 type="button"
                 variant="outline"
@@ -397,24 +261,10 @@ export function CreateRoom() {
               >
                 Cancel
               </Button>
-              <Button
-                type="submit"
-                disabled={isCreating}
-                className="flex-1 gap-2"
-              >
-                {isCreating ? (
-                  <>
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                    Creating...
-                  </>
-                ) : (
-                  <>
-                    <Gamepad2 className="h-4 w-4" />
-                    Create Room
-                  </>
-                )}
+              <Button type="submit" disabled={isCreating} className="flex-1">
+                {isCreating ? "Creating..." : "Create Room"}
               </Button>
-            </footer>
+            </div>
           </form>
         </Form>
       </DialogContent>
