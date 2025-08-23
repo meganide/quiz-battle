@@ -4,10 +4,6 @@ import { v } from "convex/values";
 
 export default defineSchema({
   ...authTables,
-  tasks: defineTable({
-    text: v.string(),
-    isCompleted: v.boolean(),
-  }),
   rooms: defineTable({
     name: v.string(),
     hostId: v.id("users"),
@@ -19,8 +15,7 @@ export default defineSchema({
       v.literal("medium"),
       v.literal("hard"),
     ),
-    maxPlayers: v.number(),
-    currentPlayers: v.number(),
+    timePerQuestion: v.number(),
     status: v.union(
       v.literal("waiting"),
       v.literal("active"),

@@ -15,7 +15,7 @@ export const create = mutation({
       v.literal("medium"),
       v.literal("hard"),
     ),
-    maxPlayers: v.number(),
+    timePerQuestion: v.number(),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -23,9 +23,9 @@ export const create = mutation({
       throw new Error("Not authenticated");
     }
 
-    // Validate maxPlayers is between 2 and 20
-    if (args.maxPlayers < 2 || args.maxPlayers > 20) {
-      throw new Error("Max players must be between 2 and 20");
+    // Validate timePerQuestion is between 10 and 60
+    if (args.timePerQuestion < 10 || args.timePerQuestion > 60) {
+      throw new Error("Time per question must be between 10 and 60 seconds");
     }
 
     // Validate numQuestions is positive
@@ -43,8 +43,7 @@ export const create = mutation({
       topic: args.topic,
       numQuestions: args.numQuestions,
       difficulty: args.difficulty,
-      maxPlayers: args.maxPlayers,
-      currentPlayers: 1,
+      timePerQuestion: args.timePerQuestion,
       status: "waiting",
       playerIds: [userId],
       createdAt: Date.now(),
@@ -87,16 +86,11 @@ export const joinRoom = mutation({
       throw new Error("Room is not accepting new players");
     }
 
-    if (room.currentPlayers >= room.maxPlayers) {
-      throw new Error("Room is full");
-    }
-
     if (room.playerIds.includes(userId)) {
       throw new Error("Already in this room");
     }
 
     await ctx.db.patch(room._id, {
-      currentPlayers: room.currentPlayers + 1,
       playerIds: [...room.playerIds, userId],
     });
 

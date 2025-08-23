@@ -8,7 +8,7 @@ export function AppNavbar() {
     <nav className="container mx-auto h-16 flex items-center gap-4 justify-between">
       <section className="flex items-center gap-4">
         <span className="mr-12">Quiz Battle</span>
-        <Link href="/">
+        <Link href="/app">
           <Button variant="link">
             <Swords /> Battles
           </Button>

@@ -18,7 +18,6 @@ import type * as http from "../http.js";
 import type * as rooms_mutations from "../rooms/mutations.js";
 import type * as rooms_queries from "../rooms/queries.js";
 import type * as rooms_utils from "../rooms/utils.js";
-import type * as tasks from "../tasks.js";
 import type * as users_queries from "../users/queries.js";
 
 /**
@@ -35,7 +34,6 @@ declare const fullApi: ApiFromModules<{
   "rooms/mutations": typeof rooms_mutations;
   "rooms/queries": typeof rooms_queries;
   "rooms/utils": typeof rooms_utils;
-  tasks: typeof tasks;
   "users/queries": typeof users_queries;
 }>;
 export declare const api: FilterApi<

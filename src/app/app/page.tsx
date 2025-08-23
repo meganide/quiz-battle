@@ -1,29 +1,22 @@
 "use client";
 
 import { useQuery } from "convex/react";
-import {  Users2 } from "lucide-react";
+import { Users2 } from "lucide-react";
 import { CreateRoom } from "@/app/app/_components/create-room";
+import { Container } from "@/components/container";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { api } from "../../../convex/_generated/api";
+import type { Doc } from "../../../convex/_generated/dataModel";
 
-type Room = {
-  _id: string;
-  name: string;
-  currentPlayers: number;
-  maxPlayers: number;
-  topic: string;
-  difficulty: string;
-  status: string;
-};
-
-function RoomCard({ room, showJoinButton = false }: { room: Room; showJoinButton?: boolean }) {
+function RoomCard({
+  room,
+  showJoinButton = false,
+}: {
+  room: Doc<"rooms">;
+  showJoinButton?: boolean;
+}) {
   return (
     <Card className="group hover:shadow-sm transition-all duration-200 border-border/50">
       <CardHeader className="space-y-4">
@@ -35,7 +28,7 @@ function RoomCard({ room, showJoinButton = false }: { room: Room; showJoinButton
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
               <span className="flex items-center gap-1.5">
                 <Users2 className="h-3.5 w-3.5" />
-                {room.currentPlayers}/{room.maxPlayers}
+                {room.playerIds.length} players
               </span>
               <span>{room.topic}</span>
               <Badge variant="outline" className="text-xs capitalize">
@@ -44,14 +37,18 @@ function RoomCard({ room, showJoinButton = false }: { room: Room; showJoinButton
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Badge 
+            <Badge
               variant={room.status === "waiting" ? "default" : "secondary"}
               className="capitalize text-xs"
             >
               {room.status}
             </Badge>
             {showJoinButton && (
-              <Button size="sm" variant="outline" className="opacity-0 group-hover:opacity-100 transition-opacity">
+              <Button
+                size="sm"
+                variant="outline"
+                className="opacity-0 group-hover:opacity-100 transition-opacity"
+              >
                 Join
               </Button>
             )}
@@ -62,16 +59,17 @@ function RoomCard({ room, showJoinButton = false }: { room: Room; showJoinButton
   );
 }
 
-function EmptyState({ type }: { type: 'myRooms' | 'publicRooms' }) {
-  const content = type === 'myRooms' 
-    ? {
-        title: "No rooms created yet",
-        description: "Create your first quiz room to get started"
-      }
-    : {
-        title: "No public rooms available", 
-        description: "Be the first to create a public room"
-      };
+function EmptyState({ type }: { type: "myRooms" | "publicRooms" }) {
+  const content =
+    type === "myRooms"
+      ? {
+          title: "No rooms created yet",
+          description: "Create your first quiz room to get started",
+        }
+      : {
+          title: "No public rooms available",
+          description: "Be the first to create a public room",
+        };
 
   return (
     <Card className="border-dashed">
@@ -80,9 +78,7 @@ function EmptyState({ type }: { type: 'myRooms' | 'publicRooms' }) {
           <p className="text-sm font-medium text-muted-foreground">
             {content.title}
           </p>
-          <p className="text-xs text-muted-foreground">
-            {content.description}
-          </p>
+          <p className="text-xs text-muted-foreground">{content.description}</p>
         </div>
       </CardContent>
     </Card>
@@ -90,8 +86,8 @@ function EmptyState({ type }: { type: 'myRooms' | 'publicRooms' }) {
 }
 
 function LoadingSkeleton() {
-  const skeletons = ['skeleton-1', 'skeleton-2'];
-  
+  const skeletons = ["skeleton-1", "skeleton-2"];
+
   return (
     <div className="space-y-4">
       {skeletons.map((id) => (
@@ -117,13 +113,15 @@ export default function AppPage() {
   const publicRooms = useQuery(api.rooms.queries.getPublicRooms);
 
   return (
-    <main className="container mx-auto flex flex-1">
+    <Container className="flex flex-1">
       <div className="container py-12">
         <div className="space-y-12">
           <section className="space-y-6">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <h2 className="text-2xl font-semibold tracking-tight">Welcome back</h2>
+                <h2 className="text-2xl font-semibold tracking-tight">
+                  Welcome back
+                </h2>
                 <p className="text-muted-foreground">
                   Manage your quiz rooms and join challenges
                 </p>
@@ -136,18 +134,18 @@ export default function AppPage() {
             <section className="space-y-6">
               <div className="space-y-2">
                 <h3 className="text-lg font-medium">My Rooms</h3>
-                <p className="text-sm text-muted-foreground">Rooms you've created</p>
+                <p className="text-sm text-muted-foreground">
+                  Rooms you've created
+                </p>
               </div>
-              
+
               <div className="space-y-4">
                 {myRooms === undefined ? (
                   <LoadingSkeleton />
                 ) : myRooms.length === 0 ? (
                   <EmptyState type="myRooms" />
                 ) : (
-                  myRooms.map((room) => (
-                    <RoomCard key={room._id} room={room} />
-                  ))
+                  myRooms.map((room) => <RoomCard key={room._id} room={room} />)
                 )}
               </div>
             </section>
@@ -155,9 +153,11 @@ export default function AppPage() {
             <section className="space-y-6">
               <div className="space-y-2">
                 <h3 className="text-lg font-medium">Public Rooms</h3>
-                <p className="text-sm text-muted-foreground">Join active quiz battles</p>
+                <p className="text-sm text-muted-foreground">
+                  Join active quiz battles
+                </p>
               </div>
-              
+
               <div className="space-y-4">
                 {publicRooms === undefined ? (
                   <LoadingSkeleton />
@@ -173,6 +173,6 @@ export default function AppPage() {
           </div>
         </div>
       </div>
-    </main>
+    </Container>
   );
 }

@@ -47,10 +47,10 @@ const formSchema = z.object({
     .min(5, "Minimum 5 questions")
     .max(50, "Maximum 50 questions"),
   difficulty: z.enum(["easy", "medium", "hard"]),
-  maxPlayers: z
+  timePerQuestion: z
     .number()
-    .min(2, "Minimum 2 players")
-    .max(20, "Maximum 20 players"),
+    .min(10, "Minimum 10 seconds")
+    .max(60, "Maximum 60 seconds"),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -73,7 +73,7 @@ export function CreateRoom() {
       topic: "",
       numQuestions: 10,
       difficulty: "medium" as const,
-      maxPlayers: 6,
+      timePerQuestion: 30,
     },
   });
 
@@ -226,20 +226,20 @@ export function CreateRoom() {
 
                 <FormField
                   control={form.control}
-                  name="maxPlayers"
+                  name="timePerQuestion"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="flex items-center justify-between">
-                        Max Players
+                        Time Per Question
                         <span className="text-sm text-muted-foreground">
-                          {field.value}
+                          {field.value}s
                         </span>
                       </FormLabel>
                       <FormControl>
                         <Slider
-                          min={2}
-                          max={20}
-                          step={1}
+                          min={10}
+                          max={60}
+                          step={5}
                           value={[field.value]}
                           onValueChange={(value) => field.onChange(value[0])}
                           className="w-full"
