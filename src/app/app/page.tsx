@@ -13,14 +13,6 @@ export default function QuizBattlesPage() {
       <Container className="flex flex-col gap-4">
         <QuizBattlesHeader />
         <QuizRoomsList />
-        <QuizRoomsList />
-        <QuizRoomsList />
-        <QuizRoomsList />
-        <QuizRoomsList />
-        <QuizRoomsList />
-        <QuizRoomsList />
-        <QuizRoomsList />
-        <QuizRoomsList />
       </Container>
     </section>
   )
