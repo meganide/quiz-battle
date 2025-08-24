@@ -17,6 +17,11 @@ import { Container } from "@/components/container"
 import { HeaderTitle } from "@/components/header-title"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
 
 import { HeaderActions } from "./header-actions"
@@ -51,24 +56,51 @@ export function Lobby({
               Room Details
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <h3 className="text-foreground font-semibold">{room.name}</h3>
-              <p className="text-muted-foreground text-sm">Room Name</p>
+          <CardContent className="flex flex-col gap-6">
+            <div className="space-y-1">
+              <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
+                Room Name
+              </p>
+              <h3 className="text-foreground text-lg font-semibold">
+                {room.name}
+              </h3>
             </div>
             <div className="flex items-center gap-2">
-              {room.isPrivate ? (
-                <Lock className="text-muted-foreground size-4" />
-              ) : (
-                <Globe className="text-muted-foreground size-4" />
-              )}
-              <span className="text-sm">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  {room.isPrivate ? (
+                    <Lock className="size-4 text-red-500" />
+                  ) : (
+                    <Globe className="size-4 text-green-500" />
+                  )}
+                </TooltipTrigger>
+                <TooltipContent>
+                  {room.isPrivate
+                    ? "This is a private room - only players with the invite code can join"
+                    : "This is a public room - the room is visible to everyone"}
+                </TooltipContent>
+              </Tooltip>
+              <span className="text-sm font-medium">
                 {room.isPrivate ? "Private Room" : "Public Room"}
               </span>
             </div>
-            <div className="flex items-center gap-2">
-              <Hash className="text-muted-foreground size-4" />
-              <span className="font-mono text-sm">{inviteCode}</span>
+            <div className="bg-muted/50 rounded-lg">
+              <p className="text-muted-foreground mb-1 text-xs font-medium tracking-wide uppercase">
+                Invite Code
+              </p>
+              <div className="flex items-center gap-2">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Hash className="text-muted-foreground size-4" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    Share this code with others to invite them to the room
+                  </TooltipContent>
+                </Tooltip>
+                <span className="text-foreground font-mono text-lg font-bold tracking-wider">
+                  {inviteCode}
+                </span>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -81,29 +113,55 @@ export function Lobby({
               Game Settings
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <p className="text-foreground font-medium">{room.topic}</p>
-              <p className="text-muted-foreground text-sm">Topic</p>
+          <CardContent className="space-y-5">
+            <div className="space-y-1">
+              <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
+                Topic
+              </p>
+              <p className="text-foreground text-lg font-semibold">
+                {room.topic}
+              </p>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground text-sm">Difficulty</span>
-              <Badge variant="secondary">
-                {room.difficulty.charAt(0).toUpperCase() +
-                  room.difficulty.slice(1)}
+              <span className="text-muted-foreground text-xs tracking-wide uppercase">
+                Difficulty
+              </span>
+              <Badge
+                className="font-semibold tracking-wide"
+                variant="secondary"
+              >
+                {room.difficulty.toLocaleUpperCase()}
               </Badge>
             </div>
-            <div className="flex items-center gap-2">
-              <Target className="text-muted-foreground size-4" />
-              <span className="text-sm">
-                {room.numQuestions} Question{room.numQuestions !== 1 ? "s" : ""}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Clock className="text-muted-foreground size-4" />
-              <span className="text-sm">
-                {room.timePerQuestion}s per question
-              </span>
+            <div className="grid grid-cols-1 gap-3">
+              <div className="flex items-center gap-2">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Target className="size-4 text-green-600 dark:text-green-400" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    Total number of questions in this quiz
+                  </TooltipContent>
+                </Tooltip>
+                <span className="text-sm">
+                  <span className="font-semibold">{room.numQuestions}</span>{" "}
+                  Question{room.numQuestions !== 1 ? "s" : ""}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Clock className="size-4 text-blue-600 dark:text-blue-400" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    Time limit for answering each question
+                  </TooltipContent>
+                </Tooltip>
+                <span className="text-sm">
+                  <span className="font-semibold">{room.timePerQuestion}s</span>{" "}
+                  per question
+                </span>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -124,23 +182,42 @@ export function Lobby({
                   presenceState={joinedPlayersPresenceState}
                 />
                 <div className="flex-1 overflow-y-auto pr-2">
-                  <div className="grid gap-2">
+                  <div className="grid">
                     {joinedPlayersPresenceState.map((player, index) => (
                       <div
                         key={`${player.userId}-${index}`}
-                        className="flex items-center gap-3 text-sm"
+                        className="flex items-center gap-3 rounded-lg p-2 text-sm transition-colors hover:bg-neutral-400"
                       >
-                        <div
-                          className={cn("size-2 rounded-full", {
-                            "bg-green-500": player.online,
-                            "bg-neutral-400": !player.online,
-                          })}
-                        />
-                        <span className="flex-1 truncate">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div
+                              className={cn(
+                                "border-background size-3 rounded-full border-2 shadow-sm",
+                                {
+                                  "bg-green-500": player.online,
+                                  "bg-neutral-400": !player.online,
+                                }
+                              )}
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            {player.online
+                              ? "Player is online and active in the room"
+                              : "Player is online, but not active in the room"}
+                          </TooltipContent>
+                        </Tooltip>
+                        <span className="flex-1 truncate font-medium">
                           {player.name || "Anonymous Player"}
                         </span>
                         {player.userId === room.hostId && (
-                          <Crown className="size-4 text-yellow-500" />
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Crown className="size-4 text-yellow-500" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              Room Host - can start the game
+                            </TooltipContent>
+                          </Tooltip>
                         )}
                       </div>
                     ))}
@@ -148,10 +225,14 @@ export function Lobby({
                 </div>
               </div>
             ) : (
-              <div className="text-muted-foreground text-center">
-                <Users className="mx-auto mb-2 size-8 opacity-50" />
-                <p className="text-sm">No players have joined yet</p>
-                <p className="text-xs">Share the invite code to get started!</p>
+              <div className="text-muted-foreground flex flex-1 flex-col justify-center text-center">
+                <Users className="mx-auto mb-3 size-12 opacity-30" />
+                <p className="text-sm font-medium">
+                  No players have joined yet
+                </p>
+                <p className="mt-1 text-xs">
+                  Share the invite code to get started!
+                </p>
               </div>
             )}
           </CardContent>
@@ -161,9 +242,14 @@ export function Lobby({
       {/* Status Section */}
       <section className="border-border bg-muted/20 rounded-lg p-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="size-2 rounded-full bg-yellow-500" />
-            <span className="text-sm font-medium">Waiting in Lobby</span>
+          <div className="flex items-center gap-3">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="size-3 animate-pulse rounded-full bg-yellow-500" />
+              </TooltipTrigger>
+              <TooltipContent>Game status indicator</TooltipContent>
+            </Tooltip>
+            <span className="text-sm font-semibold">Waiting in Lobby</span>
           </div>
           <Badge variant="outline">
             {room.status.charAt(0).toUpperCase() + room.status.slice(1)}
