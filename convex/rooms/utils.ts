@@ -1,4 +1,4 @@
-import type { DataModel, Id } from "../_generated/dataModel"
+import type { DataModel, Doc, Id } from "../_generated/dataModel"
 import type { GenericMutationCtx } from "convex/server"
 
 export const generateUniqueInviteCode = async (
@@ -67,4 +67,21 @@ const generateInviteCode = (): string => {
     result += chars.charAt(Math.floor(Math.random() * chars.length))
   }
   return result
+}
+
+export const sortRoomsByCreationDate = (
+  rooms: Doc<"rooms">[],
+  userId: Id<"users">
+) => {
+  return [...rooms].sort((a, b) => {
+    const aIsCurrentRoom = a.gamePlayerIds.includes(userId)
+    const bIsCurrentRoom = b.gamePlayerIds.includes(userId)
+
+    // If one is current room and other is not, current room goes first
+    if (aIsCurrentRoom && !bIsCurrentRoom) return -1
+    if (!aIsCurrentRoom && bIsCurrentRoom) return 1
+
+    // If both are current room or both are not, sort by creation date (newest first)
+    return b._creationTime - a._creationTime
+  })
 }

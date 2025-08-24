@@ -8,7 +8,7 @@ import { CreateRoomDialog } from "./create-room-dialog"
 import { JoinRoomDialog } from "./join-room-dialog"
 
 export function QuizBattlesHeader() {
-  const publicRooms = useQuery(api.rooms.queries.getPublicRooms)
+  const roomsInfo = useQuery(api.rooms.queries.list)
 
   return (
     <section className="flex w-full items-center justify-between">
@@ -16,7 +16,7 @@ export function QuizBattlesHeader() {
         <article className="flex items-center gap-4 rounded-sm bg-neutral-500 px-3 py-2">
           <span>Live Games</span>
           <span className="text-neutral-050 font-bold">
-            {publicRooms?.length ?? 0}
+            {roomsInfo?.numberOfActiveRooms ?? 0}
           </span>
         </article>
       </aside>
