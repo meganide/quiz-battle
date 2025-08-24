@@ -65,114 +65,117 @@ export function QuizRoomPreview({ room }: QuizRoomPreviewProps) {
   return (
     <motion.article
       layout
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: -20, scale: 0.95 }}
-      initial={{ opacity: 0, y: 20, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      initial={{ opacity: 0, y: 10 }}
       className={cn(
-        "flex flex-col gap-4 rounded-sm bg-gradient-to-b from-neutral-400 to-neutral-500 px-4 py-6 md:flex-row md:items-center md:justify-between",
-        isInRoom && "border-primary border-l-4"
+        "bg-card rounded-lg p-6 transition-all duration-200",
+        isInRoom && "border-l-primary-400 border-l-2"
       )}
       transition={{
-        duration: 0.3,
+        duration: 0.2,
         ease: "easeOut",
       }}
     >
-      <section className="flex w-full flex-col gap-1">
-        <section className="flex w-full items-center justify-between">
-          <span className="text-neutral-050 text-sm font-bold md:text-lg">
+      {/* Header */}
+      <header className="mb-6 flex items-start justify-between gap-4">
+        <section className="flex-1">
+          <h3 className="text-neutral-050 mb-2 text-xl font-bold">
             {room.name}
-          </span>
-          <section className="flex flex-wrap items-center justify-end gap-1 sm:gap-2">
-            <Badge className="bg-secondary-800 text-secondary-200 text-xs font-semibold tracking-wider uppercase sm:text-sm">
-              {room.isPrivate ? "Private" : "Public"}
-            </Badge>
-            <Badge
-              className={cn(
-                "bg-secondary-800 text-secondary-200 text-xs font-semibold tracking-wider sm:text-sm"
-              )}
-            >
-              {room.status.toUpperCase()}
-            </Badge>
-          </section>
+          </h3>
+          <p className="text-neutral-200">{room.topic}</p>
         </section>
-        <section className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <section className="flex w-full flex-col items-start gap-4">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <p className="max-w-full overflow-hidden text-sm text-ellipsis whitespace-nowrap md:text-base">
-                  {room.topic}
-                </p>
-              </TooltipTrigger>
-              <TooltipContent>Topic</TooltipContent>
-            </Tooltip>
-            <article className="flex flex-wrap items-center gap-3 text-sm sm:gap-6 md:text-base">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="flex items-center gap-1">
-                    <Users className="size-4 stroke-3 text-neutral-200" />
-                    <span>{room.gamePlayerIds.length}</span>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>Players</TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="flex items-center gap-1">
-                    <CircleQuestionMark className="size-4 stroke-3 text-neutral-200" />
-                    <span>{room.numQuestions}</span>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>Questions</TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="flex items-center gap-1">
-                    <Clock className="size-4 stroke-3 text-neutral-200" />
-                    <span>{room.timePerQuestion}s</span>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>Time per question</TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="flex items-center gap-1">
-                    <ListStart className="size-4 stroke-3 text-neutral-200" />
-                    <span>
-                      {room.difficulty.charAt(0).toUpperCase() +
-                        room.difficulty.slice(1)}
-                    </span>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>Difficulty</TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="flex items-center gap-1">
-                    <Calendar className="size-4 stroke-3 text-neutral-200" />
-                    <span>{formatDistanceToNow(room.createdAt)} ago</span>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>Time since creation</TooltipContent>
-              </Tooltip>
-            </article>
-          </section>
-          <aside className="flex w-full items-center justify-end gap-2">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="secondary">
-                  <Eye className="size-5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Spectate</TooltipContent>
-            </Tooltip>
-            {isInRoom ? (
-              <Button onClick={goToRoom}>Go to room</Button>
-            ) : (
-              <Button onClick={joinRoom}>Join</Button>
-            )}
-          </aside>
+
+        <section className="flex flex-wrap items-center gap-2">
+          <Badge className="text-xs" variant="secondary">
+            {room.isPrivate ? "Private" : "Public"}
+          </Badge>
+          <Badge className="text-xs capitalize" variant="secondary">
+            {room.status}
+          </Badge>
         </section>
+      </header>
+
+      {/* Stats */}
+      <section className="mb-8">
+        <h4 className="mb-4 text-xs font-semibold tracking-wider text-neutral-300 uppercase">
+          Room Details
+        </h4>
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-4 text-sm text-neutral-100">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex items-center gap-2">
+                <Users className="text-primary-400 size-4" />
+                <span>{room.gamePlayerIds.length} players</span>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>Players in room</TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex items-center gap-2">
+                <CircleQuestionMark className="text-primary-400 size-4" />
+                <span>{room.numQuestions} questions</span>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>Number of questions</TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex items-center gap-2">
+                <Clock className="text-primary-400 size-4" />
+                <span>{room.timePerQuestion}s each</span>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>Time per question</TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex items-center gap-2">
+                <ListStart className="text-primary-400 size-4" />
+                <span className="capitalize">{room.difficulty}</span>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>Difficulty level</TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex items-center gap-2">
+                <Calendar className="text-primary-400 size-4" />
+                <span>{formatDistanceToNow(room.createdAt)} ago</span>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>Time since creation</TooltipContent>
+          </Tooltip>
+        </div>
       </section>
+
+      {/* Actions */}
+      <footer className="flex items-center justify-end gap-3">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="secondary">
+              <Eye />
+              Spectate
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Spectate room</TooltipContent>
+        </Tooltip>
+
+        {isInRoom ? (
+          <Button className="font-medium" onClick={goToRoom}>
+            Go to room
+          </Button>
+        ) : (
+          <Button className="font-medium" onClick={joinRoom}>
+            Join room
+          </Button>
+        )}
+      </footer>
     </motion.article>
   )
 }
