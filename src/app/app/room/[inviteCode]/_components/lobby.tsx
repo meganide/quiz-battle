@@ -61,7 +61,7 @@ export function Lobby({
               <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
                 Room Name
               </p>
-              <h3 className="text-foreground text-lg font-semibold">
+              <h3 className="text-foreground text-sm font-semibold">
                 {room.name}
               </h3>
             </div>
@@ -118,7 +118,7 @@ export function Lobby({
               <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
                 Topic
               </p>
-              <p className="text-foreground text-lg font-semibold">
+              <p className="text-foreground text-sm font-semibold">
                 {room.topic}
               </p>
             </div>
@@ -175,66 +175,54 @@ export function Lobby({
             </CardTitle>
           </CardHeader>
           <CardContent className="flex h-[250px] flex-col">
-            {joinedPlayersPresenceState.length > 0 ? (
-              <div className="flex h-full flex-col gap-4">
-                <PresenceFacePile
-                  hostId={room.hostId}
-                  presenceState={joinedPlayersPresenceState}
-                />
-                <div className="flex-1 overflow-y-auto pr-2">
-                  <div className="grid">
-                    {joinedPlayersPresenceState.map((player, index) => (
-                      <div
-                        key={`${player.userId}-${index}`}
-                        className="flex items-center gap-3 rounded-lg p-2 text-sm transition-colors hover:bg-neutral-400"
-                      >
+            <div className="flex h-full flex-col gap-4">
+              <PresenceFacePile
+                hostId={room.hostId}
+                presenceState={joinedPlayersPresenceState}
+              />
+              <div className="flex-1 overflow-y-auto pr-2">
+                <div className="grid">
+                  {joinedPlayersPresenceState.map((player, index) => (
+                    <div
+                      key={`${player.userId}-${index}`}
+                      className="flex items-center gap-3 rounded-lg p-2 text-sm transition-colors hover:bg-neutral-400"
+                    >
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div
+                            className={cn(
+                              "border-background size-3 rounded-full border-2 shadow-sm",
+                              {
+                                "bg-green-500": player.online,
+                                "bg-neutral-400": !player.online,
+                              }
+                            )}
+                          />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          {player.online
+                            ? "Player is online and active in the room"
+                            : "Player is online, but not active in the room"}
+                        </TooltipContent>
+                      </Tooltip>
+                      <span className="flex-1 truncate font-medium">
+                        {player.name || "Anonymous Player"}
+                      </span>
+                      {player.userId === room.hostId && (
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <div
-                              className={cn(
-                                "border-background size-3 rounded-full border-2 shadow-sm",
-                                {
-                                  "bg-green-500": player.online,
-                                  "bg-neutral-400": !player.online,
-                                }
-                              )}
-                            />
+                            <Crown className="size-4 text-yellow-500" />
                           </TooltipTrigger>
                           <TooltipContent>
-                            {player.online
-                              ? "Player is online and active in the room"
-                              : "Player is online, but not active in the room"}
+                            Room Host - can start the game
                           </TooltipContent>
                         </Tooltip>
-                        <span className="flex-1 truncate font-medium">
-                          {player.name || "Anonymous Player"}
-                        </span>
-                        {player.userId === room.hostId && (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Crown className="size-4 text-yellow-500" />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              Room Host - can start the game
-                            </TooltipContent>
-                          </Tooltip>
-                        )}
-                      </div>
-                    ))}
-                  </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </div>
-            ) : (
-              <div className="text-muted-foreground flex flex-1 flex-col justify-center text-center">
-                <Users className="mx-auto mb-3 size-12 opacity-30" />
-                <p className="text-sm font-medium">
-                  No players have joined yet
-                </p>
-                <p className="mt-1 text-xs">
-                  Share the invite code to get started!
-                </p>
-              </div>
-            )}
+            </div>
           </CardContent>
         </Card>
       </section>
