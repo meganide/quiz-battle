@@ -28,7 +28,9 @@ export function NavUser() {
         <Button className="p-2" variant="ghost">
           <Avatar className="size-7 rounded-sm">
             <AvatarImage alt={user?.name} src={user?.image} />
-            <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+            <AvatarFallback className="rounded-lg">
+              {user?.name?.charAt(0)}
+            </AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>

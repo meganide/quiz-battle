@@ -27,38 +27,34 @@ export const leaveAllActiveRooms = async (
   ctx: GenericMutationCtx<DataModel>,
   userId: Id<"users">
 ) => {
-  const activeRooms = await ctx.db
+  const activeRoomsInLobby = await ctx.db
     .query("rooms")
-    .withIndex(
-      "by_status",
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-      (q) => q.eq("status", "lobby") || q.eq("status", "active")
-    )
+    .withIndex("by_status", (q) => q.eq("status", "lobby"))
     .collect()
 
-  const joinedRooms = activeRooms.filter((room) =>
-    room.onlinePlayerIds.includes(userId)
+  const joinedRoomsInLobby = activeRoomsInLobby.filter((room) =>
+    room.gamePlayerIds.includes(userId)
   )
 
   await Promise.all(
-    joinedRooms.map(async (room) => {
-      const onlinePlayerIds = room.onlinePlayerIds.filter((id) => id !== userId)
+    joinedRoomsInLobby.map(async (room) => {
+      const gamePlayerIds = room.gamePlayerIds.filter((id) => id !== userId)
 
-      if (onlinePlayerIds.length === 0) {
+      if (gamePlayerIds.length === 0) {
         await ctx.db.delete(room._id)
         return
       }
 
       if (room.hostId === userId) {
         await ctx.db.patch(room._id, {
-          hostId: onlinePlayerIds[0],
-          onlinePlayerIds,
+          hostId: gamePlayerIds[0],
+          gamePlayerIds,
         })
         return
       }
 
       await ctx.db.patch(room._id, {
-        onlinePlayerIds,
+        gamePlayerIds,
       })
     })
   )

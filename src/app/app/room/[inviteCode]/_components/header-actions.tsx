@@ -1,29 +1,33 @@
-"use client"
-
 import { useMutation } from "convex/react"
-import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
-import type { Id } from "~/convex/_generated/dataModel"
+import type { Doc } from "~/convex/_generated/dataModel"
 
 import { Button } from "@/components/ui/button"
+import { useUser } from "@/hooks/use-user"
 import { api } from "~/convex/_generated/api"
 
 type HeaderActionsProps = {
   inviteCode: string
-  roomId: Id<"rooms">
+  room: Doc<"rooms">
 }
 
-export function HeaderActions({ inviteCode, roomId }: HeaderActionsProps) {
+export function HeaderActions({ inviteCode, room }: HeaderActionsProps) {
   const leaveRoomMutation = useMutation(api.rooms.mutations.leave)
-  const router = useRouter()
+  const joinRoomMutation = useMutation(api.rooms.mutations.join)
+  const user = useUser()
+  const isInRoom = !!user && room.gamePlayerIds.includes(user._id)
 
   async function leaveRoom() {
     await leaveRoomMutation({
-      roomId,
+      inviteCode: room.inviteCode,
     })
+  }
 
-    router.push("/app")
+  async function joinRoom() {
+    await joinRoomMutation({
+      inviteCode,
+    })
   }
 
   async function invitePlayers() {
@@ -37,9 +41,15 @@ export function HeaderActions({ inviteCode, roomId }: HeaderActionsProps) {
       <Button variant="secondary" onClick={invitePlayers}>
         Invite Players
       </Button>
-      <Button variant="ghost" onClick={leaveRoom}>
-        Leave Room
-      </Button>
+      {isInRoom ? (
+        <Button variant="ghost" onClick={leaveRoom}>
+          Leave Room
+        </Button>
+      ) : (
+        <Button variant="default" onClick={joinRoom}>
+          Join Room
+        </Button>
+      )}
     </header>
   )
 }

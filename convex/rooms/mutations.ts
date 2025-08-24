@@ -47,8 +47,7 @@ export const create = mutation({
       difficulty: args.difficulty,
       timePerQuestion: args.timePerQuestion,
       status: "lobby",
-      playerIds: [userId],
-      onlinePlayerIds: [userId],
+      gamePlayerIds: [userId],
       createdAt: Date.now(),
       inviteCode,
     })
@@ -83,24 +82,26 @@ export const join = mutation({
       throw ROOM_ERRORS.ROOM_NOT_ACCEPTING_PLAYERS
     }
 
-    if (room.onlinePlayerIds.includes(userId)) {
+    if (room.gamePlayerIds.includes(userId)) {
       throw ROOM_ERRORS.ALREADY_IN_ROOM
     }
 
     await leaveAllActiveRooms(ctx, userId)
 
     await ctx.db.patch(room._id, {
-      playerIds: [...room.playerIds, userId],
-      onlinePlayerIds: [...room.onlinePlayerIds, userId],
+      gamePlayerIds: [...room.gamePlayerIds, userId],
     })
 
     return room._id
   },
 })
 
+/**
+ * This should only be called when the user leaves a room that is in lobby because we are updating the gamePlayerIds
+ */
 export const leave = mutation({
   args: {
-    roomId: v.id("rooms"),
+    inviteCode: v.string(),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx)
@@ -109,35 +110,42 @@ export const leave = mutation({
       throw USER_ERRORS.NOT_AUTHENTICATED
     }
 
-    const room = await ctx.db.get(args.roomId)
+    const room = await ctx.db
+      .query("rooms")
+      .withIndex("by_invite_code", (q) => q.eq("inviteCode", args.inviteCode))
+      .first()
 
     if (!room) {
       throw ROOM_ERRORS.ROOM_NOT_FOUND
     }
 
-    if (!room.playerIds.includes(userId)) {
+    if (!room.gamePlayerIds.includes(userId)) {
       throw ROOM_ERRORS.NOT_IN_ROOM
     }
 
-    const onlinePlayerIds = room.onlinePlayerIds.filter((id) => id !== userId)
+    if (room.status !== "lobby") {
+      throw ROOM_ERRORS.CANNOT_LEAVE_ROOM
+    }
+
+    const gamePlayerIds = room.gamePlayerIds.filter((id) => id !== userId)
 
     if (room.hostId === userId) {
-      if (onlinePlayerIds.length === 0) {
+      if (gamePlayerIds.length === 0) {
         await ctx.db.delete(room._id)
         return
       }
 
-      const nextHost = onlinePlayerIds[0]
+      const nextHost = gamePlayerIds[0]
 
       await ctx.db.patch(room._id, {
         hostId: nextHost,
-        onlinePlayerIds,
+        gamePlayerIds,
       })
       return
     }
 
     await ctx.db.patch(room._id, {
-      onlinePlayerIds,
+      gamePlayerIds,
     })
   },
 })

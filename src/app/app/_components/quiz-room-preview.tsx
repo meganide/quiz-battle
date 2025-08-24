@@ -22,6 +22,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { useUser } from "@/hooks/use-user"
+import { cn } from "@/lib/utils"
 import { api } from "~/convex/_generated/api"
 import { RoomErrorCodes } from "~/convex/rooms/errors"
 
@@ -30,8 +32,15 @@ type QuizRoomPreviewProps = {
 }
 
 export function QuizRoomPreview({ room }: QuizRoomPreviewProps) {
+  const user = useUser()
   const joinRoomMutation = useMutation(api.rooms.mutations.join)
   const router = useRouter()
+
+  const isInRoom = !!user && room.gamePlayerIds.includes(user._id)
+
+  function goToRoom() {
+    router.push(`/app/room/${room.inviteCode}`)
+  }
 
   async function joinRoom() {
     try {
@@ -57,9 +66,12 @@ export function QuizRoomPreview({ room }: QuizRoomPreviewProps) {
     <motion.article
       layout
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      className="flex items-center justify-between gap-4 rounded-sm bg-gradient-to-b from-neutral-400 to-neutral-500 px-4 py-6"
       exit={{ opacity: 0, y: -20, scale: 0.95 }}
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
+      className={cn(
+        "flex items-center justify-between gap-4 rounded-sm bg-gradient-to-b from-neutral-400 to-neutral-500 px-4 py-6",
+        isInRoom && "border-primary border-l-4"
+      )}
       transition={{
         duration: 0.3,
         ease: "easeOut",
@@ -89,7 +101,7 @@ export function QuizRoomPreview({ room }: QuizRoomPreviewProps) {
                 <TooltipTrigger asChild>
                   <div className="flex items-center gap-1">
                     <Users className="size-4 stroke-3 text-neutral-200" />
-                    <span>{room.onlinePlayerIds.length}</span>
+                    <span>{room.gamePlayerIds.length}</span>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent>Players</TooltipContent>
@@ -144,7 +156,11 @@ export function QuizRoomPreview({ room }: QuizRoomPreviewProps) {
               </TooltipTrigger>
               <TooltipContent>Spectate</TooltipContent>
             </Tooltip>
-            <Button onClick={joinRoom}>Join</Button>
+            {isInRoom ? (
+              <Button onClick={goToRoom}>Go to room</Button>
+            ) : (
+              <Button onClick={joinRoom}>Join</Button>
+            )}
           </aside>
         </section>
       </section>
