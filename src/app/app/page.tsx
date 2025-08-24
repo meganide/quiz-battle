@@ -1,14 +1,17 @@
-"use client";
+import { Swords } from "lucide-react"
 
-import { useAuthActions } from "@convex-dev/auth/react";
-import { Button } from "@/components/ui/button";
+import { Container } from "@/components/container"
+import { HeaderTitle } from "@/components/header-title"
 
-export default function AppPage() {
-  const { signOut } = useAuthActions();
-  
+import { QuizBattlesHeader } from "./_components/quiz-battles-header"
+import { QuizRoomsList } from "./_components/quiz-rooms-list"
+
+export default function QuizBattlesPage() {
   return (
-    <div>
-      <Button onClick={() => void signOut()}>Sign out</Button>
-    </div>
-  );
+    <Container className="flex flex-col gap-4">
+      <HeaderTitle Icon={Swords} title="Quiz Battles" />
+      <QuizBattlesHeader />
+      <QuizRoomsList />
+    </Container>
+  )
 }
