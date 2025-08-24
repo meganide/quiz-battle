@@ -37,3 +37,27 @@ export const getByInviteCode = query({
       .unique()
   },
 })
+
+export const isInRoom = query({
+  args: {
+    inviteCode: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx)
+
+    if (!userId) {
+      throw USER_ERRORS.NOT_AUTHENTICATED
+    }
+
+    const room = await ctx.db
+      .query("rooms")
+      .withIndex("by_invite_code", (q) => q.eq("inviteCode", args.inviteCode))
+      .unique()
+
+    if (!room) {
+      return false
+    }
+
+    return room.onlinePlayerIds.includes(userId)
+  },
+})

@@ -1,7 +1,4 @@
-"use client"
-
-import { useMutation } from "convex/react"
-import { useRouter } from "next/navigation"
+import { useMutation, useQuery } from "convex/react"
 import { toast } from "sonner"
 
 import type { Id } from "~/convex/_generated/dataModel"
@@ -16,14 +13,21 @@ type HeaderActionsProps = {
 
 export function HeaderActions({ inviteCode, roomId }: HeaderActionsProps) {
   const leaveRoomMutation = useMutation(api.rooms.mutations.leave)
-  const router = useRouter()
+  const joinRoomMutation = useMutation(api.rooms.mutations.join)
+  const isInRoom = useQuery(api.rooms.queries.isInRoom, {
+    inviteCode,
+  })
 
   async function leaveRoom() {
     await leaveRoomMutation({
       roomId,
     })
+  }
 
-    router.push("/app")
+  async function joinRoom() {
+    await joinRoomMutation({
+      inviteCode,
+    })
   }
 
   async function invitePlayers() {
@@ -37,9 +41,15 @@ export function HeaderActions({ inviteCode, roomId }: HeaderActionsProps) {
       <Button variant="secondary" onClick={invitePlayers}>
         Invite Players
       </Button>
-      <Button variant="ghost" onClick={leaveRoom}>
-        Leave Room
-      </Button>
+      {isInRoom ? (
+        <Button variant="ghost" onClick={leaveRoom}>
+          Leave Room
+        </Button>
+      ) : (
+        <Button variant="default" onClick={joinRoom}>
+          Join Room
+        </Button>
+      )}
     </header>
   )
 }
