@@ -16,7 +16,7 @@ export function HeaderActions({ inviteCode, room }: HeaderActionsProps) {
   const leaveRoomMutation = useMutation(api.rooms.mutations.leave)
   const joinRoomMutation = useMutation(api.rooms.mutations.join)
   const user = useUser()
-  const isInRoom = !!user && room.onlinePlayerIds.includes(user._id)
+  const isInRoom = !!user && room.gamePlayerIds.includes(user._id)
 
   async function leaveRoom() {
     await leaveRoomMutation({

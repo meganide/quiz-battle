@@ -35,8 +35,8 @@ export function QuizRoomsList() {
 
 function sortRoomsByCreationDate(rooms: Doc<"rooms">[], userId: Id<"users">) {
   return [...rooms].sort((a, b) => {
-    const aIsCurrentRoom = a.onlinePlayerIds.includes(userId)
-    const bIsCurrentRoom = b.onlinePlayerIds.includes(userId)
+    const aIsCurrentRoom = a.gamePlayerIds.includes(userId)
+    const bIsCurrentRoom = b.gamePlayerIds.includes(userId)
 
     // If one is current room and other is not, current room goes first
     if (aIsCurrentRoom && !bIsCurrentRoom) return -1

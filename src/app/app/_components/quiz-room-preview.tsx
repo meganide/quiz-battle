@@ -36,7 +36,7 @@ export function QuizRoomPreview({ room }: QuizRoomPreviewProps) {
   const joinRoomMutation = useMutation(api.rooms.mutations.join)
   const router = useRouter()
 
-  const isInRoom = user && room.onlinePlayerIds.includes(user._id)
+  const isInRoom = !!user && room.gamePlayerIds.includes(user._id)
 
   function goToRoom() {
     router.push(`/app/room/${room.inviteCode}`)
@@ -101,7 +101,7 @@ export function QuizRoomPreview({ room }: QuizRoomPreviewProps) {
                 <TooltipTrigger asChild>
                   <div className="flex items-center gap-1">
                     <Users className="size-4 stroke-3 text-neutral-200" />
-                    <span>{room.onlinePlayerIds.length}</span>
+                    <span>{room.gamePlayerIds.length}</span>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent>Players</TooltipContent>

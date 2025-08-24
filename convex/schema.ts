@@ -22,8 +22,7 @@ export default defineSchema({
       v.literal("ongoing"),
       v.literal("completed")
     ),
-    gamePlayerIds: v.array(v.id("users")), // Players who were in game when it started
-    onlinePlayerIds: v.array(v.id("users")), // Currently online
+    gamePlayerIds: v.array(v.id("users")), // Players participating in the game
     createdAt: v.number(),
     startedAt: v.optional(v.number()),
     completedAt: v.optional(v.number()),
@@ -33,8 +32,7 @@ export default defineSchema({
     .index("by_host", ["hostId"])
     .index("by_status", ["status"])
     .index("by_invite_code", ["inviteCode"])
-    .index("by_game_player", ["gamePlayerIds"])
-    .index("by_online_player", ["onlinePlayerIds"]),
+    .index("by_game_player", ["gamePlayerIds"]),
 
   questions: defineTable({
     gameStateId: v.id("gameStates"),

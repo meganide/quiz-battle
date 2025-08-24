@@ -48,7 +48,6 @@ export const create = mutation({
       timePerQuestion: args.timePerQuestion,
       status: "lobby",
       gamePlayerIds: [userId],
-      onlinePlayerIds: [userId],
       createdAt: Date.now(),
       inviteCode,
     })
@@ -83,7 +82,7 @@ export const join = mutation({
       throw ROOM_ERRORS.ROOM_NOT_ACCEPTING_PLAYERS
     }
 
-    if (room.onlinePlayerIds.includes(userId)) {
+    if (room.gamePlayerIds.includes(userId)) {
       throw ROOM_ERRORS.ALREADY_IN_ROOM
     }
 
@@ -91,7 +90,6 @@ export const join = mutation({
 
     await ctx.db.patch(room._id, {
       gamePlayerIds: [...room.gamePlayerIds, userId],
-      onlinePlayerIds: [...room.onlinePlayerIds, userId],
     })
 
     return room._id
@@ -118,31 +116,28 @@ export const leave = mutation({
       throw ROOM_ERRORS.ROOM_NOT_FOUND
     }
 
-    if (!room.onlinePlayerIds.includes(userId)) {
+    if (!room.gamePlayerIds.includes(userId)) {
       throw ROOM_ERRORS.NOT_IN_ROOM
     }
 
-    const onlinePlayerIds = room.onlinePlayerIds.filter((id) => id !== userId)
     const gamePlayerIds = room.gamePlayerIds.filter((id) => id !== userId)
 
     if (room.hostId === userId) {
-      if (onlinePlayerIds.length === 0) {
+      if (gamePlayerIds.length === 0) {
         await ctx.db.delete(room._id)
         return
       }
 
-      const nextHost = onlinePlayerIds[0]
+      const nextHost = gamePlayerIds[0]
 
       await ctx.db.patch(room._id, {
         hostId: nextHost,
         gamePlayerIds,
-        onlinePlayerIds,
       })
       return
     }
 
     await ctx.db.patch(room._id, {
-      onlinePlayerIds,
       gamePlayerIds,
     })
   },

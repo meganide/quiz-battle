@@ -34,7 +34,7 @@ export default function RoomPage({ params }: RoomPageProps) {
   const joinedPlayersPresenceState = React.useMemo(
     () =>
       presenceState?.filter((player) => {
-        return room?.onlinePlayerIds.includes(player.userId as Id<"users">)
+        return room?.gamePlayerIds.includes(player.userId as Id<"users">)
       }) ?? [],
     [presenceState, room]
   )
