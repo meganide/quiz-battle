@@ -1,4 +1,7 @@
-import type { PresenceState } from "./presence-face-pile"
+import { Crown } from "lucide-react"
+
+import type { PresenceState } from "../../_types"
+import type { Id } from "~/convex/_generated/dataModel"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -10,7 +13,12 @@ import { cn } from "@/lib/utils"
 
 import { getTimeAgo } from "../../_utils/date"
 
-export function MoreUsersPopover({ users }: { users: PresenceState[] }) {
+type MoreUsersPopoverProps = {
+  users: PresenceState[]
+  hostId: Id<"users">
+}
+
+export function MoreUsersPopover({ users, hostId }: MoreUsersPopoverProps) {
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -23,8 +31,8 @@ export function MoreUsersPopover({ users }: { users: PresenceState[] }) {
         </div>
       </PopoverTrigger>
       <PopoverContent className="w-64 p-2">
-        <div className="space-y-2">
-          {users.slice(0, 10).map((presence) => (
+        <div className="flex max-h-[400px] flex-col gap-2 overflow-y-auto">
+          {users.map((presence) => (
             <div
               key={presence.userId}
               className="hover:bg-accent flex items-center gap-2 rounded-md p-2"
@@ -42,8 +50,11 @@ export function MoreUsersPopover({ users }: { users: PresenceState[] }) {
                 </AvatarFallback>
               </Avatar>
               <div className="min-w-0 flex-1">
-                <div className="truncate text-sm font-medium">
+                <div className="flex items-center gap-1 truncate text-sm font-medium">
                   {presence.name || presence.userId}
+                  {presence.userId === hostId && (
+                    <Crown className="size-3 text-yellow-500" />
+                  )}
                 </div>
                 <div className="text-muted-foreground text-xs">
                   {presence.online

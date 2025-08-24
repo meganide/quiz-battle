@@ -1,6 +1,7 @@
 "use client"
 
 import type { PresenceState } from "../../_types"
+import type { Id } from "~/convex/_generated/dataModel"
 
 import { cn } from "@/lib/utils"
 
@@ -9,10 +10,15 @@ import { PresenceAvatar } from "./presence-avatar"
 
 type FacePileProps = {
   presenceState: PresenceState[]
+  hostId: Id<"users">
   className?: string
 }
 
-export function PresenceFacePile({ presenceState, className }: FacePileProps) {
+export function PresenceFacePile({
+  presenceState,
+  hostId,
+  className,
+}: FacePileProps) {
   const visible = presenceState.slice(0, 5)
   const hidden = presenceState.slice(5)
 
@@ -26,12 +32,15 @@ export function PresenceFacePile({ presenceState, className }: FacePileProps) {
         {visible.map((presence, index) => (
           <PresenceAvatar
             key={presence.userId}
+            hostId={hostId}
             index={index}
             presence={presence}
             total={visible.length}
           />
         ))}
-        {hidden.length > 0 && <MoreUsersPopover users={hidden} />}
+        {hidden.length > 0 && (
+          <MoreUsersPopover hostId={hostId} users={hidden} />
+        )}
       </div>
     </section>
   )

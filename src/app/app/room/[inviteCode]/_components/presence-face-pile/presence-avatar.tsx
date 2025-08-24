@@ -1,4 +1,7 @@
-import type { PresenceState } from "./presence-face-pile"
+import { Crown } from "lucide-react"
+
+import type { PresenceState } from "../../_types"
+import type { Id } from "~/convex/_generated/dataModel"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -10,15 +13,19 @@ import { cn } from "@/lib/utils"
 
 import { getTimeAgo } from "../../_utils/date"
 
+type PresenceAvatarProps = {
+  presence: PresenceState
+  index: number
+  total: number
+  hostId: Id<"users">
+}
+
 export function PresenceAvatar({
   presence,
   index,
   total,
-}: {
-  presence: PresenceState
-  index: number
-  total: number
-}) {
+  hostId,
+}: PresenceAvatarProps) {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -50,8 +57,11 @@ export function PresenceAvatar({
       </TooltipTrigger>
       <TooltipContent>
         <div className="space-y-1">
-          <div className="text-xs font-medium">
+          <div className="flex items-center gap-1 text-xs font-medium">
             {presence.name || presence.userId}
+            {presence.userId === hostId && (
+              <Crown className="size-3 text-yellow-500" />
+            )}
           </div>
           <div className="text-muted-foreground text-xs">
             {presence.online
