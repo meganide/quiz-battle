@@ -24,7 +24,7 @@ export function HeaderTitle({ title, Icon, href }: HeaderTitleProps) {
             </Button>
           </Link>
         )}
-        <h2>{title}</h2>
+        <h2 className="md:text-2xl">{title}</h2>
       </div>
       <Icon className="size-8 fill-neutral-300 stroke-neutral-300" />
     </header>
