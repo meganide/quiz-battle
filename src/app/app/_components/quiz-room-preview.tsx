@@ -82,9 +82,18 @@ export function QuizRoomPreview({ room }: QuizRoomPreviewProps) {
           <span className="text-neutral-050 text-lg font-bold">
             {room.name}
           </span>
-          <Badge className="bg-secondary-800 text-secondary-200 font-semibold tracking-wider">
-            {room.status.toUpperCase()}
-          </Badge>
+          <section className="flex items-center gap-2">
+            <Badge className="bg-secondary-800 text-secondary-200 font-semibold tracking-wider uppercase">
+              {room.isPrivate ? "Private" : "Public"}
+            </Badge>
+            <Badge
+              className={cn(
+                "bg-secondary-800 text-secondary-200 font-semibold tracking-wider"
+              )}
+            >
+              {room.status.toUpperCase()}
+            </Badge>
+          </section>
         </section>
         <section className="flex items-center justify-between gap-4">
           <section className="flex w-full flex-col items-start gap-4">
