@@ -2,7 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server"
 import { v } from "convex/values"
 
 import { ROOM_ERRORS } from "./errors"
-import { generateInviteCode } from "./utils"
+import { generateUniqueInviteCode, leaveAllActiveRooms } from "./utils"
 import { mutation } from "../_generated/server"
 import { USER_ERRORS } from "../users/errors"
 
@@ -34,59 +34,9 @@ export const create = mutation({
       throw ROOM_ERRORS.INVALID_NUMBER_OF_QUESTIONS
     }
 
-    const activeRooms = await ctx.db
-      .query("rooms")
-      .withIndex(
-        "by_status",
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        (q) => q.eq("status", "active") || q.eq("status", "lobby")
-      )
-      .collect()
+    await leaveAllActiveRooms(ctx, userId)
 
-    const joinedRooms = activeRooms.filter((room) =>
-      room.onlinePlayerIds.includes(userId)
-    )
-
-    await Promise.all(
-      joinedRooms.map(async (room) => {
-        const onlinePlayerIds = room.onlinePlayerIds.filter(
-          (id) => id !== userId
-        )
-
-        if (onlinePlayerIds.length === 0) {
-          await ctx.db.delete(room._id)
-          return
-        }
-
-        if (room.hostId === userId) {
-          await ctx.db.patch(room._id, {
-            hostId: onlinePlayerIds[0],
-            onlinePlayerIds,
-          })
-          return
-        }
-
-        await ctx.db.patch(room._id, {
-          onlinePlayerIds,
-        })
-      })
-    )
-
-    let inviteCode = generateInviteCode()
-
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, no-constant-condition
-    while (true) {
-      const existingRoom = await ctx.db
-        .query("rooms")
-        .withIndex("by_invite_code", (q) => q.eq("inviteCode", inviteCode))
-        .first()
-
-      if (!existingRoom) {
-        break
-      }
-
-      inviteCode = generateInviteCode()
-    }
+    const inviteCode = await generateUniqueInviteCode(ctx)
 
     await ctx.db.insert("rooms", {
       name: args.name,
@@ -136,6 +86,8 @@ export const join = mutation({
     if (room.onlinePlayerIds.includes(userId)) {
       throw ROOM_ERRORS.ALREADY_IN_ROOM
     }
+
+    await leaveAllActiveRooms(ctx, userId)
 
     await ctx.db.patch(room._id, {
       playerIds: [...room.playerIds, userId],
