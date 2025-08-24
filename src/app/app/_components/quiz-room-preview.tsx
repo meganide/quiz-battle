@@ -36,7 +36,7 @@ export function QuizRoomPreview({ room }: QuizRoomPreviewProps) {
   const joinRoomMutation = useMutation(api.rooms.mutations.join)
   const router = useRouter()
 
-  const isInRoom = room.onlinePlayerIds.includes(user._id)
+  const isInRoom = user && room.onlinePlayerIds.includes(user._id)
 
   function goToRoom() {
     router.push(`/app/room/${room.inviteCode}`)

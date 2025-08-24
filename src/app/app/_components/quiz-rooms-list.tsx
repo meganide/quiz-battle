@@ -16,8 +16,9 @@ export function QuizRoomsList() {
   const user = useUser()
   const publicRooms = useQuery(api.rooms.queries.getPublicRooms)
   const sortedRooms = React.useMemo(() => {
+    if (!user) return []
     return sortRoomsByCreationDate(publicRooms ?? [], user._id)
-  }, [publicRooms, user._id])
+  }, [publicRooms, user])
 
   if (!publicRooms) return <p>No public rooms found</p>
 
