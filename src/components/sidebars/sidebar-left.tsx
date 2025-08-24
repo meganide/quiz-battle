@@ -3,21 +3,32 @@
 
 import type * as React from "react"
 
-import { Menu, PanelLeftClose } from "lucide-react"
+import { Menu, PanelLeftClose, Swords } from "lucide-react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 
-import { Sidebar, SidebarHeader, useSidebar } from "@/components/ui/sidebar"
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
+} from "@/components/ui/sidebar"
 import { cn } from "@/lib/utils"
-
-// This is sample data.
 
 export function SidebarLeft({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
   const { toggleSidebar, state } = useSidebar()
 
+  const path = usePathname()
+  const isQuizBattles = path === "/app"
+
   return (
     <Sidebar className="border-r-0" {...props} collapsible="icon">
-      <SidebarHeader className="p-0">
+      <SidebarHeader className="p-0 shadow-[0_3px_6px_rgba(0,0,0,0.1)]">
         <section
           role="button"
           tabIndex={0}
@@ -37,6 +48,18 @@ export function SidebarLeft({
           {state === "expanded" && <span>Menu</span>}
         </section>
       </SidebarHeader>
+      <SidebarContent>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <Link href="/app">
+              <SidebarMenuButton isActive={isQuizBattles}>
+                <Swords />
+                {state === "expanded" && <span>Quiz Battles</span>}
+              </SidebarMenuButton>
+            </Link>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarContent>
     </Sidebar>
   )
 }
