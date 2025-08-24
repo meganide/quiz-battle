@@ -8,6 +8,8 @@ export function Container({
   className?: string
 }) {
   return (
-    <div className={cn("container mx-auto p-4", className)}>{children}</div>
+    <div className="w-full p-4">
+      <div className={cn("container mx-auto", className)}>{children}</div>
+    </div>
   )
 }
