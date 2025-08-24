@@ -41,12 +41,14 @@ export default function RoomPage({ params }: RoomPageProps) {
 
   if (!room) {
     return (
-      <Container className="flex flex-col gap-4">
+      <section>
         <HeaderTitle href="/app" Icon={Users} title="Quiz Battle Room" />
-        <p className="text-muted-foreground text-sm">
-          The room you are looking for does not exist.
-        </p>
-      </Container>
+        <Container className="flex flex-col gap-4">
+          <p className="text-muted-foreground text-sm">
+            The room you are looking for does not exist.
+          </p>
+        </Container>
+      </section>
     )
   }
 
