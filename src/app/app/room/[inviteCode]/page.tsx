@@ -38,7 +38,7 @@ export default function RoomPage({ params }: RoomPageProps) {
   return (
     <Container className="flex flex-col gap-4">
       <HeaderTitle Icon={Users} title="Quiz Battle Room" />
-      <HeaderActions inviteCode={inviteCode} roomId={room._id} />
+      <HeaderActions inviteCode={inviteCode} room={room} />
     </Container>
   )
 }

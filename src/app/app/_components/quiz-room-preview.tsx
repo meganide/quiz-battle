@@ -22,6 +22,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { useUser } from "@/hooks/use-user"
 import { api } from "~/convex/_generated/api"
 import { RoomErrorCodes } from "~/convex/rooms/errors"
 
@@ -30,8 +31,18 @@ type QuizRoomPreviewProps = {
 }
 
 export function QuizRoomPreview({ room }: QuizRoomPreviewProps) {
+  const user = useUser()
   const joinRoomMutation = useMutation(api.rooms.mutations.join)
+  const leaveRoomMutation = useMutation(api.rooms.mutations.leave)
   const router = useRouter()
+
+  const isInRoom = room.onlinePlayerIds.includes(user._id)
+
+  async function leaveRoom() {
+    await leaveRoomMutation({
+      roomId: room._id,
+    })
+  }
 
   async function joinRoom() {
     try {
@@ -144,7 +155,13 @@ export function QuizRoomPreview({ room }: QuizRoomPreviewProps) {
               </TooltipTrigger>
               <TooltipContent>Spectate</TooltipContent>
             </Tooltip>
-            <Button onClick={joinRoom}>Join</Button>
+            {isInRoom ? (
+              <Button variant="ghost" onClick={leaveRoom}>
+                Leave
+              </Button>
+            ) : (
+              <Button onClick={joinRoom}>Join</Button>
+            )}
           </aside>
         </section>
       </section>

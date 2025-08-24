@@ -1,26 +1,26 @@
-import { useMutation, useQuery } from "convex/react"
+import { useMutation } from "convex/react"
 import { toast } from "sonner"
 
-import type { Id } from "~/convex/_generated/dataModel"
+import type { Doc } from "~/convex/_generated/dataModel"
 
 import { Button } from "@/components/ui/button"
+import { useUser } from "@/hooks/use-user"
 import { api } from "~/convex/_generated/api"
 
 type HeaderActionsProps = {
   inviteCode: string
-  roomId: Id<"rooms">
+  room: Doc<"rooms">
 }
 
-export function HeaderActions({ inviteCode, roomId }: HeaderActionsProps) {
+export function HeaderActions({ inviteCode, room }: HeaderActionsProps) {
   const leaveRoomMutation = useMutation(api.rooms.mutations.leave)
   const joinRoomMutation = useMutation(api.rooms.mutations.join)
-  const isInRoom = useQuery(api.rooms.queries.isInRoom, {
-    inviteCode,
-  })
+  const user = useUser()
+  const isInRoom = room.onlinePlayerIds.includes(user._id)
 
   async function leaveRoom() {
     await leaveRoomMutation({
-      roomId,
+      roomId: room._id,
     })
   }
 

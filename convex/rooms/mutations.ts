@@ -47,7 +47,7 @@ export const create = mutation({
       difficulty: args.difficulty,
       timePerQuestion: args.timePerQuestion,
       status: "lobby",
-      playerIds: [userId],
+      gamePlayerIds: [userId],
       onlinePlayerIds: [userId],
       createdAt: Date.now(),
       inviteCode,
@@ -90,7 +90,7 @@ export const join = mutation({
     await leaveAllActiveRooms(ctx, userId)
 
     await ctx.db.patch(room._id, {
-      playerIds: [...room.playerIds, userId],
+      gamePlayerIds: [...room.gamePlayerIds, userId],
       onlinePlayerIds: [...room.onlinePlayerIds, userId],
     })
 
@@ -115,7 +115,7 @@ export const leave = mutation({
       throw ROOM_ERRORS.ROOM_NOT_FOUND
     }
 
-    if (!room.playerIds.includes(userId)) {
+    if (!room.onlinePlayerIds.includes(userId)) {
       throw ROOM_ERRORS.NOT_IN_ROOM
     }
 
