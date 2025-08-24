@@ -13,8 +13,9 @@ import { HeaderTitle } from "@/components/header-title"
 import { useUser } from "@/hooks/use-user"
 import { api } from "~/convex/_generated/api"
 
-import { FacePile } from "./_components/face-pile"
 import { HeaderActions } from "./_components/header-actions"
+import { PresenceFacePile } from "./_components/presence-face-pile/presence-face-pile"
+
 type RoomPageProps = {
   params: Promise<{
     inviteCode: string
@@ -53,7 +54,7 @@ export default function RoomPage({ params }: RoomPageProps) {
     <Container className="flex flex-col gap-4">
       <HeaderTitle Icon={Users} title="Quiz Battle Room" />
       <HeaderActions inviteCode={inviteCode} room={room} />
-      <FacePile presenceState={joinedPlayersPresenceState} />
+      <PresenceFacePile presenceState={joinedPlayersPresenceState} />
     </Container>
   )
 }
