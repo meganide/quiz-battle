@@ -34,15 +34,12 @@ type QuizRoomPreviewProps = {
 export function QuizRoomPreview({ room }: QuizRoomPreviewProps) {
   const user = useUser()
   const joinRoomMutation = useMutation(api.rooms.mutations.join)
-  const leaveRoomMutation = useMutation(api.rooms.mutations.leave)
   const router = useRouter()
 
   const isInRoom = room.onlinePlayerIds.includes(user._id)
 
-  async function leaveRoom() {
-    await leaveRoomMutation({
-      roomId: room._id,
-    })
+  function goToRoom() {
+    router.push(`/app/room/${room.inviteCode}`)
   }
 
   async function joinRoom() {
@@ -160,9 +157,7 @@ export function QuizRoomPreview({ room }: QuizRoomPreviewProps) {
               <TooltipContent>Spectate</TooltipContent>
             </Tooltip>
             {isInRoom ? (
-              <Button variant="ghost" onClick={leaveRoom}>
-                Leave
-              </Button>
+              <Button onClick={goToRoom}>Go to room</Button>
             ) : (
               <Button onClick={joinRoom}>Join</Button>
             )}

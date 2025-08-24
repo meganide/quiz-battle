@@ -2,15 +2,19 @@
 
 import React from "react"
 
+import usePresence from "@convex-dev/presence/react"
 import { useQuery } from "convex/react"
 import { Users } from "lucide-react"
 
+import type { Id } from "~/convex/_generated/dataModel"
+
 import { Container } from "@/components/container"
 import { HeaderTitle } from "@/components/header-title"
+import { useUser } from "@/hooks/use-user"
 import { api } from "~/convex/_generated/api"
 
+import { FacePile } from "./_components/face-pile"
 import { HeaderActions } from "./_components/header-actions"
-
 type RoomPageProps = {
   params: Promise<{
     inviteCode: string
@@ -20,9 +24,19 @@ type RoomPageProps = {
 export default function RoomPage({ params }: RoomPageProps) {
   const { inviteCode } = React.use(params)
 
+  const user = useUser()
   const room = useQuery(api.rooms.queries.getByInviteCode, {
     inviteCode,
   })
+
+  const presenceState = usePresence(api.presence, inviteCode, user._id)
+  const joinedPlayersPresenceState = React.useMemo(
+    () =>
+      presenceState?.filter((player) => {
+        return room?.onlinePlayerIds.includes(player.userId as Id<"users">)
+      }) ?? [],
+    [presenceState, room]
+  )
 
   if (!room) {
     return (
@@ -39,6 +53,7 @@ export default function RoomPage({ params }: RoomPageProps) {
     <Container className="flex flex-col gap-4">
       <HeaderTitle Icon={Users} title="Quiz Battle Room" />
       <HeaderActions inviteCode={inviteCode} room={room} />
+      <FacePile presenceState={joinedPlayersPresenceState} />
     </Container>
   )
 }
