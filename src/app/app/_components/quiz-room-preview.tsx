@@ -23,6 +23,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { useUser } from "@/hooks/use-user"
+import { cn } from "@/lib/utils"
 import { api } from "~/convex/_generated/api"
 import { RoomErrorCodes } from "~/convex/rooms/errors"
 
@@ -68,9 +69,12 @@ export function QuizRoomPreview({ room }: QuizRoomPreviewProps) {
     <motion.article
       layout
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      className="flex items-center justify-between gap-4 rounded-sm bg-gradient-to-b from-neutral-400 to-neutral-500 px-4 py-6"
       exit={{ opacity: 0, y: -20, scale: 0.95 }}
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
+      className={cn(
+        "flex items-center justify-between gap-4 rounded-sm bg-gradient-to-b from-neutral-400 to-neutral-500 px-4 py-6",
+        isInRoom && "border-primary border-l-4"
+      )}
       transition={{
         duration: 0.3,
         ease: "easeOut",
