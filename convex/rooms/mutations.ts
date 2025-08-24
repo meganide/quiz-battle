@@ -98,6 +98,9 @@ export const join = mutation({
   },
 })
 
+/**
+ * This should only be called when the user leaves a room that is in lobby because we are updating the gamePlayerIds
+ */
 export const leave = mutation({
   args: {
     roomId: v.id("rooms"),
@@ -120,6 +123,7 @@ export const leave = mutation({
     }
 
     const onlinePlayerIds = room.onlinePlayerIds.filter((id) => id !== userId)
+    const gamePlayerIds = room.gamePlayerIds.filter((id) => id !== userId)
 
     if (room.hostId === userId) {
       if (onlinePlayerIds.length === 0) {
@@ -131,6 +135,7 @@ export const leave = mutation({
 
       await ctx.db.patch(room._id, {
         hostId: nextHost,
+        gamePlayerIds,
         onlinePlayerIds,
       })
       return
@@ -138,6 +143,7 @@ export const leave = mutation({
 
     await ctx.db.patch(room._id, {
       onlinePlayerIds,
+      gamePlayerIds,
     })
   },
 })
