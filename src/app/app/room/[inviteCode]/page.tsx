@@ -31,6 +31,7 @@ export default function RoomPage({ params }: RoomPageProps) {
   })
 
   const presenceState = usePresence(api.presence, inviteCode, user?._id)
+
   const joinedPlayersPresenceState = React.useMemo(
     () =>
       presenceState?.filter((player) => {
