@@ -16,8 +16,8 @@ import {
 import type * as LabelPrimitive from "@radix-ui/react-label"
 
 import { Label } from "@/components/ui/label"
-import { cn } from "@/lib/utils"
 import { UI_ERRORS } from "@/lib/errors"
+import { cn } from "@/lib/utils"
 
 const Form = FormProvider
 

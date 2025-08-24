@@ -4,8 +4,8 @@ import * as React from "react"
 
 import * as RechartsPrimitive from "recharts"
 
-import { cn } from "@/lib/utils"
 import { UI_ERRORS } from "@/lib/errors"
+import { cn } from "@/lib/utils"
 
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: "", dark: ".dark" } as const
