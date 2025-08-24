@@ -42,7 +42,7 @@ export default function RoomPage({ params }: RoomPageProps) {
   if (!room) {
     return (
       <Container className="flex flex-col gap-4">
-        <HeaderTitle Icon={Users} title="Quiz Battle Room" />
+        <HeaderTitle href="/app" Icon={Users} title="Quiz Battle Room" />
         <p className="text-muted-foreground text-sm">
           The room you are looking for does not exist.
         </p>
@@ -52,7 +52,7 @@ export default function RoomPage({ params }: RoomPageProps) {
 
   return (
     <Container className="flex flex-col gap-4">
-      <HeaderTitle Icon={Users} title="Quiz Battle Room" />
+      <HeaderTitle href="/app" Icon={Users} title="Quiz Battle Room" />
       <HeaderActions inviteCode={inviteCode} room={room} />
       <PresenceFacePile presenceState={joinedPlayersPresenceState} />
     </Container>
