@@ -11,22 +11,24 @@ type HeaderTitleProps = {
 
 export function HeaderTitle({ title, Icon, href }: HeaderTitleProps) {
   return (
-    <header className="flex h-16 w-full items-center justify-between gap-2 rounded-sm bg-neutral-500 px-3 py-2">
-      <div className="flex items-center gap-2">
-        {href && (
-          <Link href={href}>
-            <Button
-              className="hover:bg-neutral-400"
-              size="icon"
-              variant="ghost"
-            >
-              <MoveLeft className="size-5" />
-            </Button>
-          </Link>
-        )}
-        <h2 className="md:text-2xl">{title}</h2>
-      </div>
-      <Icon className="size-8 fill-neutral-300 stroke-neutral-300" />
-    </header>
+    <section className="bg-neutral-500 px-4">
+      <header className="container mx-auto flex h-16 w-full items-center justify-between gap-2 rounded-sm">
+        <div className="flex items-center gap-2">
+          {href && (
+            <Link href={href}>
+              <Button
+                className="hover:bg-neutral-400"
+                size="icon"
+                variant="ghost"
+              >
+                <MoveLeft className="size-5" />
+              </Button>
+            </Link>
+          )}
+          <h2 className="text-lg md:text-xl">{title}</h2>
+        </div>
+        <Icon className="size-6 fill-neutral-300 stroke-neutral-300 md:size-11" />
+      </header>
+    </section>
   )
 }

@@ -8,10 +8,12 @@ import { QuizRoomsList } from "./_components/quiz-rooms-list"
 
 export default function QuizBattlesPage() {
   return (
-    <Container className="flex flex-col gap-4">
+    <section>
       <HeaderTitle Icon={Swords} title="Quiz Battles" />
-      <QuizBattlesHeader />
-      <QuizRoomsList />
-    </Container>
+      <Container className="flex flex-col gap-4">
+        <QuizBattlesHeader />
+        <QuizRoomsList />
+      </Container>
+    </section>
   )
 }

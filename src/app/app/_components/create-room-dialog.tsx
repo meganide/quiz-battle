@@ -193,7 +193,7 @@ export function CreateRoomDialog() {
             </div>
 
             <Button className="self-end" disabled={isCreating} type="submit">
-              {isCreating ? "Creating..." : "Create Room"}
+              {isCreating ? "Creating..." : "Create Quiz Battle"}
             </Button>
           </form>
         </Form>

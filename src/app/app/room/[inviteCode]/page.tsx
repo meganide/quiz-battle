@@ -12,8 +12,7 @@ import { HeaderTitle } from "@/components/header-title"
 import { useUser } from "@/hooks/use-user"
 import { api } from "~/convex/_generated/api"
 
-import { HeaderActions } from "./_components/header-actions"
-import { PresenceFacePile } from "./_components/presence-face-pile/presence-face-pile"
+import { Lobby } from "./_components/lobby"
 import { usePresence } from "./_hooks/use-presence"
 
 type RoomPageProps = {
@@ -31,6 +30,7 @@ export default function RoomPage({ params }: RoomPageProps) {
   })
 
   const presenceState = usePresence(api.presence, inviteCode, user?._id)
+
   const joinedPlayersPresenceState = React.useMemo(
     () =>
       presenceState?.filter((player) => {
@@ -41,20 +41,24 @@ export default function RoomPage({ params }: RoomPageProps) {
 
   if (!room) {
     return (
-      <Container className="flex flex-col gap-4">
+      <section>
         <HeaderTitle href="/app" Icon={Users} title="Quiz Battle Room" />
-        <p className="text-muted-foreground text-sm">
-          The room you are looking for does not exist.
-        </p>
-      </Container>
+        <Container className="flex flex-col gap-4">
+          <p className="text-muted-foreground text-sm">
+            The room you are looking for does not exist.
+          </p>
+        </Container>
+      </section>
     )
   }
 
-  return (
-    <Container className="flex flex-col gap-4">
-      <HeaderTitle href="/app" Icon={Users} title="Quiz Battle Room" />
-      <HeaderActions inviteCode={inviteCode} room={room} />
-      <PresenceFacePile presenceState={joinedPlayersPresenceState} />
-    </Container>
-  )
+  if (room.status === "lobby") {
+    return (
+      <Lobby
+        inviteCode={inviteCode}
+        joinedPlayersPresenceState={joinedPlayersPresenceState}
+        room={room}
+      />
+    )
+  }
 }

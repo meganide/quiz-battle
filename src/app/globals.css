@@ -81,7 +81,7 @@
   --radius: 0.60rem;
   --background: var(--neutral-600);
   --foreground: var(--neutral-100);
-  --card: var(--neutral-600);
+  --card: var(--neutral-500);
   --card-foreground: var(--neutral-100);
   --popover: var(--neutral-600);
   --popover-foreground: var(--neutral-100);
@@ -182,6 +182,27 @@
   }
 
   p {
-    @apply text-base md:text-lg leading-relaxed;
+    @apply text-base leading-relaxed;
+  }
+
+  /* Text selection styles */
+  ::selection {
+    @apply bg-neutral-400 text-accent-foreground;
+  }
+  ::-moz-selection {
+    @apply bg-neutral-400 text-accent-foreground;
+  }
+
+  /* Webkit Scrollbar Styles */
+  ::-webkit-scrollbar {
+    @apply w-2 h-2.5;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-neutral-500 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-neutral-400 hover:bg-neutral-300 transition-colors;
   }
 }
