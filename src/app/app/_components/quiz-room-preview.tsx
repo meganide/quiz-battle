@@ -69,7 +69,7 @@ export function QuizRoomPreview({ room }: QuizRoomPreviewProps) {
       exit={{ opacity: 0, y: -20, scale: 0.95 }}
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
       className={cn(
-        "flex items-center justify-between gap-4 rounded-sm bg-gradient-to-b from-neutral-400 to-neutral-500 px-4 py-6",
+        "flex flex-col gap-4 rounded-sm bg-gradient-to-b from-neutral-400 to-neutral-500 px-4 py-6 md:flex-row md:items-center md:justify-between",
         isInRoom && "border-primary border-l-4"
       )}
       transition={{
@@ -79,33 +79,33 @@ export function QuizRoomPreview({ room }: QuizRoomPreviewProps) {
     >
       <section className="flex w-full flex-col gap-1">
         <section className="flex w-full items-center justify-between">
-          <span className="text-neutral-050 text-lg font-bold">
+          <span className="text-neutral-050 text-sm font-bold md:text-lg">
             {room.name}
           </span>
-          <section className="flex items-center gap-2">
-            <Badge className="bg-secondary-800 text-secondary-200 font-semibold tracking-wider uppercase">
+          <section className="flex flex-wrap items-center justify-end gap-1 sm:gap-2">
+            <Badge className="bg-secondary-800 text-secondary-200 text-xs font-semibold tracking-wider uppercase sm:text-sm">
               {room.isPrivate ? "Private" : "Public"}
             </Badge>
             <Badge
               className={cn(
-                "bg-secondary-800 text-secondary-200 font-semibold tracking-wider"
+                "bg-secondary-800 text-secondary-200 text-xs font-semibold tracking-wider sm:text-sm"
               )}
             >
               {room.status.toUpperCase()}
             </Badge>
           </section>
         </section>
-        <section className="flex items-center justify-between gap-4">
+        <section className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <section className="flex w-full flex-col items-start gap-4">
             <Tooltip>
               <TooltipTrigger asChild>
-                <p className="max-w-full overflow-hidden text-base text-ellipsis whitespace-nowrap">
+                <p className="max-w-full overflow-hidden text-sm text-ellipsis whitespace-nowrap md:text-base">
                   {room.topic}
                 </p>
               </TooltipTrigger>
               <TooltipContent>Topic</TooltipContent>
             </Tooltip>
-            <article className="flex items-center gap-10">
+            <article className="flex flex-wrap items-center gap-3 text-sm sm:gap-6 md:text-base">
               <Tooltip>
                 <TooltipTrigger asChild>
                   <div className="flex items-center gap-1">
@@ -156,7 +156,7 @@ export function QuizRoomPreview({ room }: QuizRoomPreviewProps) {
               </Tooltip>
             </article>
           </section>
-          <aside className="flex items-center gap-2">
+          <aside className="flex w-full items-center justify-end gap-2">
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button variant="secondary">
