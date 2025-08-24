@@ -19,7 +19,7 @@ export default defineSchema({
     timePerQuestion: v.number(),
     status: v.union(
       v.literal("lobby"),
-      v.literal("active"),
+      v.literal("ongoing"),
       v.literal("completed")
     ),
     gamePlayerIds: v.array(v.id("users")), // Players who were in game when it started

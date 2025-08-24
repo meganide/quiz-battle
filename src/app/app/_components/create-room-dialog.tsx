@@ -100,7 +100,7 @@ export function CreateRoomDialog() {
                       defaultValue={field.value}
                       onValueChange={field.onChange}
                     >
-                      <FormControl>
+                      <FormControl className="w-full">
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>

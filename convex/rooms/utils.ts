@@ -32,7 +32,7 @@ export const leaveAllActiveRooms = async (
     .withIndex(
       "by_status",
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-      (q) => q.eq("status", "lobby") || q.eq("status", "active")
+      (q) => q.eq("status", "lobby") || q.eq("status", "ongoing")
     )
     .collect()
 
