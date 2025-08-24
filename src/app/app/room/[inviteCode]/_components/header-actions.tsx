@@ -20,7 +20,7 @@ export function HeaderActions({ inviteCode, room }: HeaderActionsProps) {
 
   async function leaveRoom() {
     await leaveRoomMutation({
-      roomId: room._id,
+      inviteCode: room.inviteCode,
     })
   }
 

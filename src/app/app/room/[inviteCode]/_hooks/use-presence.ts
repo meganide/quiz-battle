@@ -7,6 +7,8 @@ import { useConvex, useMutation, useQuery } from "convex/react"
 
 import type { FunctionReference } from "convex/server"
 
+import { api } from "~/convex/_generated/api"
+
 import { useSingleFlight } from "./use-single-flight"
 
 // Interface in your Convex app /convex directory that implements these
@@ -74,7 +76,7 @@ export interface PresenceState {
 // example of how to incorporate this hook into your application.
 export function usePresence(
   presence: PresenceAPI,
-  roomId: string,
+  roomInviteCode: string,
   userId: string | undefined,
   interval: number = 10000,
   convexUrl?: string
@@ -96,6 +98,8 @@ export function usePresence(
   const heartbeat = useSingleFlight(useMutation(presence.heartbeat))
   const disconnect = useSingleFlight(useMutation(presence.disconnect))
 
+  const leaveRoomMutation = useMutation(api.rooms.mutations.leave)
+
   useEffect(() => {
     // Reset session state when roomId or userId changes.
     if (intervalRef.current) {
@@ -108,7 +112,7 @@ export function usePresence(
     setSessionId(crypto.randomUUID())
     setSessionToken(null)
     setRoomToken(null)
-  }, [roomId, userId, disconnect])
+  }, [roomInviteCode, userId, disconnect])
 
   useEffect(() => {
     // Update refs whenever tokens change.
@@ -120,7 +124,12 @@ export function usePresence(
     // Periodic heartbeats.
     const sendHeartbeat = async () => {
       if (!userId) return
-      const result = await heartbeat({ roomId, userId, sessionId, interval })
+      const result = await heartbeat({
+        roomId: roomInviteCode,
+        userId,
+        sessionId,
+        interval,
+      })
       setRoomToken(result.roomToken)
       setSessionToken(result.sessionToken)
     }
@@ -149,6 +158,8 @@ export function usePresence(
           }
         )
         navigator.sendBeacon(`${baseUrl}/api/mutation`, blob)
+
+        void leaveRoomMutation({ inviteCode: roomInviteCode })
       }
     }
     window.addEventListener("beforeunload", handleUnload)
@@ -190,7 +201,16 @@ export function usePresence(
         }
       }
     }
-  }, [heartbeat, disconnect, roomId, userId, baseUrl, interval, sessionId])
+  }, [
+    heartbeat,
+    disconnect,
+    roomInviteCode,
+    userId,
+    baseUrl,
+    interval,
+    sessionId,
+    leaveRoomMutation,
+  ])
 
   useEffect(() => {
     hasMounted.current = true
