@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 
 import { useConvex, useMutation, useQuery } from "convex/react"
 
+import type { PresenceState } from "../_types"
 import type { FunctionReference } from "convex/server"
 
 import { api } from "~/convex/_generated/api"
@@ -53,17 +54,6 @@ export interface PresenceAPI {
     { roomToken: string; sessionToken: string }
   >
   disconnect: FunctionReference<"mutation", "public", { sessionToken: string }>
-}
-
-// Presence state for a user within the given room.
-export interface PresenceState {
-  userId: string
-  online: boolean
-  lastDisconnected: number
-  // Set these accordingly in your Convex app.
-  // See ../../example-with-auth/convex/presence.ts for an example.
-  name?: string
-  image?: string
 }
 
 // React hook for maintaining presence state.

@@ -1,17 +1,11 @@
 "use client"
 
+import type { PresenceState } from "../../_types"
+
 import { cn } from "@/lib/utils"
 
 import { MoreUsersPopover } from "./more-users-popover"
 import { PresenceAvatar } from "./presence-avatar"
-
-export type PresenceState = {
-  userId: string
-  online: boolean
-  lastDisconnected: number
-  name?: string
-  image?: string
-}
 
 type FacePileProps = {
   presenceState: PresenceState[]
