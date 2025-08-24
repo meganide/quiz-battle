@@ -104,6 +104,7 @@ export const leave = mutation({
     inviteCode: v.string(),
   },
   handler: async (ctx, args) => {
+    console.log("leave")
     const userId = await getAuthUserId(ctx)
 
     if (!userId) {
@@ -130,12 +131,16 @@ export const leave = mutation({
     const gamePlayerIds = room.gamePlayerIds.filter((id) => id !== userId)
 
     if (room.hostId === userId) {
+      console.log("i am host")
       if (gamePlayerIds.length === 0) {
+        console.log("delete it")
         await ctx.db.delete(room._id)
         return
       }
 
       const nextHost = gamePlayerIds[0]
+
+      console.log("next host", nextHost)
 
       await ctx.db.patch(room._id, {
         hostId: nextHost,
@@ -143,6 +148,8 @@ export const leave = mutation({
       })
       return
     }
+
+    console.log("i am not host update gameplayerids")
 
     await ctx.db.patch(room._id, {
       gamePlayerIds,

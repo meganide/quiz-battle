@@ -145,6 +145,7 @@ export function usePresence(
 
     // Handle page unload.
     const handleUnload = () => {
+      void leaveRoomMutation({ inviteCode: roomInviteCode })
       if (sessionTokenRef.current) {
         const blob = new Blob(
           [
@@ -158,8 +159,6 @@ export function usePresence(
           }
         )
         navigator.sendBeacon(`${baseUrl}/api/mutation`, blob)
-
-        void leaveRoomMutation({ inviteCode: roomInviteCode })
       }
     }
     window.addEventListener("beforeunload", handleUnload)
