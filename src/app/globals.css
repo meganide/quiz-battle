@@ -182,7 +182,7 @@
   }
 
   p {
-    @apply text-base md:text-lg leading-relaxed;
+    @apply text-base leading-relaxed;
   }
 
   /* Text selection styles */

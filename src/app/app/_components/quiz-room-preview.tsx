@@ -69,7 +69,7 @@ export function QuizRoomPreview({ room }: QuizRoomPreviewProps) {
       exit={{ opacity: 0, y: -10 }}
       initial={{ opacity: 0, y: 10 }}
       className={cn(
-        "bg-card rounded-lg p-6 transition-all duration-200",
+        "bg-card flex flex-col gap-6 rounded-lg p-6 transition-all duration-200",
         isInRoom && "border-l-primary-400 border-l-2"
       )}
       transition={{
@@ -78,27 +78,35 @@ export function QuizRoomPreview({ room }: QuizRoomPreviewProps) {
       }}
     >
       {/* Header */}
-      <header className="mb-6 flex items-start justify-between gap-4">
-        <section className="flex-1">
-          <h3 className="text-neutral-050 mb-2 text-xl font-bold">
-            {room.name}
-          </h3>
-          <p className="text-neutral-200">{room.topic}</p>
-        </section>
+      <header>
+        <section className="flex flex-col md:flex-row md:items-start md:justify-between">
+          <div className="flex flex-1 flex-col gap-6">
+            <div className="flex flex-col gap-1">
+              <h4 className="text-xs font-semibold tracking-wider text-neutral-300 uppercase">
+                Room Name
+              </h4>
+              <h3 className="text-neutral-050 text-base font-bold">
+                {room.name}
+              </h3>
+            </div>
 
-        <section className="flex flex-wrap items-center gap-2">
-          <Badge className="text-xs" variant="secondary">
-            {room.isPrivate ? "Private" : "Public"}
-          </Badge>
-          <Badge className="text-xs capitalize" variant="secondary">
-            {room.status}
-          </Badge>
+            <div className="flex flex-col gap-1">
+              <h4 className="text-xs font-semibold tracking-wider text-neutral-300 uppercase">
+                Topic
+              </h4>
+              <p className="leading-4 text-neutral-100">{room.topic}</p>
+            </div>
+
+            <RoomBadges className="md:hidden" room={room} />
+          </div>
+
+          <RoomBadges className="hidden md:flex" room={room} />
         </section>
       </header>
 
       {/* Stats */}
-      <section className="mb-8">
-        <h4 className="mb-4 text-xs font-semibold tracking-wider text-neutral-300 uppercase">
+      <section className="flex flex-col gap-1">
+        <h4 className="text-xs font-semibold tracking-wider text-neutral-300 uppercase">
           Room Details
         </h4>
         <div className="flex flex-wrap items-center gap-x-6 gap-y-4 text-sm text-neutral-100">
@@ -177,5 +185,23 @@ export function QuizRoomPreview({ room }: QuizRoomPreviewProps) {
         )}
       </footer>
     </motion.article>
+  )
+}
+
+type RoomBadgesProps = {
+  room: Doc<"rooms">
+  className?: string
+}
+
+function RoomBadges({ room, className }: RoomBadgesProps) {
+  return (
+    <section className={cn("flex flex-wrap items-center gap-2", className)}>
+      <Badge className="text-xs" variant="secondary">
+        {room.isPrivate ? "Private" : "Public"}
+      </Badge>
+      <Badge className="text-xs capitalize" variant="secondary">
+        {room.status}
+      </Badge>
+    </section>
   )
 }
