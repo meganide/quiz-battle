@@ -2,7 +2,6 @@
 
 import React from "react"
 
-import usePresence from "@convex-dev/presence/react"
 import { useQuery } from "convex/react"
 import { Users } from "lucide-react"
 
@@ -15,6 +14,7 @@ import { api } from "~/convex/_generated/api"
 
 import { HeaderActions } from "./_components/header-actions"
 import { PresenceFacePile } from "./_components/presence-face-pile/presence-face-pile"
+import { usePresence } from "./_hooks/use-presence"
 
 type RoomPageProps = {
   params: Promise<{
@@ -30,7 +30,7 @@ export default function RoomPage({ params }: RoomPageProps) {
     inviteCode,
   })
 
-  const presenceState = usePresence(api.presence, inviteCode, user?._id ?? "")
+  const presenceState = usePresence(api.presence, inviteCode, user?._id)
   const joinedPlayersPresenceState = React.useMemo(
     () =>
       presenceState?.filter((player) => {
