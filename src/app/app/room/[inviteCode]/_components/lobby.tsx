@@ -1,3 +1,5 @@
+import React from "react"
+
 import {
   Brain,
   Clock,
@@ -13,6 +15,7 @@ import {
 import type { PresenceState } from "../_types"
 import type { Doc } from "~/convex/_generated/dataModel"
 
+import { useChatStore } from "@/app/stores/chat-store"
 import { Container } from "@/components/container"
 import { HeaderTitle } from "@/components/header-title"
 import { Badge } from "@/components/ui/badge"
@@ -38,15 +41,18 @@ export function Lobby({
   room,
   joinedPlayersPresenceState,
 }: LobbyProps) {
+  const { setChatRoomId } = useChatStore()
+
+  React.useEffect(() => {
+    setChatRoomId(inviteCode)
+  }, [inviteCode, setChatRoomId])
+
   return (
     <section>
       <HeaderTitle href="/app" Icon={Users} title="Quiz Battle Room" />
       <Container className="flex flex-col gap-6">
-        {/* Header with Room Title and Actions */}
         <HeaderActions inviteCode={inviteCode} room={room} />
-        {/* Room Information Cards */}
         <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {/* Room Details Card */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">

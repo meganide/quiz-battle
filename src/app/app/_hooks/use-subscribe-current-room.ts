@@ -6,7 +6,7 @@ import { useChatStore } from "@/app/stores/chat-store"
 import { api } from "~/convex/_generated/api"
 
 export function useSubscribeCurrentRoom() {
-  const { setChatRoomIds, setChatRoomId, resetChat } = useChatStore()
+  const { setChatRoomIds, resetChat } = useChatStore()
   const currentRoom = useQuery(api.rooms.queries.getCurrentRoom)
 
   useEffect(() => {
@@ -16,8 +16,7 @@ export function useSubscribeCurrentRoom() {
     }
 
     setChatRoomIds([currentRoom.inviteCode])
-    setChatRoomId(currentRoom.inviteCode)
-  }, [currentRoom, resetChat, setChatRoomId, setChatRoomIds])
+  }, [currentRoom, resetChat, setChatRoomIds])
 
   return currentRoom
 }
