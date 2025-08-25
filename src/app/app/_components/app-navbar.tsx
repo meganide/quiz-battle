@@ -1,4 +1,4 @@
-import { MessageCircle, MessagesSquare } from "lucide-react"
+import { MessagesSquare } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 
