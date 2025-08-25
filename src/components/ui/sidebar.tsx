@@ -93,6 +93,10 @@ function SidebarProvider({
     [setOpenProp, open]
   )
 
+  React.useEffect(() => {
+    setOpenMobile(openProp ?? false)
+  }, [openProp])
+
   // Helper to toggle the sidebar.
   const toggleSidebar = React.useCallback(() => {
     return isMobile ? setOpenMobile((open) => !open) : setOpen((open) => !open)
@@ -168,7 +172,16 @@ function Sidebar({
   variant?: "sidebar" | "floating" | "inset"
   collapsible?: "offcanvas" | "icon" | "none"
 }) {
-  const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
+  const { isMobile, state, openMobile, setOpenMobile, setOpen } = useSidebar()
+
+  const handleMobileOpenChange = React.useCallback(
+    (open: boolean) => {
+      setOpenMobile(open)
+      // Also sync with the parent's open state to prevent double-click issue
+      setOpen(open)
+    },
+    [setOpenMobile, setOpen]
+  )
 
   if (collapsible === "none") {
     return (
@@ -187,7 +200,7 @@ function Sidebar({
 
   if (isMobile) {
     return (
-      <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
+      <Sheet open={openMobile} onOpenChange={handleMobileOpenChange} {...props}>
         <SheetContent
           className="bg-sidebar text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden"
           data-mobile="true"
