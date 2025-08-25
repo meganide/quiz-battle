@@ -19,7 +19,7 @@ export function AppNavbar({ setIsChatSidebarOpen }: AppNavbarProps) {
         <section className="flex items-center gap-4">
           <span className="mr-12">Quiz Battle</span>
         </section>
-        <section className="flex items-center gap-2">
+        <section className="flex items-center gap-3">
           <NavUser />
           <Button
             className="rounded-full bg-neutral-500 hover:bg-neutral-400"

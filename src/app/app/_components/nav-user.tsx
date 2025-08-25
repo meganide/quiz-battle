@@ -2,14 +2,12 @@
 
 import { useAuthActions } from "@convex-dev/auth/react"
 import { useQuery } from "convex/react"
-import { BadgeCheck, Bell, CreditCard, LogOut, Sparkles } from "lucide-react"
+import { LogOut } from "lucide-react"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -25,14 +23,12 @@ export function NavUser() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button className="p-2" variant="ghost">
-          <Avatar className="size-7 rounded-sm">
-            <AvatarImage alt={user?.name} src={user?.image} />
-            <AvatarFallback className="rounded-lg">
-              {user?.name?.charAt(0)}
-            </AvatarFallback>
-          </Avatar>
-        </Button>
+        <Avatar className="size-8 cursor-pointer transition-all duration-200 hover:brightness-110">
+          <AvatarImage alt={user?.name} src={user?.image} />
+          <AvatarFallback className="rounded-full">
+            {user?.name?.charAt(0)}
+          </AvatarFallback>
+        </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
@@ -52,28 +48,7 @@ export function NavUser() {
             </div>
           </div>
         </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <Sparkles />
-            Upgrade to Pro
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <BadgeCheck />
-            Account
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <CreditCard />
-            Billing
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Bell />
-            Notifications
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
+
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => void signOut()}>
           <LogOut />
