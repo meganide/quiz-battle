@@ -10,16 +10,16 @@ import { api } from "~/convex/_generated/api"
 export function ChatFooter() {
   const [message, setMessage] = useState("")
 
-  const sendMessage = useMutation(api.chat.mutations.sendMessage)
+  const sendMessageMutation = useMutation(api.chat.mutations.sendMessage)
 
   const isMessageEmpty = message.length === 0
   const isMessageTooLong = message.length > 280
   const isButtonDisabled = isMessageEmpty || isMessageTooLong
 
-  async function handleSendMessage() {
+  async function sendMessage() {
     if (isButtonDisabled) return
 
-    await sendMessage({
+    await sendMessageMutation({
       chatRoomId: "global_chat",
       message,
     })
@@ -30,7 +30,7 @@ export function ChatFooter() {
   async function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
     if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault()
-      await handleSendMessage()
+      await sendMessage()
     }
   }
 
@@ -51,7 +51,7 @@ export function ChatFooter() {
         className="absolute top-1/2 right-2 h-8 -translate-y-1/2 px-3"
         disabled={isButtonDisabled}
         size="sm"
-        onClick={handleSendMessage}
+        onClick={sendMessage}
       >
         Send
       </Button>
