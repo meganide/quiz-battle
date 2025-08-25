@@ -21,7 +21,7 @@ export function ChatMessage({
 }: ChatMessageProps) {
   return (
     <article
-      className={cn("hover:bg-muted/50 flex gap-3 px-2 py-3 transition-colors")}
+      className={cn("hover:bg-accent flex gap-3 px-2 py-3 transition-colors")}
     >
       <Avatar className="size-8 shrink-0">
         <AvatarImage alt={`${username}'s avatar`} src={avatarUrl} />
