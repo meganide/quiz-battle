@@ -27,7 +27,9 @@ export function ChatHeader({ onClose }: ChatHeaderProps) {
   const presenceState = usePresence(api.presence, "global", user?._id)
 
   const onlineUsers =
-    presenceState?.filter((presence) => presence.online).length ?? 0
+    presenceState?.filter(
+      (presence) => presence.online && presence.userId !== user?._id
+    ).length ?? 0
 
   return (
     <section className="flex w-full items-center justify-between gap-2">
