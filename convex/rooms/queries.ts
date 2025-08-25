@@ -58,3 +58,23 @@ export const list = query({
     }
   },
 })
+
+export const getCurrentRoom = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx)
+
+    if (!userId) {
+      throw USER_ERRORS.NOT_AUTHENTICATED
+    }
+
+    const rooms = await ctx.db
+      .query("rooms")
+      .filter((q) => q.eq(q.field("status"), "lobby"))
+      .collect()
+
+    const userRoom = rooms.find((room) => room.gamePlayerIds.includes(userId))
+
+    return userRoom || null
+  },
+})

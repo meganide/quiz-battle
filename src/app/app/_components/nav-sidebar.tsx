@@ -18,9 +18,7 @@ import {
 } from "@/components/ui/sidebar"
 import { cn } from "@/lib/utils"
 
-export function SidebarLeft({
-  ...props
-}: React.ComponentProps<typeof Sidebar>) {
+export function NavSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { toggleSidebar, state } = useSidebar()
 
   const path = usePathname()

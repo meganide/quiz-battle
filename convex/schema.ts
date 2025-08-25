@@ -23,7 +23,6 @@ export default defineSchema({
       v.literal("completed")
     ),
     gamePlayerIds: v.array(v.id("users")), // Players participating in the game
-    createdAt: v.number(),
     startedAt: v.optional(v.number()),
     completedAt: v.optional(v.number()),
     inviteCode: v.string(),
@@ -46,7 +45,6 @@ export default defineSchema({
       v.literal("medium"),
       v.literal("hard")
     ),
-    createdAt: v.number(),
   })
     .index("by_game_state", ["gameStateId"])
     .index("by_game_and_index", ["gameStateId", "questionIndex"]),
@@ -62,7 +60,6 @@ export default defineSchema({
       v.literal("finished")
     ),
     questionStartTime: v.optional(v.number()),
-    createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("by_room", ["roomId"])
@@ -90,4 +87,15 @@ export default defineSchema({
     .index("by_game_state", ["gameStateId"])
     .index("by_question", ["questionId"])
     .index("by_user_question", ["userId", "questionId"]),
+
+  chatMessages: defineTable({
+    content: v.string(),
+    userId: v.id("users"),
+    chatRoomId: v.string(),
+    updatedAt: v.optional(v.number()),
+    isEdited: v.optional(v.boolean()),
+    isDeleted: v.optional(v.boolean()),
+  })
+    .index("by_chat_room", ["chatRoomId"])
+    .index("by_user", ["userId"]),
 })
