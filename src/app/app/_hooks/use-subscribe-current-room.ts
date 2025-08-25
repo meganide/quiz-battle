@@ -19,5 +19,5 @@ export function useSubscribeCurrentRoom() {
     setChatRoomId(currentRoom.inviteCode)
   }, [currentRoom, resetChat, setChatRoomId, setChatRoomIds])
 
-  return currentRoom?.inviteCode
+  return currentRoom
 }
