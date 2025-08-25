@@ -202,7 +202,7 @@ function Sidebar({
     return (
       <Sheet open={openMobile} onOpenChange={handleMobileOpenChange} {...props}>
         <SheetContent
-          className="bg-sidebar text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden"
+          className="bg-sidebar text-sidebar-foreground w-full p-0 [&>button]:hidden"
           data-mobile="true"
           data-sidebar="sidebar"
           data-slot="sidebar"
