@@ -90,4 +90,23 @@ export default defineSchema({
     .index("by_game_state", ["gameStateId"])
     .index("by_question", ["questionId"])
     .index("by_user_question", ["userId", "questionId"]),
+
+  chatRooms: defineTable({
+    name: v.string(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  }).index("by_name", ["name"]),
+
+  chatMessages: defineTable({
+    content: v.string(),
+    userId: v.id("users"),
+    chatRoomId: v.id("chatRooms"),
+    createdAt: v.number(),
+    updatedAt: v.optional(v.number()),
+    isEdited: v.optional(v.boolean()),
+    isDeleted: v.optional(v.boolean()),
+  })
+    .index("by_chat_room", ["chatRoomId"])
+    .index("by_user", ["userId"])
+    .index("by_room_created", ["chatRoomId", "createdAt"]),
 })
