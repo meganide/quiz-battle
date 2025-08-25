@@ -75,6 +75,9 @@
   --color-neutral-700: var(--neutral-700);
   --color-neutral-800: var(--neutral-800);
   --color-neutral-900: var(--neutral-900);
+
+  /* Remove 2xl breakpoint (96rem/1536px) entirely */
+  --breakpoint-2xl: initial;
 }
 
 :root {
@@ -102,14 +105,14 @@
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: var(--neutral-300);
-  --sidebar-foreground: var(--neutral-900);
+  --sidebar: var(--neutral-800);
+  --sidebar-foreground: var(--neutral-100);
   --sidebar-primary: var(--primary-400);
   --sidebar-primary-foreground: var(--primary-900);
-  --sidebar-accent: var(--neutral-300);
-  --sidebar-accent-foreground: var(--neutral-900);
-  --sidebar-border: var(--neutral-900);
-  --sidebar-ring: var(--primary-900);
+  --sidebar-accent: var(--neutral-500);
+  --sidebar-accent-foreground: var(--neutral-100);
+  --sidebar-border: var(--neutral-500);
+  --sidebar-ring: var(--primary-600);
 
   /* Primary */
   --primary-050: hsl(193, 75%, 96%);
@@ -153,8 +156,12 @@
     @apply border-border outline-ring/50;
   }
 
+  html {
+    @apply h-full;
+  }
+
   body {
-    @apply bg-background text-foreground font-open-sans;
+    @apply bg-background text-foreground font-open-sans h-full overflow-hidden;
   }
 
   h1 {
