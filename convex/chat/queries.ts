@@ -13,7 +13,7 @@ export const getMessages = query({
     const messages = await ctx.db
       .query("chatMessages")
       .filter((q) => q.eq(q.field("chatRoomId"), args.chatRoomId))
-      .order("asc")
+      .order("desc")
       .take(20)
 
     const messagesWithUser = await Promise.all(

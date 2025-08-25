@@ -10,8 +10,6 @@ export function ChatContent() {
     chatRoomId: "global_chat",
   })
 
-  console.log(messages)
-
   return (
     <ScrollArea className="h-full flex-1 pr-2">
       <section className="flex flex-col">

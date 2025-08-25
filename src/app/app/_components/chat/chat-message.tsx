@@ -34,7 +34,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
             {message.author.name}
           </h4>
           <time
-            className="text-muted-foreground text-xs"
+            className="text-muted-foreground text-[10px]"
             dateTime={message._creationTime.toString()}
           >
             {formatDistanceToNow(message._creationTime, { addSuffix: true })}
