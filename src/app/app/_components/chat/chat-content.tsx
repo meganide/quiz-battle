@@ -20,7 +20,7 @@ export function ChatContent() {
       <section
         ref={scrollRef}
         className={cn(
-          "h-full overflow-y-auto pr-2",
+          "h-full overflow-y-auto",
           "scrollbar-thin scrollbar-track-transparent scrollbar-thumb-border"
         )}
         onScroll={handleScroll}
