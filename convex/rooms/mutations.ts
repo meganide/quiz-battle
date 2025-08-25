@@ -48,7 +48,6 @@ export const create = mutation({
       timePerQuestion: args.timePerQuestion,
       status: "lobby",
       gamePlayerIds: [userId],
-      createdAt: Date.now(),
       inviteCode,
     })
 

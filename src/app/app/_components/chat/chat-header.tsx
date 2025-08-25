@@ -24,7 +24,7 @@ type ChatHeaderProps = {
 export function ChatHeader({ onClose }: ChatHeaderProps) {
   const [chatRoom, setChatRoom] = useState("global")
   const user = useUser()
-  const presenceState = usePresence(api.presence, "global", user?._id)
+  const presenceState = usePresence(api.presence, "global_chat", user?._id)
 
   const onlineUsers =
     presenceState?.filter(

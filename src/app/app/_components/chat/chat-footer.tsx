@@ -1,28 +1,36 @@
 import { useState } from "react"
 
+import { useMutation } from "convex/react"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
+import { api } from "~/convex/_generated/api"
 
 export function ChatFooter() {
   const [message, setMessage] = useState("")
+
+  const sendMessage = useMutation(api.chat.mutations.sendMessage)
 
   const isMessageEmpty = message.length === 0
   const isMessageTooLong = message.length > 280
   const isButtonDisabled = isMessageEmpty || isMessageTooLong
 
-  function handleSendMessage() {
+  async function handleSendMessage() {
     if (isButtonDisabled) return
 
-    // TODO: Add actual send message logic here
+    await sendMessage({
+      chatRoomId: "global_chat",
+      message,
+    })
 
     setMessage("")
   }
 
-  function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+  async function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
     if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault()
-      handleSendMessage()
+      await handleSendMessage()
     }
   }
 

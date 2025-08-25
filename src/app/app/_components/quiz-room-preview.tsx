@@ -154,7 +154,7 @@ export function QuizRoomPreview({ room }: QuizRoomPreviewProps) {
             <TooltipTrigger asChild>
               <div className="flex items-center gap-2">
                 <Calendar className="text-primary-400 size-4" />
-                <span>{formatDistanceToNow(room.createdAt)} ago</span>
+                <span>{formatDistanceToNow(room._creationTime)} ago</span>
               </div>
             </TooltipTrigger>
             <TooltipContent>Time since creation</TooltipContent>

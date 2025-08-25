@@ -9,6 +9,9 @@
  */
 
 import type * as auth from "../auth.js";
+import type * as chat_mutations from "../chat/mutations.js";
+import type * as chat_queries from "../chat/queries.js";
+import type * as chat_types from "../chat/types.js";
 import type * as http from "../http.js";
 import type * as presence from "../presence.js";
 import type * as rooms_errors from "../rooms/errors.js";
@@ -34,6 +37,9 @@ import type {
  */
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
+  "chat/mutations": typeof chat_mutations;
+  "chat/queries": typeof chat_queries;
+  "chat/types": typeof chat_types;
   http: typeof http;
   presence: typeof presence;
   "rooms/errors": typeof rooms_errors;
