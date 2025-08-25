@@ -1,38 +1,18 @@
-import { useState } from "react"
-
-import { useMutation } from "convex/react"
-
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
-import { api } from "~/convex/_generated/api"
+
+import { useSendMessage } from "../../_hooks/use-send-message"
 
 export function ChatFooter() {
-  const [message, setMessage] = useState("")
-
-  const sendMessageMutation = useMutation(api.chat.mutations.sendMessage)
-
-  const isMessageEmpty = message.length === 0
-  const isMessageTooLong = message.length > 280
-  const isButtonDisabled = isMessageEmpty || isMessageTooLong
-
-  async function sendMessage() {
-    if (isButtonDisabled) return
-
-    await sendMessageMutation({
-      chatRoomId: "global_chat",
-      message,
-    })
-
-    setMessage("")
-  }
-
-  async function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
-    if (event.key === "Enter" && !event.shiftKey) {
-      event.preventDefault()
-      await sendMessage()
-    }
-  }
+  const {
+    message,
+    setMessage,
+    isMessageTooLong,
+    isButtonDisabled,
+    handleKeyDown,
+    throttledSendMessage,
+  } = useSendMessage()
 
   return (
     <footer className="relative">
@@ -51,7 +31,7 @@ export function ChatFooter() {
         className="absolute top-1/2 right-2 h-8 -translate-y-1/2 px-3"
         disabled={isButtonDisabled}
         size="sm"
-        onClick={sendMessage}
+        onClick={throttledSendMessage}
       >
         Send
       </Button>
