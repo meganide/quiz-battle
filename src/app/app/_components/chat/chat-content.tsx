@@ -1,15 +1,14 @@
-import { useQuery } from "convex/react"
 import { ChevronDown } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { api } from "~/convex/_generated/api"
 
 import { ChatMessage } from "./chat-message"
+import { useAccumulatedMessages } from "../../_hooks/use-accumulated-messages"
 import { useChatScroll } from "../../_hooks/use-chat-scroll"
 
 export function ChatContent() {
-  const messages = useQuery(api.chat.queries.getMessages, {
+  const messages = useAccumulatedMessages({
     chatRoomId: "global_chat",
   })
 
@@ -27,7 +26,7 @@ export function ChatContent() {
         onScroll={handleScroll}
       >
         <section className="flex flex-col">
-          {messages?.map((message) => (
+          {messages.map((message) => (
             <ChatMessage key={message._id} message={message} />
           ))}
         </section>
