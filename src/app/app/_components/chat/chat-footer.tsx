@@ -1,3 +1,6 @@
+import { useConvexAuth } from "convex/react"
+import Link from "next/link"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
@@ -13,6 +16,16 @@ export function ChatFooter() {
     handleKeyDown,
     throttledSendMessage,
   } = useSendMessage()
+
+  const { isAuthenticated } = useConvexAuth()
+
+  if (!isAuthenticated) {
+    return (
+      <Link href="/signin">
+        <Button className="w-full">Login to Chat</Button>
+      </Link>
+    )
+  }
 
   return (
     <footer className="relative">
