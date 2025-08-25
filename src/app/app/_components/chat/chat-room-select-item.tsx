@@ -46,13 +46,12 @@ export function ChatRoomSelectItem({ chatRoomId }: ChatRoomSelectItemProps) {
 
   return (
     <SelectItem
-      key={chatRoomId}
       className="flex w-full items-center justify-between"
       value={chatRoomId}
     >
       <span>{chatRoomId}</span>
       <div className="ml-auto flex items-center gap-1">
-        {onlineUsers ? (
+        {onlineUsers !== undefined ? (
           <div className="mr-0.5 size-2 rounded-full bg-green-500" />
         ) : (
           <Loader2 className="size-2 animate-spin" />
