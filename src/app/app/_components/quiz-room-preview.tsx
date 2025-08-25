@@ -196,10 +196,10 @@ type RoomBadgesProps = {
 function RoomBadges({ room, className }: RoomBadgesProps) {
   return (
     <section className={cn("flex flex-wrap items-center gap-2", className)}>
-      <Badge className="text-xs" variant="secondary">
+      <Badge className="bg-neutral-600 text-xs text-neutral-100">
         {room.isPrivate ? "Private" : "Public"}
       </Badge>
-      <Badge className="text-xs capitalize" variant="secondary">
+      <Badge className="bg-neutral-600 text-xs text-neutral-100 capitalize">
         {room.status}
       </Badge>
     </section>

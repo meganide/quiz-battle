@@ -9,7 +9,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { AppNavbar } from "./_components/app-navbar"
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  const [isChatSidebarOpen, setIsChatSidebarOpen] = React.useState(true)
+  const [isChatSidebarOpen, setIsChatSidebarOpen] = React.useState(false)
 
   return (
     <section className="flex h-full w-full flex-1 flex-row">
