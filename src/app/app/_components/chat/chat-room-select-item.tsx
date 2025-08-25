@@ -1,6 +1,9 @@
 "use client"
 
+import React from "react"
+
 import { useQuery } from "convex/react"
+import { Loader2 } from "lucide-react"
 
 import { DEFAULT_ROOM_ID } from "@/app/stores/chat-store"
 import { SelectItem } from "@/components/ui/select"
@@ -23,8 +26,8 @@ export function ChatRoomSelectItem({ chatRoomId }: ChatRoomSelectItemProps) {
 
   const presenceState = usePresence(api.presence, chatRoomId, user?._id)
 
-  const onlineUsers =
-    presenceState?.filter((presence) => {
+  const onlineUsers = React.useMemo(() => {
+    return presenceState?.filter((presence) => {
       const isUserOnline = presence.online
       const isUserSelf = presence.userId === user?._id
 
@@ -38,7 +41,8 @@ export function ChatRoomSelectItem({ chatRoomId }: ChatRoomSelectItemProps) {
       )
 
       return isUserOnline && !isUserSelf && isUserInRoom
-    }).length ?? 0
+    }).length
+  }, [chatRoomId, presenceState, specificRoom?.gamePlayerIds, user?._id])
 
   return (
     <SelectItem
@@ -48,8 +52,12 @@ export function ChatRoomSelectItem({ chatRoomId }: ChatRoomSelectItemProps) {
     >
       <span>{chatRoomId}</span>
       <div className="ml-auto flex items-center gap-1">
-        <div className="size-2 rounded-full bg-green-500" />
-        <span className="text-muted-foreground text-xs">
+        {onlineUsers ? (
+          <div className="mr-0.5 size-2 rounded-full bg-green-500" />
+        ) : (
+          <Loader2 className="size-2 animate-spin" />
+        )}
+        <span className="text-muted-foreground flex items-center gap-1 text-xs">
           {onlineUsers} online
         </span>
       </div>
