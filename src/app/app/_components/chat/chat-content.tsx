@@ -8,9 +8,7 @@ import { useAccumulatedMessages } from "../../_hooks/use-accumulated-messages"
 import { useChatScroll } from "../../_hooks/use-chat-scroll"
 
 export function ChatContent() {
-  const messages = useAccumulatedMessages({
-    chatRoomId: "global_chat",
-  })
+  const messages = useAccumulatedMessages()
 
   const { scrollRef, handleScroll, isAtBottom, scrollToBottom } =
     useChatScroll(messages)

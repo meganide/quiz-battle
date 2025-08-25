@@ -3,11 +3,13 @@ import React from "react"
 import { useMutation } from "convex/react"
 import throttle from "lodash/throttle"
 
+import { useChatStore } from "@/app/stores/chat-store"
 import { api } from "~/convex/_generated/api"
 
 export function useSendMessage() {
   const [message, setMessage] = React.useState("")
   const [isSending, setIsSending] = React.useState(false)
+  const { selectedChatRoomId } = useChatStore()
 
   const sendMessageMutation = useMutation(api.chat.mutations.sendMessage)
 
@@ -20,7 +22,7 @@ export function useSendMessage() {
 
     try {
       await sendMessageMutation({
-        chatRoomId: "global_chat",
+        chatRoomId: selectedChatRoomId,
         message,
       })
       setMessage("")
@@ -30,7 +32,7 @@ export function useSendMessage() {
     } finally {
       setIsSending(false)
     }
-  }, [message, sendMessageMutation])
+  }, [message, selectedChatRoomId, sendMessageMutation])
 
   const throttledSendMessage = throttle(sendMessage, 400)
 

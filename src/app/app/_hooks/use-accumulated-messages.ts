@@ -4,22 +4,23 @@ import { useQuery } from "convex/react"
 
 import type { ChatMessage } from "~/convex/chat/types"
 
+import { useChatStore } from "@/app/stores/chat-store"
 import { api } from "~/convex/_generated/api"
 
-type UseAccumulatedMessagesOptions = {
-  chatRoomId: string
-}
-
-export function useAccumulatedMessages({
-  chatRoomId,
-}: UseAccumulatedMessagesOptions) {
+export function useAccumulatedMessages() {
   const [accumulatedMessages, setAccumulatedMessages] = useState<ChatMessage[]>(
     []
   )
 
+  const { selectedChatRoomId } = useChatStore()
+
   const latestMessages = useQuery(api.chat.queries.getMessages, {
-    chatRoomId,
+    chatRoomId: selectedChatRoomId,
   })
+
+  useEffect(() => {
+    setAccumulatedMessages([])
+  }, [selectedChatRoomId])
 
   useEffect(() => {
     if (!latestMessages || latestMessages.length === 0) {
