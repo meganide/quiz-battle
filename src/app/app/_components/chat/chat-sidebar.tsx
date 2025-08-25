@@ -7,6 +7,7 @@ import {
   SidebarHeader,
 } from "@/components/ui/sidebar"
 
+import { ChatFooter } from "./chat-footer"
 import { ChatHeader } from "./chat-header"
 
 type ChatSidebarProps = React.ComponentProps<typeof Sidebar> & {
@@ -20,7 +21,9 @@ export function ChatSidebar({ onClose, ...props }: ChatSidebarProps) {
         <ChatHeader onClose={onClose} />
       </SidebarHeader>
       <SidebarContent>Content</SidebarContent>
-      <SidebarFooter>fOOTER</SidebarFooter>
+      <SidebarFooter>
+        <ChatFooter />
+      </SidebarFooter>
     </Sidebar>
   )
 }
