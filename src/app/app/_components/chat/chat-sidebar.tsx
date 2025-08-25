@@ -18,7 +18,7 @@ type ChatSidebarProps = React.ComponentProps<typeof Sidebar> & {
 export function ChatSidebar({ onClose, ...props }: ChatSidebarProps) {
   return (
     <Sidebar collapsible="offcanvas" side="right" {...props}>
-      <SidebarHeader>
+      <SidebarHeader className="flex h-16 items-center justify-center">
         <ChatHeader onClose={onClose} />
       </SidebarHeader>
       <SidebarContent>
