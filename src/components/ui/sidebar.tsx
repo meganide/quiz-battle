@@ -215,7 +215,7 @@ function Sidebar({
           data-slot="sidebar"
           side={side}
           className={cn(
-            "bg-sidebar text-sidebar-foreground top-16 h-[calc(100vh-4rem)] border-none p-0 sm:max-w-full",
+            "bg-sidebar text-sidebar-foreground top-16 h-[calc(100svh-4rem)] border-none p-0 sm:max-w-full",
             mobileWidth,
             hideCloseButtonInMobileSheet && "[&>button]:hidden"
           )}
