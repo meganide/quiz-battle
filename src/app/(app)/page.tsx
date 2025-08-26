@@ -40,7 +40,7 @@ export default function HomePage() {
 
                 {/* Value Proposition */}
                 <div className="space-y-3 sm:space-y-4">
-                  <p className="mx-auto max-w-3xl text-base leading-relaxed text-neutral-100 sm:text-lg md:text-xl lg:text-2xl">
+                  <p className="mx-auto max-w-3xl text-base leading-relaxed text-balance text-neutral-100 sm:text-lg md:text-xl lg:text-2xl">
                     Create AI-powered quizzes on any topic and challenge friends
                     in real-time battles.
                   </p>
@@ -60,7 +60,7 @@ export default function HomePage() {
                     <h3 className="text-primary mb-2 text-sm font-semibold sm:text-base">
                       AI Generated
                     </h3>
-                    <p className="text-xs text-neutral-200 sm:text-sm">
+                    <p className="text-xs text-balance text-neutral-200 sm:text-sm">
                       Instant quizzes on any topic you can imagine
                     </p>
                   </div>
@@ -72,7 +72,7 @@ export default function HomePage() {
                     <h3 className="text-primary mb-2 text-sm font-semibold sm:text-base">
                       Real-Time
                     </h3>
-                    <p className="text-xs text-neutral-200 sm:text-sm">
+                    <p className="text-xs text-balance text-neutral-200 sm:text-sm">
                       Battle friends live with instant responses
                     </p>
                   </div>
@@ -84,7 +84,7 @@ export default function HomePage() {
                     <h3 className="text-primary mb-2 text-sm font-semibold sm:text-base">
                       Compete
                     </h3>
-                    <p className="text-xs text-neutral-200 sm:text-sm">
+                    <p className="text-xs text-balance text-neutral-200 sm:text-sm">
                       Earn points and climb the leaderboards
                     </p>
                   </div>
