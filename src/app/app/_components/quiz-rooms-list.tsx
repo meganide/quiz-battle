@@ -1,16 +1,46 @@
 "use client"
 
 import { useQuery } from "convex/react"
+import { Users } from "lucide-react"
 import { AnimatePresence } from "motion/react"
 
+import { Spinner } from "@/components/spinner"
+import { Card, CardContent } from "@/components/ui/card"
 import { api } from "~/convex/_generated/api"
 
+import { CreateRoomDialog } from "./create-room-dialog"
 import { QuizRoomPreview } from "./quiz-room-preview"
 
 export function QuizRoomsList() {
   const roomsInfo = useQuery(api.rooms.queries.list)
 
-  if (!roomsInfo?.rooms) return <p>No public rooms found</p>
+  if (roomsInfo === undefined) {
+    return (
+      <div className="mt-4 flex justify-center">
+        <Spinner size="xl" />
+      </div>
+    )
+  }
+
+  if (roomsInfo.rooms.length === 0) {
+    return (
+      <Card className="border-dashed">
+        <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+          <div className="bg-muted mx-auto flex h-16 w-16 items-center justify-center rounded-full">
+            <Users className="text-muted-foreground h-8 w-8" />
+          </div>
+          <h3 className="mt-6 text-lg font-semibold">No Quiz Battles Found</h3>
+          <p className="text-muted-foreground mt-2 max-w-sm text-sm">
+            There are no public quiz battles available right now. Create your
+            own battle to challenge others!
+          </p>
+          <div className="mt-6">
+            <CreateRoomDialog />
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
 
   return (
     <section className="flex flex-col gap-3">
