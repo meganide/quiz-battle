@@ -45,7 +45,7 @@ export function Logo({
         />
       </svg>
       {showTitle && (
-        <h1 className="text-primary hidden text-2xl sm:block">
+        <h1 className="text-primary text-2xl">
           <span className="text-primary-050">Quiz</span> Battle
         </h1>
       )}
