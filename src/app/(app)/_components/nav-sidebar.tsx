@@ -16,15 +16,25 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
 
 export function NavSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { toggleSidebar, state } = useSidebar()
+  const isMobile = useIsMobile()
 
   const path = usePathname()
 
   const isHome = path === "/"
   const isQuizBattles = path === "/quiz-battles"
+
+  function closeSidebarIfMobile() {
+    if (!isMobile) {
+      return
+    }
+
+    toggleSidebar()
+  }
 
   return (
     <Sidebar className="border-r-0" {...props} collapsible="icon">
@@ -50,7 +60,7 @@ export function NavSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <SidebarMenu>
-          <SidebarMenuItem>
+          <SidebarMenuItem onClick={closeSidebarIfMobile}>
             <Link href="/">
               <SidebarMenuButton isActive={isHome}>
                 <Home />
@@ -58,7 +68,7 @@ export function NavSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               </SidebarMenuButton>
             </Link>
           </SidebarMenuItem>
-          <SidebarMenuItem>
+          <SidebarMenuItem onClick={closeSidebarIfMobile}>
             <Link href="/quiz-battles">
               <SidebarMenuButton isActive={isQuizBattles}>
                 <Swords />
