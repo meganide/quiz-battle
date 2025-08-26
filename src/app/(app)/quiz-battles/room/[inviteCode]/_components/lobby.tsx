@@ -15,7 +15,6 @@ import {
 import type { PresenceState } from "../_types"
 import type { Doc } from "~/convex/_generated/dataModel"
 
-import { useChatStore } from "@/app/stores/chat-store"
 import { Container } from "@/components/container"
 import { HeaderTitle } from "@/components/header-title"
 import { Badge } from "@/components/ui/badge"
@@ -26,6 +25,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
+import { useChatStore } from "@/stores/chat-store"
 
 import { HeaderActions } from "./header-actions"
 import { PresenceFacePile } from "./presence-face-pile/presence-face-pile"
@@ -49,7 +49,7 @@ export function Lobby({
 
   return (
     <section>
-      <HeaderTitle href="/app" Icon={Users} title="Quiz Battle Room" />
+      <HeaderTitle href="/quiz-battles" Icon={Users} title="Quiz Battle Room" />
       <Container className="flex flex-col gap-6">
         <HeaderActions inviteCode={inviteCode} room={room} />
         <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

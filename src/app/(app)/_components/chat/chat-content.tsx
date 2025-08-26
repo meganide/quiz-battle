@@ -1,6 +1,6 @@
 import { ChevronDown } from "lucide-react"
 
-import { useChatStore } from "@/app/stores/chat-store"
+import { useChatStore } from "@/stores/chat-store"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 

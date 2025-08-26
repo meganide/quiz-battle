@@ -2,7 +2,7 @@
 
 import { PanelRightClose } from "lucide-react"
 
-import { useChatStore } from "@/app/stores/chat-store"
+import { useChatStore } from "@/stores/chat-store"
 import { Button } from "@/components/ui/button"
 import {
   Select,

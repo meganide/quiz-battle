@@ -3,7 +3,7 @@ import React from "react"
 import { useMutation } from "convex/react"
 import throttle from "lodash/throttle"
 
-import { useChatStore } from "@/app/stores/chat-store"
+import { useChatStore } from "@/stores/chat-store"
 import { api } from "~/convex/_generated/api"
 
 export function useSendMessage() {

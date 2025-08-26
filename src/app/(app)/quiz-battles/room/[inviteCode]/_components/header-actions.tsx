@@ -23,7 +23,7 @@ export function HeaderActions({ inviteCode, room }: HeaderActionsProps) {
   function leaveRoom() {
     const isLastPlayer = room.gamePlayerIds.length === 1
     if (isLastPlayer) {
-      router.push("/app")
+      router.push("/quiz-battles")
     }
 
     // This is a workaround to avoid the race condition where the user leaves the room and the room is deleted before the user is redirected to the home page
@@ -41,7 +41,7 @@ export function HeaderActions({ inviteCode, room }: HeaderActionsProps) {
   }
 
   async function invitePlayers() {
-    const inviteUrl = `${window.location.origin}/app/room/${inviteCode}`
+    const inviteUrl = `${window.location.origin}/room/${inviteCode}`
     await navigator.clipboard.writeText(inviteUrl)
     toast.success("Invite URL copied to clipboard")
   }

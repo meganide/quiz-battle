@@ -39,7 +39,7 @@ export function QuizRoomPreview({ room }: QuizRoomPreviewProps) {
   const isInRoom = !!user && room.gamePlayerIds.includes(user._id)
 
   function goToRoom() {
-    router.push(`/app/room/${room.inviteCode}`)
+    router.push(`/room/${room.inviteCode}`)
   }
 
   async function joinRoom() {
@@ -47,11 +47,11 @@ export function QuizRoomPreview({ room }: QuizRoomPreviewProps) {
       await joinRoomMutation({
         inviteCode: room.inviteCode,
       })
-      router.push(`/app/room/${room.inviteCode}`)
+      router.push(`/room/${room.inviteCode}`)
     } catch (error) {
       if (error instanceof ConvexError) {
         if (error.data.code === RoomErrorCodes.ALREADY_IN_ROOM) {
-          router.push(`/app/room/${room.inviteCode}`)
+          router.push(`/room/${room.inviteCode}`)
           return
         }
 

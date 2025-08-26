@@ -39,7 +39,7 @@ export function SignIn() {
             <Button
               className="h-12 w-full border border-slate-200 bg-white font-medium text-slate-700 shadow-sm transition-all duration-200 hover:bg-gray-50 hover:shadow-md"
               variant="outline"
-              onClick={() => void signIn("google", { redirectTo: "/app" })}
+              onClick={() => void signIn("google")}
             >
               <svg
                 aria-hidden="true"

@@ -12,7 +12,7 @@ export function Logo({ className, showTitle = false, ...props }: LogoProps) {
   return (
     <Link
       className="flex cursor-pointer items-center gap-2 hover:brightness-200"
-      href="/app"
+      href="/"
     >
       <svg
         className={cn("text-primary size-9 cursor-pointer", className)}

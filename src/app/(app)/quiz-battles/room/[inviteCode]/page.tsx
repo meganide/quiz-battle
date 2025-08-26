@@ -52,7 +52,11 @@ export default function RoomPage({ params }: RoomPageProps) {
   if (room === undefined) {
     return (
       <section>
-        <HeaderTitle href="/app" Icon={Users} title="Quiz Battle Room" />
+        <HeaderTitle
+          href="/quiz-battles"
+          Icon={Users}
+          title="Quiz Battle Room"
+        />
         <Container className="flex flex-col items-center gap-4">
           <Spinner size="xl" />
         </Container>
@@ -63,7 +67,11 @@ export default function RoomPage({ params }: RoomPageProps) {
   if (room === null) {
     return (
       <section>
-        <HeaderTitle href="/app" Icon={Users} title="Quiz Battle Room" />
+        <HeaderTitle
+          href="/quiz-battles"
+          Icon={Users}
+          title="Quiz Battle Room"
+        />
         <Container className="flex flex-col gap-4">
           <Card className="text-center">
             <CardHeader className="flex flex-col items-center">
@@ -78,7 +86,7 @@ export default function RoomPage({ params }: RoomPageProps) {
             </CardHeader>
             <CardContent>
               <Button asChild>
-                <Link href="/app">
+                <Link href="/quiz-battles">
                   <ArrowLeft className="h-4 w-4" />
                   Back to Quiz Battles
                 </Link>

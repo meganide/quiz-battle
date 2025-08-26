@@ -4,7 +4,7 @@ import { useQuery } from "convex/react"
 
 import type { ChatMessage } from "~/convex/chat/types"
 
-import { useChatStore } from "@/app/stores/chat-store"
+import { useChatStore } from "@/stores/chat-store"
 import { api } from "~/convex/_generated/api"
 
 export function useAccumulatedMessages() {

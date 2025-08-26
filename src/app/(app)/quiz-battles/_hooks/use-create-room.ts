@@ -41,7 +41,7 @@ export function useCreateRoom() {
         const result = await createRoomMutation(values)
         setIsCreateRoomDialogOpen(false)
         form.reset()
-        router.push(`/app/room/${result.inviteCode}`)
+        router.push(`/room/${result.inviteCode}`)
       } catch (error) {
         if (error instanceof ConvexError) {
           toast.error(error.data.message)
