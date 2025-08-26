@@ -1,4 +1,5 @@
 import { useMutation } from "convex/react"
+import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
 import type { Doc } from "~/convex/_generated/dataModel"
@@ -16,12 +17,21 @@ export function HeaderActions({ inviteCode, room }: HeaderActionsProps) {
   const leaveRoomMutation = useMutation(api.rooms.mutations.leave)
   const joinRoomMutation = useMutation(api.rooms.mutations.join)
   const user = useUser()
+  const router = useRouter()
   const isInRoom = !!user && room.gamePlayerIds.includes(user._id)
 
-  async function leaveRoom() {
-    await leaveRoomMutation({
-      inviteCode: room.inviteCode,
-    })
+  function leaveRoom() {
+    const isLastPlayer = room.gamePlayerIds.length === 1
+    if (isLastPlayer) {
+      router.push("/app")
+    }
+
+    // This is a workaround to avoid the race condition where the user leaves the room and the room is deleted before the user is redirected to the home page
+    setTimeout(() => {
+      void leaveRoomMutation({
+        inviteCode: room.inviteCode,
+      })
+    }, 350)
   }
 
   async function joinRoom() {
