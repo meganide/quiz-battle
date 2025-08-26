@@ -3,7 +3,7 @@
 
 import type * as React from "react"
 
-import { Menu, PanelLeftClose, Swords } from "lucide-react"
+import { Home, Menu, PanelLeftClose, Swords } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
@@ -22,7 +22,9 @@ export function NavSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { toggleSidebar, state } = useSidebar()
 
   const path = usePathname()
-  const isQuizBattles = path === "/app"
+
+  const isHome = path === "/"
+  const isQuizBattles = path === "/quiz-battles"
 
   return (
     <Sidebar className="border-r-0" {...props} collapsible="icon">
@@ -49,7 +51,15 @@ export function NavSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <SidebarMenu>
           <SidebarMenuItem>
-            <Link href="/app">
+            <Link href="/">
+              <SidebarMenuButton isActive={isHome}>
+                <Home />
+                {state === "expanded" && <span>Home</span>}
+              </SidebarMenuButton>
+            </Link>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <Link href="/quiz-battles">
               <SidebarMenuButton isActive={isQuizBattles}>
                 <Swords />
                 {state === "expanded" && <span>Quiz Battles</span>}

@@ -1,6 +1,6 @@
 import type * as React from "react"
 
-import { Menu, MessagesSquare, Swords } from "lucide-react"
+import { Home, Menu, MessagesSquare, Swords } from "lucide-react"
 import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
@@ -34,6 +34,16 @@ export function MobileBottomNavbar({
           <Menu className="size-5" />
           <span>Menu</span>
         </Button>
+
+        <Link href="/">
+          <Button
+            className="hover:text-accent-foreground flex flex-col items-center justify-center gap-1 rounded-lg text-xs font-medium text-neutral-100"
+            variant="ghost"
+          >
+            <Home className="size-5" />
+            <span>Home</span>
+          </Button>
+        </Link>
         <Button
           className="hover:text-accent-foreground flex flex-col items-center justify-center gap-1 rounded-lg text-xs font-medium text-neutral-100 transition-colors"
           size="icon"
@@ -44,7 +54,7 @@ export function MobileBottomNavbar({
           <span>Chat</span>
         </Button>
 
-        <Link href="/app">
+        <Link href="/quiz-battles">
           <Button
             className="hover:text-accent-foreground flex flex-col items-center justify-center gap-1 rounded-lg text-xs font-medium text-neutral-100"
             variant="ghost"
