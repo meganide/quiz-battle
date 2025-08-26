@@ -10,10 +10,16 @@ export const getByInviteCode = query({
     inviteCode: v.string(),
   },
   handler: async (ctx, args) => {
-    return await ctx.db
+    const room = await ctx.db
       .query("rooms")
       .withIndex("by_invite_code", (q) => q.eq("inviteCode", args.inviteCode))
       .unique()
+
+    if (!room) {
+      return null
+    }
+
+    return room
   },
 })
 
