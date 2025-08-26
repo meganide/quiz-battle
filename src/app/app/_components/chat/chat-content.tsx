@@ -1,5 +1,6 @@
 import { ChevronDown } from "lucide-react"
 
+import { useChatStore } from "@/app/stores/chat-store"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -9,9 +10,12 @@ import { useChatScroll } from "../../_hooks/use-chat-scroll"
 
 export function ChatContent() {
   const messages = useAccumulatedMessages()
+  const { selectedChatRoomId } = useChatStore()
 
-  const { scrollRef, handleScroll, isAtBottom, scrollToBottom } =
-    useChatScroll(messages)
+  const { scrollRef, handleScroll, isAtBottom, scrollToBottom } = useChatScroll(
+    messages,
+    selectedChatRoomId
+  )
 
   return (
     <section className="relative h-full flex-1">

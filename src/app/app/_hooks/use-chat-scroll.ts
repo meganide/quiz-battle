@@ -7,11 +7,13 @@ type Message = {
 
 export function useChatScroll(
   messages: Message[] | undefined,
+  roomId?: string,
   threshold = 100
 ) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [isAtBottom, setIsAtBottom] = useState(true)
   const previousMessageIdsRef = useRef<string[]>([])
+  const previousRoomIdRef = useRef<string | undefined>(roomId)
 
   const scrollToBottom = useCallback((smooth = false) => {
     if (scrollRef.current) {
@@ -35,7 +37,33 @@ export function useChatScroll(
     setIsAtBottom(atBottom)
   }, [checkIfAtBottom])
 
-  // Handle scrolling when messages change
+  // Handle room changes separately - always scroll to bottom when room changes
+  useEffect(() => {
+    const previousRoomId = previousRoomIdRef.current
+    const hasRoomChanged =
+      roomId !== previousRoomId && previousRoomId !== undefined
+
+    if (hasRoomChanged) {
+      // Update room ref immediately
+      previousRoomIdRef.current = roomId
+
+      // Force scroll to bottom on room change with multiple attempts to ensure it works
+      const scrollToBottomOnRoomChange = function () {
+        scrollToBottom(false)
+        setIsAtBottom(true)
+      }
+
+      // Immediate scroll
+      scrollToBottomOnRoomChange()
+
+      // Backup scroll after a delay to handle any race conditions
+      const timeoutId = setTimeout(scrollToBottomOnRoomChange, 150)
+
+      return () => clearTimeout(timeoutId)
+    }
+  }, [roomId, scrollToBottom])
+
+  // Handle initial load and message changes
   useEffect(() => {
     if (!messages || messages.length === 0) {
       return
@@ -52,8 +80,13 @@ export function useChatScroll(
       (id) => !previousMessageIds.includes(id)
     )
 
-    // Update the ref
+    // Update the message ids ref
     previousMessageIdsRef.current = currentMessageIds
+
+    // Initialize room ref on first load
+    if (isInitialLoad && previousRoomIdRef.current === undefined) {
+      previousRoomIdRef.current = roomId
+    }
 
     if (isInitialLoad) {
       // Always scroll to bottom on initial load
@@ -65,13 +98,13 @@ export function useChatScroll(
     }
 
     if (hasNewMessages && isAtBottom) {
-      // Auto-scroll to bottom if user is at bottom and there are new messages
+      // Only auto-scroll for new messages if user is at bottom
       const timeoutId = setTimeout(() => {
         scrollToBottom(true)
       }, 100)
       return () => clearTimeout(timeoutId)
     }
-  }, [messages, isAtBottom, scrollToBottom])
+  }, [messages, roomId, isAtBottom, scrollToBottom])
 
   return {
     scrollRef,
