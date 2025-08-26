@@ -26,7 +26,7 @@ export function MobileBottomNavbar({
     >
       <section className="flex h-14 items-center justify-evenly">
         <Button
-          className="flex flex-col items-center justify-center gap-1 rounded-lg text-xs font-medium text-neutral-100 transition-colors"
+          className="flex flex-col items-center justify-center gap-1 rounded-lg text-xs font-medium text-neutral-100 hover:bg-transparent"
           size="icon"
           variant="ghost"
           onClick={onToggleNavSidebar}
@@ -37,7 +37,7 @@ export function MobileBottomNavbar({
 
         <Link href="/">
           <Button
-            className="flex flex-col items-center justify-center gap-1 rounded-lg text-xs font-medium text-neutral-100"
+            className="flex flex-col items-center justify-center gap-1 rounded-lg text-xs font-medium text-neutral-100 hover:bg-transparent"
             variant="ghost"
           >
             <Home className="size-5" />
@@ -47,7 +47,7 @@ export function MobileBottomNavbar({
 
         <Link href="/quiz-battles">
           <Button
-            className="flex flex-col items-center justify-center gap-1 rounded-lg text-xs font-medium text-neutral-100"
+            className="flex flex-col items-center justify-center gap-1 rounded-lg text-xs font-medium text-neutral-100 hover:bg-transparent"
             variant="ghost"
           >
             <Swords className="size-5" />
@@ -55,7 +55,7 @@ export function MobileBottomNavbar({
           </Button>
         </Link>
         <Button
-          className="flex flex-col items-center justify-center gap-1 rounded-lg text-xs font-medium text-neutral-100 transition-colors"
+          className="flex flex-col items-center justify-center gap-1 rounded-lg text-xs font-medium text-neutral-100 hover:bg-transparent"
           size="icon"
           variant="ghost"
           onClick={onToggleChatSidebar}
