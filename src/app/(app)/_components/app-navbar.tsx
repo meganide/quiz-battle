@@ -25,7 +25,13 @@ export function AppNavbar({ setIsChatSidebarOpen }: AppNavbarProps) {
           <Logo showTitle />
         </section>
         <section className="flex items-center gap-3">
-          {isAuthenticated ? <NavUser /> : <SignInDialog />}
+          {isAuthenticated ? (
+            <NavUser />
+          ) : (
+            <SignInDialog>
+              <Button>Login</Button>
+            </SignInDialog>
+          )}
           <Button
             className="rounded-full bg-neutral-500 hover:bg-neutral-400"
             size="icon"
