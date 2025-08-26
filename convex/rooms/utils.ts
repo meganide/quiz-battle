@@ -71,9 +71,13 @@ const generateInviteCode = (): string => {
 
 export const sortRoomsByCreationDate = (
   rooms: Doc<"rooms">[],
-  userId: Id<"users">
+  userId: Id<"users"> | null
 ) => {
   return [...rooms].sort((a, b) => {
+    if (!userId) {
+      return b._creationTime - a._creationTime
+    }
+
     const aIsCurrentRoom = a.gamePlayerIds.includes(userId)
     const bIsCurrentRoom = b.gamePlayerIds.includes(userId)
 

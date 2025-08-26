@@ -1,7 +1,9 @@
 "use client"
 
+import { useConvexAuth } from "convex/react"
 import { Users } from "lucide-react"
 
+import { SignInDialog } from "@/components/sign-in-dialog"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -25,6 +27,8 @@ import { useJoinRoom } from "../_hooks/use-join-room"
 export function JoinRoomDialog() {
   const { isJoinRoomDialogOpen, setIsJoinRoomDialogOpen, form, joinRoom } =
     useJoinRoom()
+
+  const { isAuthenticated } = useConvexAuth()
 
   return (
     <Dialog open={isJoinRoomDialogOpen} onOpenChange={setIsJoinRoomDialogOpen}>
@@ -60,9 +64,15 @@ export function JoinRoomDialog() {
               />
             </div>
 
-            <Button className="self-end" type="submit">
-              Join Room
-            </Button>
+            {isAuthenticated ? (
+              <Button className="self-end" type="submit">
+                Join Room
+              </Button>
+            ) : (
+              <SignInDialog>
+                <Button className="self-end">Login to Join Room</Button>
+              </SignInDialog>
+            )}
           </form>
         </Form>
       </DialogContent>

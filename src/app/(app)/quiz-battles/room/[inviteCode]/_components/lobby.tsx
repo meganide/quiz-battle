@@ -12,8 +12,7 @@ import {
   Users,
 } from "lucide-react"
 
-import type { PresenceState } from "../_types"
-import type { Doc } from "~/convex/_generated/dataModel"
+import type { Doc, Id } from "~/convex/_generated/dataModel"
 
 import { Container } from "@/components/container"
 import { HeaderTitle } from "@/components/header-title"
@@ -24,23 +23,33 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { useUser } from "@/hooks/use-user"
 import { cn } from "@/lib/utils"
 import { useChatStore } from "@/stores/chat-store"
+import { api } from "~/convex/_generated/api"
 
 import { HeaderActions } from "./header-actions"
 import { PresenceFacePile } from "./presence-face-pile/presence-face-pile"
+import { usePresence } from "../_hooks/use-presence"
 
 type LobbyProps = {
   inviteCode: string
   room: Doc<"rooms">
-  joinedPlayersPresenceState: PresenceState[]
 }
 
-export function Lobby({
-  inviteCode,
-  room,
-  joinedPlayersPresenceState,
-}: LobbyProps) {
+export function Lobby({ inviteCode, room }: LobbyProps) {
+  const user = useUser()
+
+  const presenceState = usePresence(api.presence, inviteCode, user?._id)
+
+  const joinedPlayersPresenceState = React.useMemo(
+    () =>
+      presenceState?.filter((player) => {
+        return room.gamePlayerIds.includes(player.userId as Id<"users">)
+      }) ?? [],
+    [presenceState, room]
+  )
+
   const { setChatRoomId } = useChatStore()
 
   React.useEffect(() => {

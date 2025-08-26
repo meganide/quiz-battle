@@ -1,11 +1,12 @@
 import { useConvexAuth } from "convex/react"
-import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 
 import { useSendMessage } from "../../_hooks/use-send-message"
+
+import { SignInDialog } from "@/components/sign-in-dialog"
 
 export function ChatFooter() {
   const {
@@ -21,9 +22,9 @@ export function ChatFooter() {
 
   if (!isAuthenticated) {
     return (
-      <Link href="/signin">
+      <SignInDialog>
         <Button className="w-full">Login to Chat</Button>
-      </Link>
+      </SignInDialog>
     )
   }
 

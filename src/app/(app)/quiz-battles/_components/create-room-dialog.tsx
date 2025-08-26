@@ -1,7 +1,9 @@
 "use client"
 
+import { useConvexAuth } from "convex/react"
 import { Plus } from "lucide-react"
 
+import { SignInDialog } from "@/components/sign-in-dialog"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -39,6 +41,8 @@ export function CreateRoomDialog() {
     form,
     createRoom,
   } = useCreateRoom()
+
+  const { isAuthenticated } = useConvexAuth()
 
   return (
     <Dialog
@@ -192,9 +196,15 @@ export function CreateRoomDialog() {
               />
             </div>
 
-            <Button className="self-end" disabled={isCreating} type="submit">
-              {isCreating ? "Creating..." : "Create Quiz Battle"}
-            </Button>
+            {isAuthenticated ? (
+              <Button className="self-end" disabled={isCreating} type="submit">
+                {isCreating ? "Creating..." : "Create Quiz Battle"}
+              </Button>
+            ) : (
+              <SignInDialog>
+                <Button className="self-end">Login to Create Room</Button>
+              </SignInDialog>
+            )}
           </form>
         </Form>
       </DialogContent>

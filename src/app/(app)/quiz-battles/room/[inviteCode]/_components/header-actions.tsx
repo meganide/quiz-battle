@@ -41,7 +41,7 @@ export function HeaderActions({ inviteCode, room }: HeaderActionsProps) {
   }
 
   async function invitePlayers() {
-    const inviteUrl = `${window.location.origin}/room/${inviteCode}`
+    const inviteUrl = `${window.location.origin}/quiz-battles/room/${inviteCode}`
     await navigator.clipboard.writeText(inviteUrl)
     toast.success("Invite URL copied to clipboard")
   }
