@@ -1,6 +1,8 @@
+import { useConvexAuth } from "convex/react"
 import { MessagesSquare } from "lucide-react"
 
 import { Logo } from "@/components/logo"
+import { SignInDialog } from "@/components/sign-in-dialog"
 import { Button } from "@/components/ui/button"
 
 import { NavUser } from "./nav-user"
@@ -10,6 +12,8 @@ type AppNavbarProps = {
 }
 
 export function AppNavbar({ setIsChatSidebarOpen }: AppNavbarProps) {
+  const { isAuthenticated } = useConvexAuth()
+
   function toggleChatSidebar() {
     setIsChatSidebarOpen((prev) => !prev)
   }
@@ -21,7 +25,7 @@ export function AppNavbar({ setIsChatSidebarOpen }: AppNavbarProps) {
           <Logo showTitle />
         </section>
         <section className="flex items-center gap-3">
-          <NavUser />
+          {isAuthenticated ? <NavUser /> : <SignInDialog />}
           <Button
             className="rounded-full bg-neutral-500 hover:bg-neutral-400"
             size="icon"

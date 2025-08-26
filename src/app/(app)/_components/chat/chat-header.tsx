@@ -2,7 +2,6 @@
 
 import { PanelRightClose } from "lucide-react"
 
-import { useChatStore } from "@/stores/chat-store"
 import { Button } from "@/components/ui/button"
 import {
   Select,
@@ -10,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { useChatStore } from "@/stores/chat-store"
 
 import { ChatRoomSelectItem } from "./chat-room-select-item"
 

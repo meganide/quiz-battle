@@ -71,7 +71,7 @@ export const getCurrentRoom = query({
     const userId = await getAuthUserId(ctx)
 
     if (!userId) {
-      throw USER_ERRORS.NOT_AUTHENTICATED
+      return null
     }
 
     const rooms = await ctx.db
