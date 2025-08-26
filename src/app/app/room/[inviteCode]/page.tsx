@@ -3,12 +3,22 @@
 import React from "react"
 
 import { useQuery } from "convex/react"
-import { Users } from "lucide-react"
+import { AlertTriangle, ArrowLeft, Users } from "lucide-react"
+import Link from "next/link"
 
 import type { Id } from "~/convex/_generated/dataModel"
 
 import { Container } from "@/components/container"
 import { HeaderTitle } from "@/components/header-title"
+import { Spinner } from "@/components/spinner"
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { useUser } from "@/hooks/use-user"
 import { api } from "~/convex/_generated/api"
 
@@ -39,14 +49,42 @@ export default function RoomPage({ params }: RoomPageProps) {
     [presenceState, room]
   )
 
-  if (!room) {
+  if (room === undefined) {
+    return (
+      <section>
+        <HeaderTitle href="/app" Icon={Users} title="Quiz Battle Room" />
+        <Container className="flex flex-col items-center gap-4">
+          <Spinner size="xl" />
+        </Container>
+      </section>
+    )
+  }
+
+  if (room === null) {
     return (
       <section>
         <HeaderTitle href="/app" Icon={Users} title="Quiz Battle Room" />
         <Container className="flex flex-col gap-4">
-          <p className="text-muted-foreground text-sm">
-            The room you are looking for does not exist.
-          </p>
+          <Card className="text-center">
+            <CardHeader className="flex flex-col items-center">
+              <AlertTriangle className="text-muted-foreground h-8 w-8" />
+              <section className="space-y-2">
+                <CardTitle className="text-xl">Room Not Found</CardTitle>
+                <CardDescription className="max-w-sm">
+                  The quiz room you&apos;re looking for doesn&apos;t exist or
+                  may have been removed.
+                </CardDescription>
+              </section>
+            </CardHeader>
+            <CardContent>
+              <Button asChild>
+                <Link href="/app">
+                  <ArrowLeft className="h-4 w-4" />
+                  Back to Quiz Battles
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
         </Container>
       </section>
     )
