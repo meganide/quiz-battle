@@ -22,7 +22,12 @@ export function ChatSidebar({ onClose, ...props }: ChatSidebarProps) {
   useSubscribeCurrentRoom()
 
   return (
-    <Sidebar collapsible="offcanvas" side="right" {...props}>
+    <Sidebar
+      collapsible="offcanvas"
+      side="right"
+      {...props}
+      hideCloseButtonInMobileSheet
+    >
       <SidebarHeader className="flex h-16 items-center justify-center">
         <ChatHeader onClose={onClose} />
       </SidebarHeader>

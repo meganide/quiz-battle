@@ -166,6 +166,7 @@ function Sidebar({
   width = "w-64",
   mobileWidth = "w-full",
   iconWidth = "w-12",
+  hideCloseButtonInMobileSheet = false,
   className,
   children,
   ...props
@@ -176,6 +177,7 @@ function Sidebar({
   width?: string
   mobileWidth?: string
   iconWidth?: string
+  hideCloseButtonInMobileSheet?: boolean
 }) {
   const { isMobile, state, openMobile, setOpenMobile, setOpen } = useSidebar()
 
@@ -213,8 +215,9 @@ function Sidebar({
           data-slot="sidebar"
           side={side}
           className={cn(
-            "bg-sidebar text-sidebar-foreground p-0 [&>button]:hidden",
-            mobileWidth
+            "bg-sidebar text-sidebar-foreground top-16 h-[calc(100vh-4rem)] border-none p-0 sm:max-w-full",
+            mobileWidth,
+            hideCloseButtonInMobileSheet && "[&>button]:hidden"
           )}
         >
           <SheetHeader className="sr-only">
