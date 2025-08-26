@@ -44,15 +44,6 @@ export function MobileBottomNavbar({
             <span>Home</span>
           </Button>
         </Link>
-        <Button
-          className="hover:text-accent-foreground flex flex-col items-center justify-center gap-1 rounded-lg text-xs font-medium text-neutral-100 transition-colors"
-          size="icon"
-          variant="ghost"
-          onClick={onToggleChatSidebar}
-        >
-          <MessagesSquare className="size-5" />
-          <span>Chat</span>
-        </Button>
 
         <Link href="/quiz-battles">
           <Button
@@ -63,6 +54,15 @@ export function MobileBottomNavbar({
             <span>Quiz Battles</span>
           </Button>
         </Link>
+        <Button
+          className="hover:text-accent-foreground flex flex-col items-center justify-center gap-1 rounded-lg text-xs font-medium text-neutral-100 transition-colors"
+          size="icon"
+          variant="ghost"
+          onClick={onToggleChatSidebar}
+        >
+          <MessagesSquare className="size-5" />
+          <span>Chat</span>
+        </Button>
       </section>
     </nav>
   )
