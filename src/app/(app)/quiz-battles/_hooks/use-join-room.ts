@@ -32,11 +32,11 @@ export function useJoinRoom() {
         await joinRoomMutation(values)
         setIsJoinRoomDialogOpen(false)
         form.reset()
-        router.push(`/room/${values.inviteCode}`)
+        router.push(`/quiz-battles/room/${values.inviteCode}`)
       } catch (error) {
         if (error instanceof ConvexError) {
           if (error.data.code === RoomErrorCodes.ALREADY_IN_ROOM) {
-            router.push(`/room/${values.inviteCode}`)
+            router.push(`/quiz-battles/room/${values.inviteCode}`)
             return
           }
 

@@ -5,9 +5,9 @@ import React from "react"
 import { useQuery } from "convex/react"
 import { Loader2 } from "lucide-react"
 
-import { DEFAULT_ROOM_ID } from "@/stores/chat-store"
 import { SelectItem } from "@/components/ui/select"
 import { useUser } from "@/hooks/use-user"
+import { DEFAULT_ROOM_ID } from "@/stores/chat-store"
 import { api } from "~/convex/_generated/api"
 
 import { usePresence } from "../../quiz-battles/room/[inviteCode]/_hooks/use-presence"
