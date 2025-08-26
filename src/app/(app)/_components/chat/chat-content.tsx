@@ -1,8 +1,8 @@
 import { ChevronDown } from "lucide-react"
 
-import { useChatStore } from "@/stores/chat-store"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { useChatStore } from "@/stores/chat-store"
 
 import { ChatMessage } from "./chat-message"
 import { useAccumulatedMessages } from "../../_hooks/use-accumulated-messages"

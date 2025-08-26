@@ -1,12 +1,11 @@
 import { useConvexAuth } from "convex/react"
 
+import { SignInDialog } from "@/components/sign-in-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 
 import { useSendMessage } from "../../_hooks/use-send-message"
-
-import { SignInDialog } from "@/components/sign-in-dialog"
 
 export function ChatFooter() {
   const {
