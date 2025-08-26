@@ -95,7 +95,7 @@ export default function HomePage() {
               <footer className="text-center">
                 <Button
                   asChild
-                  className="h-10 px-6 text-base font-semibold shadow-lg transition-all duration-200 hover:scale-105 hover:shadow-xl sm:h-12 sm:px-8 sm:text-lg md:h-14 md:px-10 md:text-xl"
+                  className="h-10 px-6 text-base font-semibold shadow-lg sm:h-12 sm:px-8 sm:text-lg md:h-14 md:px-10 md:text-xl"
                   size="lg"
                 >
                   <Link href="/quiz-battles">Start Your First Battle</Link>
