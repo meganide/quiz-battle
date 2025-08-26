@@ -26,8 +26,6 @@ export default function RoomPage({ params }: RoomPageProps) {
     inviteCode,
   })
 
-  console.log("what is room")
-
   if (room === undefined) {
     return (
       <section>

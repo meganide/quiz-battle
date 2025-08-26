@@ -1,8 +1,8 @@
 "use client"
 
 import { useQuery } from "convex/react"
+import { AnimatePresence, motion } from "framer-motion"
 import { Users } from "lucide-react"
-import { AnimatePresence } from "motion/react"
 
 import { Spinner } from "@/components/spinner"
 import { Card, CardContent } from "@/components/ui/card"
@@ -46,7 +46,15 @@ export function QuizRoomsList() {
     <section className="flex flex-col gap-3">
       <AnimatePresence mode="popLayout">
         {roomsInfo.rooms.map((room) => (
-          <QuizRoomPreview key={room._id} room={room} />
+          <motion.div
+            key={room._id}
+            layout
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            initial={{ opacity: 0, y: 10 }}
+          >
+            <QuizRoomPreview room={room} />
+          </motion.div>
         ))}
       </AnimatePresence>
     </section>

@@ -9,7 +9,6 @@ import {
   ListStart,
   Users,
 } from "lucide-react"
-import { motion } from "motion/react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
@@ -63,19 +62,11 @@ export function QuizRoomPreview({ room }: QuizRoomPreviewProps) {
   }
 
   return (
-    <motion.article
-      layout
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
-      initial={{ opacity: 0, y: 10 }}
+    <article
       className={cn(
-        "bg-card flex flex-col gap-6 rounded-lg p-6 transition-all duration-200",
+        "bg-card flex flex-col gap-6 rounded-lg p-6",
         isInRoom && "border-l-primary-400 border-l-2"
       )}
-      transition={{
-        duration: 0.2,
-        ease: "easeOut",
-      }}
     >
       {/* Header */}
       <header>
@@ -184,7 +175,7 @@ export function QuizRoomPreview({ room }: QuizRoomPreviewProps) {
           </Button>
         )}
       </footer>
-    </motion.article>
+    </article>
   )
 }
 
