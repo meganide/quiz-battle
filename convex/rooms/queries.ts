@@ -3,7 +3,6 @@ import { v } from "convex/values"
 
 import { sortRoomsByCreationDate } from "./utils"
 import { query } from "../_generated/server"
-import { USER_ERRORS } from "../users/errors"
 
 export const getByInviteCode = query({
   args: {
@@ -27,10 +26,6 @@ export const list = query({
   args: {},
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx)
-
-    if (!userId) {
-      throw USER_ERRORS.NOT_AUTHENTICATED
-    }
 
     const [publicRooms, myPrivateRooms] = await Promise.all([
       ctx.db
@@ -71,7 +66,7 @@ export const getCurrentRoom = query({
     const userId = await getAuthUserId(ctx)
 
     if (!userId) {
-      throw USER_ERRORS.NOT_AUTHENTICATED
+      return null
     }
 
     const rooms = await ctx.db
