@@ -18,6 +18,7 @@ import type * as quiz_actions from "../quiz/actions.js";
 import type * as quiz_errors from "../quiz/errors.js";
 import type * as quiz_mutations from "../quiz/mutations.js";
 import type * as quiz_prompts from "../quiz/prompts.js";
+import type * as quiz_queries from "../quiz/queries.js";
 import type * as quiz_schemas from "../quiz/schemas.js";
 import type * as quiz_types from "../quiz/types.js";
 import type * as quiz_utils from "../quiz/utils.js";
@@ -53,6 +54,7 @@ declare const fullApi: ApiFromModules<{
   "quiz/errors": typeof quiz_errors;
   "quiz/mutations": typeof quiz_mutations;
   "quiz/prompts": typeof quiz_prompts;
+  "quiz/queries": typeof quiz_queries;
   "quiz/schemas": typeof quiz_schemas;
   "quiz/types": typeof quiz_types;
   "quiz/utils": typeof quiz_utils;

@@ -55,9 +55,7 @@ export default defineSchema({
     ),
     questionStartTime: v.optional(v.number()),
     updatedAt: v.number(),
-  })
-    .index("by_room", ["roomId"])
-    .index("by_phase", ["phase"]),
+  }).index("by_room", ["roomId"]),
 
   playerScores: defineTable({
     gameStateId: v.id("gameStates"),

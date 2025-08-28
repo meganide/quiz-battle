@@ -20,10 +20,17 @@ function RadioGroup({
   )
 }
 
+type RadioGroupItemProps = React.ComponentProps<
+  typeof RadioGroupPrimitive.Item
+> & {
+  circleClassName?: string
+}
+
 function RadioGroupItem({
   className,
+  circleClassName,
   ...props
-}: React.ComponentProps<typeof RadioGroupPrimitive.Item>) {
+}: RadioGroupItemProps) {
   return (
     <RadioGroupPrimitive.Item
       data-slot="radio-group-item"
@@ -37,7 +44,12 @@ function RadioGroupItem({
         className="relative flex items-center justify-center"
         data-slot="radio-group-indicator"
       >
-        <CircleIcon className="fill-primary absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2" />
+        <CircleIcon
+          className={cn(
+            "fill-primary absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2",
+            circleClassName
+          )}
+        />
       </RadioGroupPrimitive.Indicator>
     </RadioGroupPrimitive.Item>
   )

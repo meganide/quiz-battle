@@ -48,12 +48,6 @@ export function Timer({ duration }: TimerProps) {
     }
   }, [duration])
 
-  const formatTime = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60)
-    const secs = Math.floor(seconds % 60)
-    return `${mins}:${secs.toString().padStart(2, "0")}`
-  }
-
   const progressValue = duration > 0 ? (timeLeft / duration) * 100 : 0
   const isLowTime = timeLeft <= 10 && timeLeft > 0
 
@@ -76,4 +70,10 @@ export function Timer({ duration }: TimerProps) {
       />
     </section>
   )
+}
+
+function formatTime(seconds: number): string {
+  const mins = Math.floor(seconds / 60)
+  const secs = Math.floor(seconds % 60)
+  return `${mins}:${secs.toString().padStart(2, "0")}`
 }
