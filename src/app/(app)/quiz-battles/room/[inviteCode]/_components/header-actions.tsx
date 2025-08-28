@@ -1,9 +1,12 @@
-import { useMutation } from "convex/react"
+import React from "react"
+
+import { useAction, useMutation } from "convex/react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
 import type { Doc } from "~/convex/_generated/dataModel"
 
+import { Spinner } from "@/components/spinner"
 import { Button } from "@/components/ui/button"
 import { useUser } from "@/hooks/use-user"
 import { api } from "~/convex/_generated/api"
@@ -14,8 +17,12 @@ type HeaderActionsProps = {
 }
 
 export function HeaderActions({ inviteCode, room }: HeaderActionsProps) {
+  const [isStarting, setIsStarting] = React.useState(false)
+
   const leaveRoomMutation = useMutation(api.rooms.mutations.leave)
   const joinRoomMutation = useMutation(api.rooms.mutations.join)
+  const startQuizAction = useAction(api.quiz.actions.startQuiz)
+
   const user = useUser()
   const router = useRouter()
   const isInRoom = !!user && room.gamePlayerIds.includes(user._id)
@@ -41,6 +48,19 @@ export function HeaderActions({ inviteCode, room }: HeaderActionsProps) {
     })
   }
 
+  async function startQuiz() {
+    try {
+      setIsStarting(true)
+      await startQuizAction({
+        roomId: room._id,
+      })
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setIsStarting(false)
+    }
+  }
+
   async function invitePlayers() {
     const inviteUrl = `${window.location.origin}/quiz-battles/room/${inviteCode}`
     await navigator.clipboard.writeText(inviteUrl)
@@ -63,7 +83,14 @@ export function HeaderActions({ inviteCode, room }: HeaderActionsProps) {
           Invite Players
         </Button>
       </section>
-      {isHost && <Button>Start Quiz</Button>}
+      {isHost && (
+        <Button disabled={isStarting} onClick={startQuiz}>
+          {isStarting && (
+            <Spinner className="text-primary-foreground" size="sm" />
+          )}
+          Start Quiz
+        </Button>
+      )}
     </header>
   )
 }

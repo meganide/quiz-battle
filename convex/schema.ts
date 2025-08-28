@@ -39,12 +39,6 @@ export default defineSchema({
     question: v.string(),
     answers: v.array(v.string()),
     correctAnswerIndex: v.number(),
-    topic: v.string(),
-    difficulty: v.union(
-      v.literal("easy"),
-      v.literal("medium"),
-      v.literal("hard")
-    ),
   })
     .index("by_game_state", ["gameStateId"])
     .index("by_game_and_index", ["gameStateId", "questionIndex"]),

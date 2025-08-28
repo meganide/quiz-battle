@@ -79,3 +79,13 @@ export const getCurrentRoom = query({
     return userRoom || null
   },
 })
+
+export const getById = query({
+  args: {
+    roomId: v.id("rooms"),
+  },
+  handler: async (ctx, args) => {
+    const room = await ctx.db.get(args.roomId)
+    return room
+  },
+})

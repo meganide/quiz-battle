@@ -1,51 +1,71 @@
-import { getAuthUserId } from "@convex-dev/auth/server"
 import { v } from "convex/values"
 
-import { QuizErrorCodes } from "./errors"
-import { mutation } from "../_generated/server"
+import { internalMutation } from "../_generated/server"
 import { ROOM_ERRORS } from "../rooms/errors"
-import { USER_ERRORS } from "../users/errors"
 
-export const startQuiz = mutation({
+export const saveQuestions = internalMutation({
   args: {
     roomId: v.id("rooms"),
+    questions: v.array(
+      v.object({
+        question: v.string(),
+        answers: v.array(v.string()),
+        correctAnswerIndex: v.number(),
+      })
+    ),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx)
-
-    if (!userId) {
-      throw USER_ERRORS.NOT_AUTHENTICATED
-    }
-
-    const { roomId } = args
-    const room = await ctx.db.get(roomId)
+    const room = await ctx.db.get(args.roomId)
 
     if (!room) {
       throw ROOM_ERRORS.ROOM_NOT_FOUND
     }
 
-    if (room.status !== "lobby") {
-      throw ROOM_ERRORS.ROOM_HAS_ALREADY_STARTED
-    }
+    const gameStateId = await ctx.db.insert("gameStates", {
+      roomId: args.roomId,
+      phase: "question",
+      currentQuestionIndex: 0,
+      updatedAt: Date.now(),
+      questionStartTime: Date.now(),
+    })
 
-    const isHost = userId === room.hostId
+    await Promise.all([
+      room.gamePlayerIds.map((playerId) =>
+        ctx.db.insert("playerScores", {
+          gameStateId: gameStateId,
+          userId: playerId,
+          score: 0,
+          correctAnswers: 0,
+          totalAnswered: 0,
+          updatedAt: Date.now(),
+        })
+      ),
+      args.questions.map(async (question, index) => {
+        await ctx.db.insert("questions", {
+          gameStateId: gameStateId,
+          answers: question.answers,
+          correctAnswerIndex: question.correctAnswerIndex,
+          questionIndex: index,
+          question: question.question,
+        })
+      }),
+    ])
 
-    if (!isHost) {
-      throw QuizErrorCodes.NOT_HOST
-    }
+    const firstQuestion = await ctx.db
+      .query("questions")
+      .withIndex("by_game_and_index", (q) =>
+        q.eq("gameStateId", gameStateId).eq("questionIndex", 0)
+      )
+      .first()
 
-    if (!room.gamePlayerIds.includes(userId)) {
-      throw ROOM_ERRORS.NOT_IN_ROOM
-    }
+    await ctx.db.patch(gameStateId, {
+      currentQuestionId: firstQuestion?._id,
+    })
 
-    // 1. We need to create a new game state
-    // 2. Create questions with langchain for all topics
-    // 3. Insert questions into the database
-    // 4. Create the game state object
-
-    // const quiz = await ctx.db.patch(roomId, {
-    //   status: "ongoing",
-    //   startedAt: Date.now(),
-    // })
+    await ctx.db.patch(args.roomId, {
+      status: "ongoing",
+      startedAt: Date.now(),
+      currentGameStateId: gameStateId,
+    })
   },
 })

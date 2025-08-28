@@ -10,6 +10,7 @@ import { HeaderTitle } from "@/components/header-title"
 import { Spinner } from "@/components/spinner"
 import { api } from "~/convex/_generated/api"
 
+import { Game } from "./_components/game"
 import { Lobby } from "./_components/lobby"
 import { RoomDoesntExist } from "./_components/room-doesnt-exist"
 
@@ -47,5 +48,9 @@ export default function RoomPage({ params }: RoomPageProps) {
 
   if (room.status === "lobby") {
     return <Lobby inviteCode={inviteCode} room={room} />
+  }
+
+  if (room.status === "ongoing") {
+    return <Game />
   }
 }
