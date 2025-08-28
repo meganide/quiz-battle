@@ -3,7 +3,7 @@ import { v } from "convex/values"
 import { internalMutation } from "../_generated/server"
 import { ROOM_ERRORS } from "../rooms/errors"
 
-export const saveQuestions = internalMutation({
+export const startQuiz = internalMutation({
   args: {
     roomId: v.id("rooms"),
     questions: v.array(

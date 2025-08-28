@@ -47,7 +47,7 @@ export const startQuiz = action({
       room.difficulty
     )
 
-    await ctx.runMutation(internal.quiz.mutations.saveQuestions, {
+    await ctx.runMutation(internal.quiz.mutations.startQuiz, {
       roomId,
       questions: aiQuestions,
     })
