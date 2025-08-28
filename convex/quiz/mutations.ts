@@ -78,6 +78,7 @@ export const startQuiz = internalMutation({
         gameStateId,
         nextQuestionIndex: 1,
         timePerQuestionInSeconds: room.timePerQuestion,
+        totalQuestions: args.questions.length,
       }
     )
   },
@@ -89,17 +90,23 @@ export const nextQuestion = internalMutation({
     gameStateId: v.id("gameStates"),
     nextQuestionIndex: v.number(),
     timePerQuestionInSeconds: v.number(),
+    totalQuestions: v.number(),
   },
   handler: async (ctx, args) => {
-    const { gameStateId, nextQuestionIndex, timePerQuestionInSeconds } = args
+    const {
+      gameStateId,
+      nextQuestionIndex,
+      timePerQuestionInSeconds,
+      totalQuestions,
+    } = args
 
     await ctx.db.patch(args.gameStateId, {
       currentQuestionIndex: nextQuestionIndex,
       questionStartTime: Date.now(),
     })
 
-    const LAST_QUESTION_INDEX = 3
-    if (nextQuestionIndex === LAST_QUESTION_INDEX + 1) {
+    const isLastQuestion = nextQuestionIndex === totalQuestions
+    if (isLastQuestion) {
       await ctx.db.patch(args.roomId, {
         status: "completed",
         completedAt: Date.now(),
@@ -114,8 +121,9 @@ export const nextQuestion = internalMutation({
       {
         roomId: args.roomId,
         gameStateId,
-        nextQuestionIndex: 1,
+        nextQuestionIndex: nextQuestionIndex + 1,
         timePerQuestionInSeconds: timePerQuestionInSeconds,
+        totalQuestions: totalQuestions,
       }
     )
   },
