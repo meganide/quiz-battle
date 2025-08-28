@@ -12,11 +12,10 @@ import { useUser } from "@/hooks/use-user"
 import { api } from "~/convex/_generated/api"
 
 type HeaderActionsProps = {
-  inviteCode: string
   room: Doc<"rooms">
 }
 
-export function HeaderActions({ inviteCode, room }: HeaderActionsProps) {
+export function HeaderActions({ room }: HeaderActionsProps) {
   const [isStarting, setIsStarting] = React.useState(false)
 
   const leaveRoomMutation = useMutation(api.rooms.mutations.leave)
@@ -44,7 +43,7 @@ export function HeaderActions({ inviteCode, room }: HeaderActionsProps) {
 
   async function joinRoom() {
     await joinRoomMutation({
-      inviteCode,
+      inviteCode: room.inviteCode,
     })
   }
 
@@ -62,7 +61,7 @@ export function HeaderActions({ inviteCode, room }: HeaderActionsProps) {
   }
 
   async function invitePlayers() {
-    const inviteUrl = `${window.location.origin}/quiz-battles/room/${inviteCode}`
+    const inviteUrl = `${window.location.origin}/quiz-battles/room/${room.inviteCode}`
     await navigator.clipboard.writeText(inviteUrl)
     toast.success("Invite URL copied to clipboard")
   }

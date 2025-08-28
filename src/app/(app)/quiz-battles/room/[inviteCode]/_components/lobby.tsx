@@ -33,14 +33,13 @@ import { PresenceFacePile } from "./presence-face-pile/presence-face-pile"
 import { usePresence } from "../_hooks/use-presence"
 
 type LobbyProps = {
-  inviteCode: string
   room: Doc<"rooms">
 }
 
-export function Lobby({ inviteCode, room }: LobbyProps) {
+export function Lobby({ room }: LobbyProps) {
   const user = useUser()
 
-  const presenceState = usePresence(api.presence, inviteCode, user?._id)
+  const presenceState = usePresence(api.presence, room.inviteCode, user?._id)
 
   const joinedPlayersPresenceState = React.useMemo(
     () =>
@@ -53,14 +52,14 @@ export function Lobby({ inviteCode, room }: LobbyProps) {
   const { setChatRoomId } = useChatStore()
 
   React.useEffect(() => {
-    setChatRoomId(inviteCode)
-  }, [inviteCode, setChatRoomId])
+    setChatRoomId(room.inviteCode)
+  }, [room.inviteCode, setChatRoomId])
 
   return (
     <section>
       <HeaderTitle href="/quiz-battles" Icon={Users} title="Quiz Battle Room" />
       <Container className="flex flex-col gap-6">
-        <HeaderActions inviteCode={inviteCode} room={room} />
+        <HeaderActions room={room} />
         <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           <Card>
             <CardHeader>
@@ -111,7 +110,7 @@ export function Lobby({ inviteCode, room }: LobbyProps) {
                     </TooltipContent>
                   </Tooltip>
                   <span className="text-foreground font-mono text-lg font-bold tracking-wider">
-                    {inviteCode}
+                    {room.inviteCode}
                   </span>
                 </div>
               </div>

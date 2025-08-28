@@ -55,3 +55,37 @@ export const startQuiz = action({
     return { success: true }
   },
 })
+
+// Keep this action for potential manual overrides, but game progression is now automatic
+export const handleQuestionTimeout = action({
+  args: {
+    gameStateId: v.id("gameStates"),
+  },
+  handler: async (
+    ctx,
+    args
+  ): Promise<{
+    success: boolean
+    gameFinished?: boolean
+    message?: string
+  }> => {
+    // This is now handled automatically by cron jobs
+    // But kept for backward compatibility or manual triggers
+    await ctx.runMutation(internal.quiz.mutations.showResults, {
+      gameStateId: args.gameStateId,
+    })
+
+    await new Promise((resolve) => {
+      setTimeout(resolve, 3000)
+    })
+
+    const result = await ctx.runMutation(
+      internal.quiz.mutations.advanceToNextQuestion,
+      {
+        gameStateId: args.gameStateId,
+      }
+    )
+
+    return { success: true, gameFinished: result.gameFinished }
+  },
+})
