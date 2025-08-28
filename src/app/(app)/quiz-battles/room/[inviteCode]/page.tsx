@@ -10,7 +10,7 @@ import { HeaderTitle } from "@/components/header-title"
 import { Spinner } from "@/components/spinner"
 import { api } from "~/convex/_generated/api"
 
-import { Game } from "./_components/game"
+import { Game } from "./_components/game/game"
 import { Lobby } from "./_components/lobby"
 import { RoomDoesntExist } from "./_components/room-doesnt-exist"
 
