@@ -1,5 +1,6 @@
 import { v } from "convex/values"
 
+import { internal } from "../_generated/api"
 import { internalMutation } from "../_generated/server"
 import { ROOM_ERRORS } from "../rooms/errors"
 
@@ -60,6 +61,7 @@ export const startQuiz = internalMutation({
 
     await ctx.db.patch(gameStateId, {
       currentQuestionId: firstQuestion?._id,
+      questionStartTime: Date.now(),
     })
 
     await ctx.db.patch(args.roomId, {
@@ -67,5 +69,54 @@ export const startQuiz = internalMutation({
       startedAt: Date.now(),
       currentGameStateId: gameStateId,
     })
+
+    await ctx.scheduler.runAfter(
+      room.timePerQuestion * 1000,
+      internal.quiz.mutations.nextQuestion,
+      {
+        roomId: args.roomId,
+        gameStateId,
+        nextQuestionIndex: 1,
+        timePerQuestionInSeconds: room.timePerQuestion,
+      }
+    )
+  },
+})
+
+export const nextQuestion = internalMutation({
+  args: {
+    roomId: v.id("rooms"),
+    gameStateId: v.id("gameStates"),
+    nextQuestionIndex: v.number(),
+    timePerQuestionInSeconds: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const { gameStateId, nextQuestionIndex, timePerQuestionInSeconds } = args
+
+    await ctx.db.patch(args.gameStateId, {
+      currentQuestionIndex: nextQuestionIndex,
+      questionStartTime: Date.now(),
+    })
+
+    const LAST_QUESTION_INDEX = 3
+    if (nextQuestionIndex === LAST_QUESTION_INDEX + 1) {
+      await ctx.db.patch(args.roomId, {
+        status: "completed",
+        completedAt: Date.now(),
+      })
+
+      return
+    }
+
+    await ctx.scheduler.runAfter(
+      timePerQuestionInSeconds * 1000,
+      internal.quiz.mutations.nextQuestion,
+      {
+        roomId: args.roomId,
+        gameStateId,
+        nextQuestionIndex: 1,
+        timePerQuestionInSeconds: timePerQuestionInSeconds,
+      }
+    )
   },
 })

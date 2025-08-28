@@ -7,27 +7,18 @@ import { cn } from "@/lib/utils"
 
 type TimerProps = {
   duration: number
+  timeStartedAt: number
 }
 
-export function Timer({ duration }: TimerProps) {
+export function Timer({ duration, timeStartedAt }: TimerProps) {
   const [timeLeft, setTimeLeft] = React.useState(duration)
-  const startTimeRef = React.useRef<number | null>(null)
   const animationFrameRef = React.useRef<number | null>(null)
 
   React.useEffect(() => {
-    setTimeLeft(duration)
-    startTimeRef.current = Date.now()
-  }, [duration])
-
-  React.useEffect(() => {
-    if (duration <= 0) return
-
-    startTimeRef.current = Date.now()
+    if (duration <= 0 || timeStartedAt <= 0) return
 
     const updateTimer = () => {
-      if (!startTimeRef.current) return
-
-      const elapsed = (Date.now() - startTimeRef.current) / 1000
+      const elapsed = (Date.now() - timeStartedAt) / 1000
       const remaining = Math.max(0, duration - elapsed)
 
       setTimeLeft(remaining)
@@ -39,6 +30,7 @@ export function Timer({ duration }: TimerProps) {
       animationFrameRef.current = requestAnimationFrame(updateTimer)
     }
 
+    updateTimer()
     animationFrameRef.current = requestAnimationFrame(updateTimer)
 
     return () => {
@@ -46,7 +38,7 @@ export function Timer({ duration }: TimerProps) {
         cancelAnimationFrame(animationFrameRef.current)
       }
     }
-  }, [duration])
+  }, [duration, timeStartedAt])
 
   const progressValue = duration > 0 ? (timeLeft / duration) * 100 : 0
   const isLowTime = timeLeft <= 10 && timeLeft > 0

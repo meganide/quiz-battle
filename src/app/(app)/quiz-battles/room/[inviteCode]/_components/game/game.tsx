@@ -34,7 +34,10 @@ export function Game({ room }: GameProps) {
 
   return (
     <Container className="flex flex-col gap-6">
-      <Timer duration={20} />
+      <Timer
+        duration={room.timePerQuestion}
+        timeStartedAt={gameState?.gameState.questionStartTime ?? Date.now()}
+      />
       <section className="flex flex-row gap-4">
         <Card className="flex-2">
           <CardHeader>
