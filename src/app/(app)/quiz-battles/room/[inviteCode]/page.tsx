@@ -47,10 +47,10 @@ export default function RoomPage({ params }: RoomPageProps) {
   }
 
   if (room.status === "lobby") {
-    return <Lobby inviteCode={inviteCode} room={room} />
+    return <Lobby room={room} />
   }
 
   if (room.status === "ongoing") {
-    return <Game />
+    return <Game room={room} />
   }
 }
