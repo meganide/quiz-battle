@@ -14,6 +14,8 @@ import type * as chat_queries from "../chat/queries.js";
 import type * as chat_types from "../chat/types.js";
 import type * as http from "../http.js";
 import type * as presence from "../presence.js";
+import type * as quiz_errors from "../quiz/errors.js";
+import type * as quiz_mutations from "../quiz/mutations.js";
 import type * as rooms_errors from "../rooms/errors.js";
 import type * as rooms_mutations from "../rooms/mutations.js";
 import type * as rooms_queries from "../rooms/queries.js";
@@ -42,6 +44,8 @@ declare const fullApi: ApiFromModules<{
   "chat/types": typeof chat_types;
   http: typeof http;
   presence: typeof presence;
+  "quiz/errors": typeof quiz_errors;
+  "quiz/mutations": typeof quiz_mutations;
   "rooms/errors": typeof rooms_errors;
   "rooms/mutations": typeof rooms_mutations;
   "rooms/queries": typeof rooms_queries;

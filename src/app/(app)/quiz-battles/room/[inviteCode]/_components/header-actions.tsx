@@ -19,6 +19,7 @@ export function HeaderActions({ inviteCode, room }: HeaderActionsProps) {
   const user = useUser()
   const router = useRouter()
   const isInRoom = !!user && room.gamePlayerIds.includes(user._id)
+  const isHost = room.hostId === user?._id
 
   function leaveRoom() {
     const isLastPlayer = room.gamePlayerIds.length === 1
@@ -47,19 +48,22 @@ export function HeaderActions({ inviteCode, room }: HeaderActionsProps) {
   }
 
   return (
-    <header className="ml-auto flex items-center gap-2">
-      <Button variant="secondary" onClick={invitePlayers}>
-        Invite Players
-      </Button>
-      {isInRoom ? (
-        <Button variant="ghost" onClick={leaveRoom}>
-          Leave Room
+    <header className="flex items-center justify-between gap-2">
+      <section className="flex items-center gap-2">
+        {isInRoom ? (
+          <Button variant="outline" onClick={leaveRoom}>
+            Leave Room
+          </Button>
+        ) : (
+          <Button variant="default" onClick={joinRoom}>
+            Join Room
+          </Button>
+        )}
+        <Button variant="secondary" onClick={invitePlayers}>
+          Invite Players
         </Button>
-      ) : (
-        <Button variant="default" onClick={joinRoom}>
-          Join Room
-        </Button>
-      )}
+      </section>
+      {isHost && <Button>Start Quiz</Button>}
     </header>
   )
 }
