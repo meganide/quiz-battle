@@ -54,6 +54,7 @@ export default defineSchema({
       v.literal("finished")
     ),
     questionStartTime: v.optional(v.number()),
+    scheduledFunctionId: v.optional(v.id("_scheduled_functions")),
     updatedAt: v.number(),
   }).index("by_room", ["roomId"]),
 

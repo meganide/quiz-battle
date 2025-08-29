@@ -72,7 +72,7 @@ export const startQuiz = internalMutation({
       currentGameStateId: gameStateId,
     })
 
-    await ctx.scheduler.runAfter(
+    const scheduledId = await ctx.scheduler.runAfter(
       room.timePerQuestion * 1000,
       internal.quiz.mutations.nextQuestion,
       {
@@ -83,6 +83,11 @@ export const startQuiz = internalMutation({
         totalQuestions: args.questions.length,
       }
     )
+
+    // Store the scheduled function ID in the game state
+    await ctx.db.patch(gameStateId, {
+      scheduledFunctionId: scheduledId,
+    })
   },
 })
 
@@ -139,7 +144,7 @@ export const nextQuestion = internalMutation({
               .first()
 
             if (!playerAnswer) {
-              throw QUIZ_ERRORS.PLAYER_ANSWER_NOT_FOUND
+              return // player did not answer the question
             }
 
             if (!playerAnswer.isCorrect) {
@@ -205,15 +210,8 @@ export const nextQuestion = internalMutation({
       throw QUIZ_ERRORS.QUESTION_NOT_FOUND
     }
 
-    // Update game state to the next question
-    await ctx.db.patch(args.gameStateId, {
-      currentQuestionId: currentQuestion._id,
-      currentQuestionIndex: nextQuestionIndex,
-      questionStartTime: Date.now(),
-    })
-
     // Schedule the next question
-    await ctx.scheduler.runAfter(
+    const scheduledId = await ctx.scheduler.runAfter(
       timePerQuestionInSeconds * 1000,
       internal.quiz.mutations.nextQuestion,
       {
@@ -224,6 +222,14 @@ export const nextQuestion = internalMutation({
         totalQuestions: totalQuestions,
       }
     )
+
+    // Update game state to the next question
+    await ctx.db.patch(args.gameStateId, {
+      currentQuestionId: currentQuestion._id,
+      currentQuestionIndex: nextQuestionIndex,
+      scheduledFunctionId: scheduledId,
+      questionStartTime: Date.now(),
+    })
   },
 })
 
@@ -300,5 +306,65 @@ export const submitAnswer = mutation({
         isCorrect: isCorrectAnswer,
       })
     }
+
+    // Check if all players have answered the current question
+    const allPlayerAnswers = await ctx.db
+      .query("playerAnswers")
+      .withIndex("by_question", (q) =>
+        q.eq("questionId", gameState.currentQuestionId!)
+      )
+      .collect()
+
+    // Get all players in the game
+    const totalPlayers = room.gamePlayerIds.length
+    const playersWhoAnswered = new Set(
+      allPlayerAnswers.map((answer) => answer.userId)
+    )
+
+    // Check if all players have answered
+    const allPlayersAnswered = playersWhoAnswered.size === totalPlayers
+
+    if (!allPlayersAnswered) {
+      return
+    }
+
+    if (!gameState.scheduledFunctionId) {
+      return
+    }
+
+    // Cancel any scheduled nextQuestion function for this game state
+    const scheduledFunction = await ctx.db.system.get(
+      gameState.scheduledFunctionId
+    )
+
+    if (!scheduledFunction) {
+      return
+    }
+
+    // Cancel all scheduled functions for this game state
+    await ctx.scheduler.cancel(scheduledFunction._id)
+
+    // Get current question to determine the next question index
+    const currentQuestionIndex = gameState.currentQuestionIndex
+    const nextQuestionIndex = currentQuestionIndex + 1
+
+    // Get total questions count
+    const totalQuestions = await ctx.db
+      .query("questions")
+      .withIndex("by_game_state", (q) => q.eq("gameStateId", gameStateId))
+      .collect()
+
+    // Immediately call nextQuestion
+    await ctx.scheduler.runAfter(
+      0, // Run immediately
+      internal.quiz.mutations.nextQuestion,
+      {
+        roomId: room._id,
+        gameStateId,
+        nextQuestionIndex,
+        timePerQuestionInSeconds: room.timePerQuestion,
+        totalQuestions: totalQuestions.length,
+      }
+    )
   },
 })
