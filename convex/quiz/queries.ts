@@ -36,3 +36,34 @@ export const getGameState = query({
     }
   },
 })
+
+export const getPlayerScores = query({
+  args: {
+    gameStateId: v.id("gameStates"),
+  },
+  handler: async (ctx, args) => {
+    const playerScores = await ctx.db
+      .query("playerScores")
+      .withIndex("by_game_state", (q) => q.eq("gameStateId", args.gameStateId))
+      .collect()
+
+    const playerScoresWithUserInfo = await Promise.all(
+      playerScores.map(async (playerScore) => {
+        const user = await ctx.db.get(playerScore.userId)
+        return {
+          ...playerScore,
+          user: {
+            name: user?.name,
+            image: user?.image,
+          },
+        }
+      })
+    )
+
+    const sortedPlayerScoresDescending = playerScoresWithUserInfo.sort(
+      (a, b) => b.score - a.score
+    )
+
+    return sortedPlayerScoresDescending
+  },
+})

@@ -72,7 +72,7 @@ export default defineSchema({
     gameStateId: v.id("gameStates"),
     questionId: v.id("questions"),
     userId: v.id("users"),
-    answerIndex: v.number(),
+    answerIndex: v.union(v.number(), v.null()),
     answeredAt: v.number(),
     isCorrect: v.boolean(),
   })

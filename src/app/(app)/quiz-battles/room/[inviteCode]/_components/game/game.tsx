@@ -2,9 +2,9 @@
 
 import React, { useEffect } from "react"
 
-import { useQuery } from "convex/react"
+import { useMutation, useQuery } from "convex/react"
 
-import type { Doc } from "~/convex/_generated/dataModel"
+import type { Doc, Id } from "~/convex/_generated/dataModel"
 
 import { Container } from "@/components/container"
 import { Button } from "@/components/ui/button"
@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { api } from "~/convex/_generated/api"
 
+import { Leaderboard } from "./leaderboard"
 import { Timer } from "./timer"
 
 type GameProps = {
@@ -27,9 +28,23 @@ export function Game({ room }: GameProps) {
     roomId: room._id,
   })
 
+  const playerScores = useQuery(api.quiz.queries.getPlayerScores, {
+    gameStateId: gameState?.gameState._id as Id<"gameStates">,
+  })
+
+  const submitAnswerMutation = useMutation(api.quiz.mutations.submitAnswer)
+
   function submitAnswer(answerIndex: number) {
-    console.log("Submitting answer:", selectedAnswerIndex)
+    if (!gameState?.gameState._id) {
+      return
+    }
+
     setSelectedAnswerIndex(answerIndex)
+
+    void submitAnswerMutation({
+      gameStateId: gameState.gameState._id,
+      answerIndex,
+    })
   }
 
   useEffect(() => {
@@ -80,12 +95,7 @@ export function Game({ room }: GameProps) {
             ))}
           </CardContent>
         </Card>
-        <Card className="flex-1">
-          <CardHeader>
-            <CardTitle>Leaderboard</CardTitle>
-          </CardHeader>
-          <CardContent>Content</CardContent>
-        </Card>
+        <Leaderboard className="flex-1" playerScores={playerScores || []} />
       </section>
     </Container>
   )
