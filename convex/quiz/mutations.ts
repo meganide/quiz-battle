@@ -257,14 +257,18 @@ export const submitAnswer = mutation({
       throw RoomErrorCodes.ROOM_NOT_FOUND
     }
 
-    // const hasQuestionTimeExpired =
-    //   gameState.questionStartTime &&
-    //   gameState.questionStartTime + room.timePerQuestion * 1000 <
-    //     Date.now() + 5000
+    const GRACE_PERIOD_MILLISECONDS = 3 * 1000
 
-    // if (hasQuestionTimeExpired) {
-    //   throw QUIZ_ERRORS.QUESTION_TIME_EXPIRED
-    // }
+    const hasQuestionTimeExpired =
+      gameState.questionStartTime &&
+      gameState.questionStartTime +
+        room.timePerQuestion * 1000 +
+        GRACE_PERIOD_MILLISECONDS <
+        Date.now()
+
+    if (hasQuestionTimeExpired) {
+      throw QUIZ_ERRORS.QUESTION_TIME_EXPIRED
+    }
 
     const { gameStateId, answerIndex } = args
 
