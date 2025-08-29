@@ -34,8 +34,8 @@ export const startQuiz = internalMutation({
     })
 
     await Promise.all([
-      room.gamePlayerIds.map((playerId) => {
-        void ctx.db.insert("playerScores", {
+      room.gamePlayerIds.map((playerId) =>
+        ctx.db.insert("playerScores", {
           gameStateId: gameStateId,
           userId: playerId,
           score: 0,
@@ -43,15 +43,7 @@ export const startQuiz = internalMutation({
           totalAnswered: 0,
           updatedAt: Date.now(),
         })
-        void ctx.db.insert("playerScores", {
-          gameStateId: gameStateId,
-          userId: playerId,
-          score: 0,
-          correctAnswers: 0,
-          totalAnswered: 0,
-          updatedAt: Date.now(),
-        })
-      }),
+      ),
       args.questions.map(async (question, index) => {
         await ctx.db.insert("questions", {
           gameStateId: gameStateId,
