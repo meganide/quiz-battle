@@ -12,7 +12,6 @@ type PlayerScore = {
   userId: string
   score: number
   correctAnswers: number
-  totalAnswered: number
   user: {
     name: string | undefined
     image: string | undefined
@@ -21,6 +20,7 @@ type PlayerScore = {
 
 type LeaderboardProps = {
   playerScores: PlayerScore[]
+  currentQuestionNumber: number
   className?: string
 }
 
@@ -54,7 +54,11 @@ function getRankBadgeVariant(position: number) {
   }
 }
 
-export function Leaderboard({ playerScores, className }: LeaderboardProps) {
+export function Leaderboard({
+  playerScores,
+  currentQuestionNumber,
+  className,
+}: LeaderboardProps) {
   return (
     <Card className={cn("h-fit", className)}>
       <CardHeader className="pb-3">
@@ -118,7 +122,7 @@ export function Leaderboard({ playerScores, className }: LeaderboardProps) {
                       {playerScore.user.name || "Anonymous"}
                     </p>
                     <p className="text-muted-foreground text-xs">
-                      {playerScore.correctAnswers}/{playerScore.totalAnswered}{" "}
+                      {playerScore.correctAnswers}/{currentQuestionNumber}{" "}
                       correct
                     </p>
                   </div>

@@ -20,9 +20,8 @@ type GameProps = {
 }
 
 export function Game({ room }: GameProps) {
-  const [selectedAnswerIndex, setSelectedAnswerIndex] = React.useState<
-    number | null
-  >(null)
+  const [selectedAnswerIndex, setSelectedAnswerIndex] =
+    React.useState<number>(-1)
 
   const gameState = useQuery(api.quiz.queries.getGameState, {
     roomId: room._id,
@@ -33,6 +32,10 @@ export function Game({ room }: GameProps) {
   })
 
   const submitAnswerMutation = useMutation(api.quiz.mutations.submitAnswer)
+
+  const currentQuestionNumber = gameState?.currentQuestion.questionIndex
+    ? gameState.currentQuestion.questionIndex + 1
+    : 0
 
   function submitAnswer(answerIndex: number) {
     if (!gameState?.gameState._id) {
@@ -48,8 +51,8 @@ export function Game({ room }: GameProps) {
   }
 
   useEffect(() => {
-    if (selectedAnswerIndex) {
-      setSelectedAnswerIndex(null)
+    if (selectedAnswerIndex !== -1) {
+      setSelectedAnswerIndex(-1)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState?.gameState.currentQuestionIndex])
@@ -59,8 +62,7 @@ export function Game({ room }: GameProps) {
       <header className="flex flex-col gap-4">
         {gameState?.currentQuestion && (
           <p className="text-center text-lg font-semibold">
-            Question {gameState.currentQuestion.questionIndex + 1} of{" "}
-            {room.numQuestions}
+            Question {currentQuestionNumber} of {room.numQuestions}
           </p>
         )}
         <Timer
@@ -79,12 +81,12 @@ export function Game({ room }: GameProps) {
             {gameState?.currentQuestion.answers.map((answer, index) => (
               <Button
                 key={answer}
-                disabled={selectedAnswerIndex !== null}
                 variant="outline"
                 className={cn(
                   "w-full py-8 text-lg transition-colors hover:bg-neutral-400",
                   {
-                    "bg-primary text-primary-foreground":
+                    "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground":
+                      selectedAnswerIndex === index ||
                       selectedAnswerIndex === index,
                   }
                 )}
@@ -95,7 +97,11 @@ export function Game({ room }: GameProps) {
             ))}
           </CardContent>
         </Card>
-        <Leaderboard className="flex-1" playerScores={playerScores || []} />
+        <Leaderboard
+          className="flex-1"
+          currentQuestionNumber={currentQuestionNumber - 1}
+          playerScores={playerScores || []}
+        />
       </section>
     </Container>
   )

@@ -5,6 +5,8 @@ export enum QuizErrorCodes {
   GAME_STATE_NOT_FOUND = "GAME_STATE_NOT_FOUND",
   QUESTION_NOT_FOUND = "QUESTION_NOT_FOUND",
   QUESTION_TIME_EXPIRED = "QUESTION_TIME_EXPIRED",
+  PLAYER_SCORE_NOT_FOUND = "PLAYER_SCORE_NOT_FOUND",
+  PLAYER_ANSWER_NOT_FOUND = "PLAYER_ANSWER_NOT_FOUND",
 }
 
 export const QUIZ_ERRORS = {
@@ -23,5 +25,13 @@ export const QUIZ_ERRORS = {
   QUESTION_TIME_EXPIRED: new ConvexError({
     code: QuizErrorCodes.QUESTION_TIME_EXPIRED,
     message: "Question time expired",
+  }),
+  PLAYER_SCORE_NOT_FOUND: new ConvexError({
+    code: QuizErrorCodes.PLAYER_SCORE_NOT_FOUND,
+    message: "Player score not found",
+  }),
+  PLAYER_ANSWER_NOT_FOUND: new ConvexError({
+    code: QuizErrorCodes.PLAYER_ANSWER_NOT_FOUND,
+    message: "Player answer not found",
   }),
 } as const

@@ -62,7 +62,6 @@ export default defineSchema({
     userId: v.id("users"),
     score: v.number(),
     correctAnswers: v.number(),
-    totalAnswered: v.number(),
     updatedAt: v.number(),
   })
     .index("by_game_state", ["gameStateId"])
@@ -72,7 +71,7 @@ export default defineSchema({
     gameStateId: v.id("gameStates"),
     questionId: v.id("questions"),
     userId: v.id("users"),
-    answerIndex: v.union(v.number(), v.null()),
+    answerIndex: v.number(),
     answeredAt: v.number(),
     isCorrect: v.boolean(),
   })

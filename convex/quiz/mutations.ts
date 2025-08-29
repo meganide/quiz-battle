@@ -40,7 +40,6 @@ export const startQuiz = internalMutation({
           userId: playerId,
           score: 0,
           correctAnswers: 0,
-          totalAnswered: 0,
           updatedAt: Date.now(),
         })
       ),
@@ -103,6 +102,98 @@ export const nextQuestion = internalMutation({
       totalQuestions,
     } = args
 
+    // Get the room to access game players
+    const room = await ctx.db.get(args.roomId)
+    if (!room) {
+      throw ROOM_ERRORS.ROOM_NOT_FOUND
+    }
+
+    // Get the current game state
+    const gameState = await ctx.db.get(gameStateId)
+    if (!gameState) {
+      throw QUIZ_ERRORS.GAME_STATE_NOT_FOUND
+    }
+
+    // Update scores for the question that just finished (if it's not the first question)
+    if (nextQuestionIndex > 0) {
+      const previousQuestionIndex = nextQuestionIndex - 1
+      const previousQuestion = await ctx.db
+        .query("questions")
+        .withIndex("by_game_and_index", (q) =>
+          q
+            .eq("gameStateId", gameStateId)
+            .eq("questionIndex", previousQuestionIndex)
+        )
+        .first()
+
+      if (previousQuestion && gameState.questionStartTime) {
+        // Update all game players' scores in parallel
+        await Promise.all(
+          room.gamePlayerIds.map(async (playerId) => {
+            // Get player's answer for the previous question
+            const playerAnswer = await ctx.db
+              .query("playerAnswers")
+              .withIndex("by_user_question", (q) =>
+                q.eq("userId", playerId).eq("questionId", previousQuestion._id)
+              )
+              .first()
+
+            if (!playerAnswer) {
+              throw QUIZ_ERRORS.PLAYER_ANSWER_NOT_FOUND
+            }
+
+            if (!playerAnswer.isCorrect) {
+              return
+            }
+
+            // Get player's current score
+            const playerScore = await ctx.db
+              .query("playerScores")
+              .withIndex("by_user_game", (q) =>
+                q.eq("userId", playerId).eq("gameStateId", gameStateId)
+              )
+              .first()
+
+            if (!playerScore) {
+              throw QUIZ_ERRORS.PLAYER_SCORE_NOT_FOUND
+            }
+
+            // Calculate score: base points for correct answer + time bonus
+            const timeElapsed =
+              playerAnswer.answeredAt - gameState.questionStartTime!
+            const maxTime = room.timePerQuestion * 1000
+            const timeBonusMultiplier = Math.max(
+              0,
+              (maxTime - timeElapsed) / maxTime
+            )
+
+            const basePoints = 100
+            const timeBonus = Math.round(basePoints * timeBonusMultiplier * 0.5) // 50% bonus for speed
+            const pointsEarned = basePoints + timeBonus
+
+            // Update player score
+            await ctx.db.patch(playerScore._id, {
+              score: playerScore.score + pointsEarned,
+              correctAnswers: playerScore.correctAnswers + 1,
+              updatedAt: Date.now(),
+            })
+          })
+        )
+      }
+    }
+
+    // Check if this is the last question
+    const isLastQuestion = nextQuestionIndex >= totalQuestions
+    if (isLastQuestion) {
+      await ctx.db.patch(args.roomId, {
+        status: "completed",
+        completedAt: Date.now(),
+      })
+
+      return
+    }
+
+    // Get the next question
     const currentQuestion = await ctx.db
       .query("questions")
       .withIndex("by_game_and_index", (q) =>
@@ -114,22 +205,14 @@ export const nextQuestion = internalMutation({
       throw QUIZ_ERRORS.QUESTION_NOT_FOUND
     }
 
+    // Update game state to the next question
     await ctx.db.patch(args.gameStateId, {
       currentQuestionId: currentQuestion._id,
       currentQuestionIndex: nextQuestionIndex,
       questionStartTime: Date.now(),
     })
 
-    const isLastQuestion = nextQuestionIndex === totalQuestions
-    if (isLastQuestion) {
-      await ctx.db.patch(args.roomId, {
-        status: "completed",
-        completedAt: Date.now(),
-      })
-
-      return
-    }
-
+    // Schedule the next question
     await ctx.scheduler.runAfter(
       timePerQuestionInSeconds * 1000,
       internal.quiz.mutations.nextQuestion,
@@ -147,7 +230,7 @@ export const nextQuestion = internalMutation({
 export const submitAnswer = mutation({
   args: {
     gameStateId: v.id("gameStates"),
-    answerIndex: v.union(v.number(), v.null()), // null if no answer was selected
+    answerIndex: v.number(),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx)
@@ -168,14 +251,14 @@ export const submitAnswer = mutation({
       throw RoomErrorCodes.ROOM_NOT_FOUND
     }
 
-    const hasTimePassedForQuestion =
-      gameState.questionStartTime &&
-      gameState.questionStartTime + room.timePerQuestion * 1000 <
-        Date.now() + 3000
+    // const hasQuestionTimeExpired =
+    //   gameState.questionStartTime &&
+    //   gameState.questionStartTime + room.timePerQuestion * 1000 <
+    //     Date.now() + 5000
 
-    if (hasTimePassedForQuestion) {
-      throw QUIZ_ERRORS.QUESTION_TIME_EXPIRED
-    }
+    // if (hasQuestionTimeExpired) {
+    //   throw QUIZ_ERRORS.QUESTION_TIME_EXPIRED
+    // }
 
     const { gameStateId, answerIndex } = args
 
@@ -191,40 +274,30 @@ export const submitAnswer = mutation({
 
     const isCorrectAnswer = answerIndex === currentQuestion.correctAnswerIndex
 
-    // Insert the player answer
-    void ctx.db.insert("playerAnswers", {
-      gameStateId,
-      questionId: gameState.currentQuestionId,
-      userId,
-      answerIndex,
-      answeredAt: Date.now(),
-      isCorrect: isCorrectAnswer,
-    })
-
-    // Update player scores
-    const playerScore = await ctx.db
-      .query("playerScores")
-      .withIndex("by_user_game", (q) =>
-        q.eq("userId", userId).eq("gameStateId", gameStateId)
+    // Check if player already answered this question
+    const existingAnswer = await ctx.db
+      .query("playerAnswers")
+      .withIndex("by_user_question", (q) =>
+        q.eq("userId", userId).eq("questionId", gameState.currentQuestionId!)
       )
       .first()
 
-    if (playerScore) {
-      const timeElapsed =
-        Date.now() - (gameState.questionStartTime || Date.now())
-      const maxTime = room.timePerQuestion * 1000
-      const timeBonusMultiplier = Math.max(0, (maxTime - timeElapsed) / maxTime)
-
-      // Calculate score: base points for correct answer + time bonus
-      const basePoints = 100
-      const timeBonus = Math.round(basePoints * timeBonusMultiplier * 0.5) // 50% bonus for speed
-      const pointsEarned = isCorrectAnswer ? basePoints + timeBonus : 0
-
-      await ctx.db.patch(playerScore._id, {
-        score: playerScore.score + pointsEarned,
-        correctAnswers: playerScore.correctAnswers + (isCorrectAnswer ? 1 : 0),
-        totalAnswered: playerScore.totalAnswered + 1,
-        updatedAt: Date.now(),
+    if (existingAnswer) {
+      // Update existing answer
+      await ctx.db.patch(existingAnswer._id, {
+        answerIndex,
+        answeredAt: Date.now(),
+        isCorrect: isCorrectAnswer,
+      })
+    } else {
+      // Insert new player answer
+      await ctx.db.insert("playerAnswers", {
+        gameStateId,
+        questionId: gameState.currentQuestionId,
+        userId,
+        answerIndex,
+        answeredAt: Date.now(),
+        isCorrect: isCorrectAnswer,
       })
     }
   },
