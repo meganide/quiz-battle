@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { useEffect } from "react"
 
 import { useQuery } from "convex/react"
 
@@ -9,8 +9,6 @@ import type { Doc } from "~/convex/_generated/dataModel"
 import { Container } from "@/components/container"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { cn } from "@/lib/utils"
 import { api } from "~/convex/_generated/api"
 
@@ -22,16 +20,24 @@ type GameProps = {
 
 export function Game({ room }: GameProps) {
   const [selectedAnswerIndex, setSelectedAnswerIndex] = React.useState<
-    string | null
+    number | null
   >(null)
 
   const gameState = useQuery(api.quiz.queries.getGameState, {
     roomId: room._id,
   })
 
-  function handleSubmitAnswer() {
+  function submitAnswer(answerIndex: number) {
     console.log("Submitting answer:", selectedAnswerIndex)
+    setSelectedAnswerIndex(answerIndex)
   }
+
+  useEffect(() => {
+    if (selectedAnswerIndex) {
+      setSelectedAnswerIndex(null)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameState?.gameState.currentQuestionIndex])
 
   return (
     <Container className="flex flex-col gap-6">
@@ -54,36 +60,24 @@ export function Game({ room }: GameProps) {
               {gameState?.currentQuestion.question}
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
-            <RadioGroup
-              value={selectedAnswerIndex}
-              onValueChange={setSelectedAnswerIndex}
-            >
-              {gameState?.currentQuestion.answers.map((answer, index) => (
-                <article key={answer} className="flex items-center space-x-2">
-                  <RadioGroupItem
-                    circleClassName="size-3"
-                    className="border-secondary size-5"
-                    id={`answer-${index}`}
-                    value={index.toString()}
-                  />
-                  <Label
-                    className="flex-1 cursor-pointer text-lg"
-                    htmlFor={`answer-${index}`}
-                  >
-                    {answer}
-                  </Label>
-                </article>
-              ))}
-            </RadioGroup>
-
-            <Button
-              className="w-full"
-              disabled={!selectedAnswerIndex}
-              onClick={handleSubmitAnswer}
-            >
-              Submit Answer
-            </Button>
+          <CardContent className="flex flex-col gap-2">
+            {gameState?.currentQuestion.answers.map((answer, index) => (
+              <Button
+                key={answer}
+                disabled={selectedAnswerIndex !== null}
+                variant="outline"
+                className={cn(
+                  "w-full py-8 text-lg transition-colors hover:bg-neutral-400",
+                  {
+                    "bg-primary text-primary-foreground":
+                      selectedAnswerIndex === index,
+                  }
+                )}
+                onClick={() => submitAnswer(index)}
+              >
+                {answer}
+              </Button>
+            ))}
           </CardContent>
         </Card>
         <Card className="flex-1">
