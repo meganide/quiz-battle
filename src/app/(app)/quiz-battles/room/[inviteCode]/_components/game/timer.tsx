@@ -44,7 +44,14 @@ export function Timer({ duration, timeStartedAt }: TimerProps) {
   const isLowTime = timeLeft <= 10 && timeLeft > 0
 
   return (
-    <section className={cn("flex flex-col items-center gap-2")}>
+    <section className={cn("flex flex-col items-center gap-1")}>
+      <Progress
+        value={progressValue}
+        className={cn(
+          "w-full transition-all duration-75 ease-linear",
+          isLowTime && "[&>div]:bg-red-500"
+        )}
+      />
       <p
         className={cn(
           "text-2xl font-bold transition-colors",
@@ -53,13 +60,6 @@ export function Timer({ duration, timeStartedAt }: TimerProps) {
       >
         {formatTime(timeLeft)}
       </p>
-      <Progress
-        value={progressValue}
-        className={cn(
-          "w-full transition-all duration-75 ease-linear",
-          isLowTime && "[&>div]:bg-red-500"
-        )}
-      />
     </section>
   )
 }

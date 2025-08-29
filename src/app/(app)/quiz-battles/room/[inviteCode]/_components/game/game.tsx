@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { cn } from "@/lib/utils"
 import { api } from "~/convex/_generated/api"
 
 import { Timer } from "./timer"
@@ -34,14 +35,22 @@ export function Game({ room }: GameProps) {
 
   return (
     <Container className="flex flex-col gap-6">
-      <Timer
-        duration={room.timePerQuestion}
-        timeStartedAt={gameState?.gameState.questionStartTime ?? Date.now()}
-      />
-      <section className="flex flex-row gap-4">
+      <header className="flex flex-col gap-4">
+        {gameState?.currentQuestion && (
+          <p className="text-center text-lg font-semibold">
+            Question {gameState.currentQuestion.questionIndex + 1} of{" "}
+            {room.numQuestions}
+          </p>
+        )}
+        <Timer
+          duration={room.timePerQuestion}
+          timeStartedAt={gameState?.gameState.questionStartTime ?? Date.now()}
+        />
+      </header>
+      <section className="flex flex-col gap-4 xl:flex-row">
         <Card className="flex-2">
           <CardHeader>
-            <CardTitle className="text-xl leading-normal">
+            <CardTitle className="text-center text-xl leading-normal">
               {gameState?.currentQuestion.question}
             </CardTitle>
           </CardHeader>
