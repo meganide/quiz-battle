@@ -99,8 +99,10 @@ export function Game({ room }: GameProps) {
         </Card>
         <Leaderboard
           className="flex-1"
-          currentQuestionNumber={currentQuestionNumber - 1}
           playerScores={playerScores || []}
+          currentQuestionNumber={
+            currentQuestionNumber === -1 ? 0 : currentQuestionNumber - 1
+          }
         />
       </section>
     </Container>
