@@ -42,7 +42,7 @@ export function Game({ room }: GameProps) {
         <Card className="flex-2">
           <CardHeader>
             <CardTitle className="text-xl leading-normal">
-              {gameState?.currentQuestion?.question}
+              {gameState?.currentQuestion.question}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -50,7 +50,7 @@ export function Game({ room }: GameProps) {
               value={selectedAnswerIndex}
               onValueChange={setSelectedAnswerIndex}
             >
-              {gameState?.currentQuestion?.answers.map((answer, index) => (
+              {gameState?.currentQuestion.answers.map((answer, index) => (
                 <article key={answer} className="flex items-center space-x-2">
                   <RadioGroupItem
                     circleClassName="size-3"
