@@ -101,7 +101,7 @@ export function Game({ room }: GameProps) {
           className="flex-1"
           playerScores={playerScores || []}
           currentQuestionNumber={
-            currentQuestionNumber === -1 ? 0 : currentQuestionNumber - 1
+            currentQuestionNumber === 0 ? 0 : currentQuestionNumber - 1
           }
         />
       </section>

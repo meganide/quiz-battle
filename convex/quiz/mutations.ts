@@ -54,24 +54,6 @@ export const startQuiz = internalMutation({
       }),
     ])
 
-    const firstQuestion = await ctx.db
-      .query("questions")
-      .withIndex("by_game_and_index", (q) =>
-        q.eq("gameStateId", gameStateId).eq("questionIndex", 0)
-      )
-      .first()
-
-    await ctx.db.patch(gameStateId, {
-      currentQuestionId: firstQuestion?._id,
-      questionStartTime: Date.now(),
-    })
-
-    await ctx.db.patch(args.roomId, {
-      status: "ongoing",
-      startedAt: Date.now(),
-      currentGameStateId: gameStateId,
-    })
-
     const scheduledId = await ctx.scheduler.runAfter(
       room.timePerQuestion * 1000,
       internal.quiz.mutations.nextQuestion,
@@ -84,9 +66,23 @@ export const startQuiz = internalMutation({
       }
     )
 
-    // Store the scheduled function ID in the game state
+    const firstQuestion = await ctx.db
+      .query("questions")
+      .withIndex("by_game_and_index", (q) =>
+        q.eq("gameStateId", gameStateId).eq("questionIndex", 0)
+      )
+      .first()
+
     await ctx.db.patch(gameStateId, {
+      currentQuestionId: firstQuestion?._id,
+      questionStartTime: Date.now(),
       scheduledFunctionId: scheduledId,
+    })
+
+    await ctx.db.patch(args.roomId, {
+      status: "ongoing",
+      startedAt: Date.now(),
+      currentGameStateId: gameStateId,
     })
   },
 })
