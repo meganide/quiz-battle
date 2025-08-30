@@ -45,6 +45,8 @@ export const generateAiQuizPrompt = ({
   8. Ensure questions are appropriate for ${difficulty} difficulty level
   9. Stay strictly within the topics of "${topics}"
   10. Avoid questions with multiple potentially correct interpretations
+  11. The language of the questions should be in the same language as the topics
+  12. the language of the answers should be in the same language as the topics
   </requirements>
   
   <thinking_process>
