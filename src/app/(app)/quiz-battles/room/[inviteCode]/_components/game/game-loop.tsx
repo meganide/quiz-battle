@@ -26,12 +26,7 @@ export function GameLoop({ room, gameState, currentQuestion }: GameLoopProps) {
         <p className="text-center text-lg font-semibold">
           Question {currentQuestionNumber} of {room.numQuestions}
         </p>
-        <Timer
-          duration={room.timePerQuestion}
-          phase={isResultsPhase ? "results" : "question"}
-          questionStartTime={gameState.questionStartTime ?? Date.now()}
-          resultsStartTime={isResultsPhase ? gameState.updatedAt : undefined}
-        />
+        <Timer duration={room.timePerQuestion} gameState={gameState} />
       </header>
       <section className="grid h-full min-h-0 grid-cols-1 gap-4 xl:grid-cols-[1fr_325px]">
         <QuestionForm currentQuestion={currentQuestion} gameState={gameState} />
