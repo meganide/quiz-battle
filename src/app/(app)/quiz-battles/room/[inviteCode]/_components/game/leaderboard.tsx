@@ -1,27 +1,20 @@
 "use client"
 
+import { useQuery } from "convex/react"
 import { Award, Medal, Trophy } from "lucide-react"
+
+import type { Id } from "~/convex/_generated/dataModel"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
-
-type PlayerScore = {
-  _id: string
-  userId: string
-  score: number
-  correctAnswers: number
-  user: {
-    name: string | undefined
-    image: string | undefined
-  }
-}
+import { api } from "~/convex/_generated/api"
 
 type LeaderboardProps = {
-  playerScores: PlayerScore[]
   currentQuestionNumber: number
   className?: string
+  gameStateId: Id<"gameStates">
 }
 
 function getRankIcon(position: number) {
@@ -42,10 +35,14 @@ function getRankIcon(position: number) {
 }
 
 export function Leaderboard({
-  playerScores,
   currentQuestionNumber,
   className,
+  gameStateId,
 }: LeaderboardProps) {
+  const playerScores = useQuery(api.quiz.queries.getPlayerScores, {
+    gameStateId: gameStateId,
+  })
+
   return (
     <Card
       className={cn(
@@ -60,14 +57,14 @@ export function Leaderboard({
         </CardTitle>
       </CardHeader>
       <CardContent className="min-h-0 space-y-3 overflow-y-auto pr-2 pl-6">
-        {playerScores.length === 0 ? (
+        {playerScores?.length === 0 ? (
           <section className="text-muted-foreground py-8 text-center">
             <p className="text-sm">No scores yet...</p>
             <p className="text-xs">Be the first to answer!</p>
           </section>
         ) : (
           <section className="space-y-2">
-            {playerScores.map((playerScore, index) => {
+            {playerScores?.map((playerScore, index) => {
               const position = index + 1
 
               return (
