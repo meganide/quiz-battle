@@ -221,6 +221,7 @@ export const nextQuestion = internalMutation({
 
     // Update game state to the next question
     await ctx.db.patch(args.gameStateId, {
+      phase: "question",
       currentQuestionId: currentQuestion._id,
       currentQuestionIndex: nextQuestionIndex,
       scheduledFunctionId: scheduledId,

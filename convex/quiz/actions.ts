@@ -4,7 +4,7 @@ import { v } from "convex/values"
 import { QuizErrorCodes } from "./errors"
 import { generateQuizQuestions } from "./utils"
 import { api, internal } from "../_generated/api"
-import { action } from "../_generated/server"
+import { action, internalAction } from "../_generated/server"
 import { ROOM_ERRORS } from "../rooms/errors"
 import { USER_ERRORS } from "../users/errors"
 
@@ -53,5 +53,15 @@ export const startQuiz = action({
     })
 
     return { success: true }
+  },
+})
+
+export const showResults = internalAction({
+  args: {
+    roomId: v.id("rooms"),
+    gameStateId: v.id("gameStates"),
+  },
+  handler: async (ctx, args) => {
+    const { roomId, gameStateId } = args
   },
 })

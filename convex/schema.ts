@@ -47,12 +47,7 @@ export default defineSchema({
     roomId: v.id("rooms"),
     currentQuestionIndex: v.number(),
     currentQuestionId: v.optional(v.id("questions")),
-    phase: v.union(
-      v.literal("waiting"),
-      v.literal("question"),
-      v.literal("results"),
-      v.literal("finished")
-    ),
+    phase: v.union(v.literal("question"), v.literal("results")),
     questionStartTime: v.optional(v.number()),
     scheduledFunctionId: v.optional(v.id("_scheduled_functions")),
     updatedAt: v.number(),
