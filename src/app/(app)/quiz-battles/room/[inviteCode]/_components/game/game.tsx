@@ -8,7 +8,7 @@ import { Container } from "@/components/container"
 import { Spinner } from "@/components/spinner"
 import { api } from "~/convex/_generated/api"
 
-import { QuestionPhase } from "./question-phase"
+import { GameLoop } from "./game-loop"
 
 type GameProps = {
   room: Doc<"rooms">
@@ -27,18 +27,11 @@ export function Game({ room }: GameProps) {
     )
   }
 
-  if (gameState.gameState.phase === "question") {
-    return (
-      <QuestionPhase
-        currentQuestion={gameState.currentQuestion}
-        gameState={gameState.gameState}
-        room={room}
-      />
-    )
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  if (gameState.gameState.phase === "results") {
-    return <p>Question results</p>
-  }
+  return (
+    <GameLoop
+      currentQuestion={gameState.currentQuestion}
+      gameState={gameState.gameState}
+      room={room}
+    />
+  )
 }

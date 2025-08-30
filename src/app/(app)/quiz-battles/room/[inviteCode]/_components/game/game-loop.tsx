@@ -9,15 +9,11 @@ import { Leaderboard } from "./leaderboard"
 import { QuestionForm } from "./question-form"
 import { Timer } from "./timer"
 
-type QuestionPhaseProps = GameState & {
+type GameLoopProps = GameState & {
   room: Doc<"rooms">
 }
 
-export function QuestionPhase({
-  room,
-  gameState,
-  currentQuestion,
-}: QuestionPhaseProps) {
+export function GameLoop({ room, gameState, currentQuestion }: GameLoopProps) {
   const currentQuestionNumber = currentQuestion.questionIndex
     ? currentQuestion.questionIndex + 1
     : 1
