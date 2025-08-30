@@ -31,7 +31,7 @@ export function Timer({ duration, gameState }: TimerProps) {
         durationMs={progressDurationMs}
         value={progressValue}
         className={cn("[&>div]:bg-primary w-full", {
-          "[&>div]:bg-destructive": isLowTime,
+          "[&>div]:bg-destructive": isLowTime && gameState.phase === "question",
         })}
       />
       <p
