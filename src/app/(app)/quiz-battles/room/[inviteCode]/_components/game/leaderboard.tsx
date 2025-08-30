@@ -69,7 +69,6 @@ export function Leaderboard({
           <section className="space-y-2">
             {playerScores.map((playerScore, index) => {
               const position = index + 1
-              const isTopThree = position <= 3
 
               return (
                 <article
@@ -109,17 +108,17 @@ export function Leaderboard({
                   </Avatar>
 
                   {/* User Info */}
-                  <div className="min-w-0 flex-1">
-                    <p
-                      className={cn("truncate text-sm font-medium", {
-                        "text-yellow-500": position === 1,
-                        "text-gray-500": position === 2,
-                        "text-amber-500": position === 3,
-                      })}
-                    >
+                  <div
+                    className={cn("min-w-0 flex-1", {
+                      "text-yellow-700": position === 1,
+                      "text-gray-700": position === 2,
+                      "text-amber-700": position === 3,
+                    })}
+                  >
+                    <p className={cn("truncate text-sm font-medium")}>
                       {playerScore.user.name || "Anonymous"}
                     </p>
-                    <p className="text-muted-foreground text-xs">
+                    <p className="text-xs">
                       {playerScore.correctAnswers}/{currentQuestionNumber}{" "}
                       correct
                     </p>
@@ -139,11 +138,6 @@ export function Leaderboard({
                     >
                       {playerScore.score.toLocaleString()}
                     </Badge>
-                    {isTopThree && (
-                      <span className="text-muted-foreground text-xs font-medium">
-                        #{position}
-                      </span>
-                    )}
                   </div>
                 </article>
               )
