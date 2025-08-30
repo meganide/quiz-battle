@@ -63,18 +63,7 @@ export function Results({ room }: ResultsProps) {
     return `${minutes}m ${seconds}s`
   }
 
-  function getDifficultyColor(difficulty: string) {
-    switch (difficulty) {
-      case "easy":
-        return "bg-green-500 text-white"
-      case "medium":
-        return "bg-yellow-500 text-white"
-      case "hard":
-        return "bg-red-500 text-white"
-      default:
-        return "bg-gray-500 text-white"
-    }
-  }
+
 
   function getRankIcon(position: number) {
     switch (position) {
@@ -93,14 +82,6 @@ export function Results({ room }: ResultsProps) {
     }
   }
 
-  function getPlayerAnswerForQuestion(
-    questionId: Id<"questions">,
-    userId: Id<"users">
-  ) {
-    return gameResults?.playerAnswers.find(
-      (answer) => answer.questionId === questionId && answer.userId === userId
-    )
-  }
 
   const gameDuration =
     room.startedAt && room.completedAt
@@ -133,14 +114,7 @@ export function Results({ room }: ResultsProps) {
             </article>
 
             <article className="bg-muted/50 flex items-center gap-3 rounded-lg p-4">
-              <Badge
-                className={cn(
-                  "text-xs font-bold",
-                  getDifficultyColor(room.difficulty)
-                )}
-              >
-                {room.difficulty.toUpperCase()}
-              </Badge>
+
               <div>
                 <p className="text-muted-foreground text-sm">Difficulty</p>
                 <p className="font-semibold capitalize">{room.difficulty}</p>
