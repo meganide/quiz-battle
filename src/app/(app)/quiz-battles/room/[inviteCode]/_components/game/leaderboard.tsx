@@ -60,7 +60,7 @@ export function Leaderboard({
   className,
 }: LeaderboardProps) {
   return (
-    <Card className={cn("h-fit", className)}>
+    <Card className={cn("max-h-full", className)}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
           <Trophy className="size-5 text-yellow-500" />
