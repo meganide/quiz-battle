@@ -65,7 +65,11 @@ export function HeaderActions({ room }: HeaderActionsProps) {
   function renderJoinButton() {
     if (isInRoom) {
       return (
-        <Button variant="outline" onClick={leaveRoom}>
+        <Button
+          className="flex-1 sm:w-auto"
+          variant="outline"
+          onClick={leaveRoom}
+        >
           Leave Room
         </Button>
       )
@@ -74,13 +78,15 @@ export function HeaderActions({ room }: HeaderActionsProps) {
     if (!isAuthenticated) {
       return (
         <SignInDialog>
-          <Button variant="default">Join Room</Button>
+          <Button className="flex-1 sm:w-auto" variant="default">
+            Join Room
+          </Button>
         </SignInDialog>
       )
     }
 
     return (
-      <Button variant="default" onClick={joinRoom}>
+      <Button className="flex-1 sm:w-auto" variant="default" onClick={joinRoom}>
         Join Room
       </Button>
     )
@@ -93,15 +99,23 @@ export function HeaderActions({ room }: HeaderActionsProps) {
   }
 
   return (
-    <header className="flex items-center justify-between gap-2">
-      <section className="flex items-center gap-2">
+    <header className="flex flex-col items-center justify-between gap-2 sm:flex-row">
+      <section className="flex w-full items-center gap-2 sm:w-auto">
         {renderJoinButton()}
-        <Button variant="secondary" onClick={invitePlayers}>
+        <Button
+          className="flex-1 sm:w-auto"
+          variant="secondary"
+          onClick={invitePlayers}
+        >
           Invite Players
         </Button>
       </section>
       {isHost && (
-        <Button disabled={isStarting} onClick={startQuiz}>
+        <Button
+          className="w-full sm:w-auto"
+          disabled={isStarting}
+          onClick={startQuiz}
+        >
           {isStarting && (
             <Spinner className="text-primary-foreground" size="sm" />
           )}
