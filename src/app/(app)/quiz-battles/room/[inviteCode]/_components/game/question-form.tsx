@@ -61,7 +61,7 @@ export function QuestionForm({
               disabled={isResultsPhase}
               variant="outline"
               className={cn(
-                "flex h-full w-full flex-col items-start gap-0 text-base whitespace-pre-line transition-colors lg:py-5 lg:text-lg",
+                "flex h-full w-full flex-col items-start gap-0 border-none text-base whitespace-pre-line transition-colors disabled:opacity-100 lg:py-5 lg:text-lg",
                 {
                   // Question phase styling
                   "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground":
@@ -69,10 +69,9 @@ export function QuestionForm({
                   "hover:bg-neutral-400": !isResultsPhase && !isSelectedByUser,
 
                   // Results phase styling
-                  "border-green-500 bg-green-100 text-green-800 hover:bg-green-100":
+                  "bg-green-100 text-green-800":
                     isResultsPhase && isCorrectAnswer,
-                  "border-red-200 bg-red-100 text-red-800 hover:bg-red-100":
-                    isResultsPhase && !isCorrectAnswer,
+                  "bg-red-100 text-red-800": isResultsPhase && !isCorrectAnswer,
                 }
               )}
               onClick={() => !isResultsPhase && submitAnswer(index)}
@@ -83,7 +82,7 @@ export function QuestionForm({
               {isResultsPhase && answerStats.players.length > 0 && (
                 <div className="ml-auto flex items-center -space-x-2">
                   {answerStats.players.slice(0, 10).map((player) => (
-                    <Avatar key={player.userId} className="h-5 w-5 border">
+                    <Avatar key={player.userId} className="h-5 w-5">
                       <AvatarImage src={player.user.image} />
                       <AvatarFallback className="text-xs">
                         {player.user.name?.charAt(0)}

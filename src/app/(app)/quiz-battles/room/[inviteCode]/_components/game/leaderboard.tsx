@@ -68,7 +68,7 @@ export function Leaderboard({
   return (
     <Card
       className={cn(
-        "h-full max-h-[500px] min-h-0 pr-1 xl:h-fit xl:max-h-full",
+        "h-full max-h-[500px] min-h-0 gap-5 pr-1 xl:h-fit xl:max-h-full",
         className
       )}
     >
@@ -85,7 +85,7 @@ export function Leaderboard({
             <p className="text-xs">Be the first to answer!</p>
           </section>
         ) : (
-          <section className="flex flex-col gap-2">
+          <section className="flex flex-col gap-2 pt-1">
             {playerScores?.map((playerScore, index) => {
               const position = index + 1
               const answerStatus = getPlayerAnswerStatus(playerScore.userId)
@@ -94,18 +94,18 @@ export function Leaderboard({
                 <article
                   key={playerScore.userId}
                   className={cn(
-                    "relative flex max-w-sm items-center gap-3 rounded-lg border-2 bg-neutral-400/60 p-3 transition-all duration-200 hover:shadow-sm",
+                    "relative flex max-w-sm items-center gap-3 rounded-lg bg-neutral-400/60 p-3 transition-all duration-200 hover:shadow-sm",
                     {
-                      "border-yellow-200 bg-gradient-to-r from-yellow-50 to-yellow-100 dark:border-yellow-800 dark:from-yellow-950/20 dark:to-yellow-900/20":
+                      "bg-gradient-to-r from-yellow-50 to-yellow-100":
                         position === 1,
-                      "border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 dark:border-gray-800 dark:from-gray-950/20 dark:to-gray-900/20":
+                      "bg-gradient-to-r from-gray-50 to-gray-100":
                         position === 2,
-                      "border-amber-200 bg-gradient-to-r from-amber-50 to-amber-100 dark:border-amber-800 dark:from-amber-950/20 dark:to-amber-900/20":
+                      "bg-gradient-to-r from-amber-50 to-amber-100":
                         position === 3,
                       // Results phase visual feedback - enhanced backgrounds
-                      "border-green-300 bg-gradient-to-r from-green-100 to-green-200 dark:border-green-700":
+                      "bg-gradient-to-r from-green-100 to-green-200":
                         showResults && answerStatus === true,
-                      "border-red-300 bg-gradient-to-r from-red-100 to-red-200":
+                      "bg-gradient-to-r from-red-100 to-red-200":
                         showResults && answerStatus === false,
                     }
                   )}
