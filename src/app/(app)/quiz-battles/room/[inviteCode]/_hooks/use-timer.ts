@@ -13,12 +13,31 @@ type UseTimerProps = {
 
 export function useTimer({ gameState, duration }: UseTimerProps) {
   const [timeLeft, setTimeLeft] = React.useState(duration)
+  const [disableAnimation, setDisableAnimation] = React.useState(false)
   const animationFrameRef = React.useRef<number | null>(null)
+  const previousPhaseRef = React.useRef(gameState.phase)
 
   const isResultsPhase = gameState.phase === "results"
   const isQuestionPhase = gameState.phase === "question"
   const resultsStartTime = isResultsPhase ? gameState.updatedAt : undefined
   const questionStartTime = gameState.questionStartTime ?? Date.now()
+
+  // Detect phase changes and handle animation control
+  React.useEffect(() => {
+    if (previousPhaseRef.current !== gameState.phase) {
+      // Phase changed - disable animation and set to max value temporarily
+      setDisableAnimation(true)
+
+      // Re-enable animation after a brief moment
+      const timeoutId = setTimeout(() => {
+        setDisableAnimation(false)
+      }, 50) // 50ms delay before re-enabling animation
+
+      previousPhaseRef.current = gameState.phase
+
+      return () => clearTimeout(timeoutId)
+    }
+  }, [gameState.phase])
 
   React.useEffect(() => {
     if (isQuestionPhase && (duration <= 0 || questionStartTime <= 0)) return
@@ -63,5 +82,5 @@ export function useTimer({ gameState, duration }: UseTimerProps) {
   const progressValue = maxDuration > 0 ? (timeLeft / maxDuration) * 100 : 0
   const isLowTime = timeLeft <= 10 && timeLeft > 0
 
-  return { progressValue, isLowTime, timeLeft }
+  return { progressValue, isLowTime, timeLeft, disableAnimation }
 }

@@ -13,7 +13,7 @@ type TimerProps = {
 }
 
 export function Timer({ duration, gameState }: TimerProps) {
-  const { progressValue, isLowTime, timeLeft } = useTimer({
+  const { progressValue, isLowTime, timeLeft, disableAnimation } = useTimer({
     gameState,
     duration,
   })
@@ -21,6 +21,7 @@ export function Timer({ duration, gameState }: TimerProps) {
   return (
     <section className={cn("flex flex-col items-center gap-1")}>
       <Progress
+        disableAnimation={disableAnimation}
         value={progressValue}
         className={cn(
           "w-full",
