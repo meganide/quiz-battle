@@ -1,11 +1,12 @@
 import React from "react"
 
-import { useAction, useMutation } from "convex/react"
+import { useAction, useConvexAuth, useMutation } from "convex/react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
 import type { Doc } from "~/convex/_generated/dataModel"
 
+import { SignInDialog } from "@/components/sign-in-dialog"
 import { Spinner } from "@/components/spinner"
 import { Button } from "@/components/ui/button"
 import { useUser } from "@/hooks/use-user"
@@ -23,6 +24,7 @@ export function HeaderActions({ room }: HeaderActionsProps) {
   const startQuizAction = useAction(api.quiz.actions.startQuiz)
 
   const user = useUser()
+  const { isAuthenticated } = useConvexAuth()
   const router = useRouter()
   const isInRoom = !!user && room.gamePlayerIds.includes(user._id)
   const isHost = room.hostId === user?._id
@@ -60,6 +62,30 @@ export function HeaderActions({ room }: HeaderActionsProps) {
     }
   }
 
+  function renderJoinButton() {
+    if (isInRoom) {
+      return (
+        <Button variant="outline" onClick={leaveRoom}>
+          Leave Room
+        </Button>
+      )
+    }
+
+    if (!isAuthenticated) {
+      return (
+        <SignInDialog>
+          <Button variant="default">Join Room</Button>
+        </SignInDialog>
+      )
+    }
+
+    return (
+      <Button variant="default" onClick={joinRoom}>
+        Join Room
+      </Button>
+    )
+  }
+
   async function invitePlayers() {
     const inviteUrl = `${window.location.origin}/quiz-battles/room/${room.inviteCode}`
     await navigator.clipboard.writeText(inviteUrl)
@@ -69,15 +95,7 @@ export function HeaderActions({ room }: HeaderActionsProps) {
   return (
     <header className="flex items-center justify-between gap-2">
       <section className="flex items-center gap-2">
-        {isInRoom ? (
-          <Button variant="outline" onClick={leaveRoom}>
-            Leave Room
-          </Button>
-        ) : (
-          <Button variant="default" onClick={joinRoom}>
-            Join Room
-          </Button>
-        )}
+        {renderJoinButton()}
         <Button variant="secondary" onClick={invitePlayers}>
           Invite Players
         </Button>

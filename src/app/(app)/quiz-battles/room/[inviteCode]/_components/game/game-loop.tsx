@@ -26,7 +26,7 @@ export function GameLoop({ room, gameState, currentQuestion }: GameLoopProps) {
   const isResultsPhase = gameState.phase === "results"
   const isSpectating = user?._id
     ? !hasUserJoinedRoom(room.gamePlayerIds, user._id)
-    : false
+    : true
 
   return (
     <Container

@@ -52,9 +52,9 @@ export function QuestionForm({
     }
   }
 
-  const hasJoinedRoom = user?._id
-    ? hasUserJoinedRoom(room.gamePlayerIds, user._id)
-    : false
+  const isSpectating = user?._id
+    ? !hasUserJoinedRoom(room.gamePlayerIds, user._id)
+    : true
 
   return (
     <Card className="h-fit">
@@ -72,7 +72,7 @@ export function QuestionForm({
           return (
             <Button
               key={answer}
-              disabled={isResultsPhase || !hasJoinedRoom}
+              disabled={isResultsPhase || isSpectating}
               variant="outline"
               className={cn(
                 "flex h-full w-full flex-col items-start gap-0 border-none text-base whitespace-pre-line transition-colors disabled:opacity-100 lg:py-5 lg:text-lg",
