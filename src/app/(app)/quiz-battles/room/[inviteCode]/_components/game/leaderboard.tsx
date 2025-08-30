@@ -52,17 +52,13 @@ export function Leaderboard({ className, gameState }: LeaderboardProps) {
       : "skip"
   )
 
-  const currentQuestionNumber = currentQuestion?.index
-    ? currentQuestion.index === 0
-      ? 0
-      : currentQuestion.index - 1
-    : 0
-
   // Get player submission status for the current question during question phase
   const submittedUserIds = useQuery(
     api.quiz.queries.getSubmittedUserIds,
     !isScorePhase ? { gameStateId: gameState._id } : "skip"
   )
+
+  const currentQuestionNumber = getCurrentQuestionNumber()
 
   // Helper function to get player's answer status for current question
   const getPlayerAnswerStatus = (userId: Id<"users">) => {
@@ -78,6 +74,12 @@ export function Leaderboard({ className, gameState }: LeaderboardProps) {
     if (!submittedUserIds) return false
 
     return submittedUserIds.includes(userId)
+  }
+
+  function getCurrentQuestionNumber() {
+    if (currentQuestion === undefined) return 0
+    if (currentQuestion.index === 0) return 0
+    return currentQuestion.index - 1
   }
 
   return (

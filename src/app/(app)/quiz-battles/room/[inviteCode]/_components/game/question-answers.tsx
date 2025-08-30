@@ -27,9 +27,12 @@ export function QuestionAnswers({ gameState, room }: QuestionAnswersProps) {
     gameStateId: gameState._id,
   })
 
-  const questionAnswers = useQuery(api.quiz.queries.getQuestionAnswers, {
-    gameStateId: gameState._id,
-  })
+  const questionAnswers = useQuery(
+    api.quiz.queries.getQuestionAnswers,
+    gameState.phase === "answering" || gameState.phase === "score"
+      ? { gameStateId: gameState._id }
+      : "skip"
+  )
 
   const currentQuestionCorrectAnswerIndex = useQuery(
     api.quiz.queries.getQuestionCorrectAnswerIndex,
@@ -66,10 +69,15 @@ export function QuestionAnswers({ gameState, room }: QuestionAnswersProps) {
     ? !hasUserJoinedRoom(room.gamePlayerIds, user._id)
     : true
 
+  // Don't render anything if we don't have question answers
+  if (!questionAnswers) return null
+
   return (
     <>
-      {questionAnswers?.map((answer, index) => {
-        const isCorrectAnswer = index === currentQuestionCorrectAnswerIndex
+      {questionAnswers.map((answer, index) => {
+        const isCorrectAnswer =
+          currentQuestionCorrectAnswerIndex !== null &&
+          index === currentQuestionCorrectAnswerIndex
         const isSelectedByUser = selectedAnswerIndex === index
         const answerStats = getAnswerStats(index)
 

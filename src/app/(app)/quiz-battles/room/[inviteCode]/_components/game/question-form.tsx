@@ -28,12 +28,11 @@ export function QuestionForm({ gameState, room }: QuestionFormProps) {
           {currentQuestion.question}
         </CardTitle>
       </CardHeader>
-      {gameState.phase === "answering" ||
-        (gameState.phase === "score" && (
-          <CardContent className="flex flex-col gap-2">
-            <QuestionAnswers gameState={gameState} room={room} />
-          </CardContent>
-        ))}
+      {(gameState.phase === "answering" || gameState.phase === "score") && (
+        <CardContent className="flex flex-col gap-2">
+          <QuestionAnswers gameState={gameState} room={room} />
+        </CardContent>
+      )}
     </Card>
   )
 }

@@ -66,7 +66,8 @@ export const getQuestionAnswers = query({
     }
 
     if (gameState.phase !== "answering" && gameState.phase !== "score") {
-      throw QUIZ_ERRORS.GAME_STATE_NOT_IN_ANSWERING_PHASE
+      // During other phases, no answers should be shown
+      return []
     }
 
     const currentQuestion = await ctx.db
@@ -98,7 +99,8 @@ export const getQuestionCorrectAnswerIndex = query({
     }
 
     if (gameState.phase !== "score") {
-      throw QUIZ_ERRORS.GAME_STATE_NOT_IN_SCORE_PHASE
+      // Correct answer is only revealed during score phase
+      return null
     }
 
     const currentQuestion = await ctx.db
@@ -162,7 +164,8 @@ export const getPlayerAnswersForQuestion = query({
     }
 
     if (gameState.phase === "question") {
-      throw QUIZ_ERRORS.GAME_STATE_IN_QUESTION_PHASE
+      // During question phase, no answers are available yet
+      return []
     }
 
     const playerAnswers = await ctx.db
