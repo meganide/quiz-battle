@@ -157,7 +157,7 @@ export function QuizRoomPreview({ room }: QuizRoomPreviewProps) {
       <footer className="flex items-center justify-end gap-3">
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="secondary">
+            <Button variant="secondary" onClick={goToRoom}>
               <Eye />
               Spectate
             </Button>
@@ -170,7 +170,11 @@ export function QuizRoomPreview({ room }: QuizRoomPreviewProps) {
             Go to room
           </Button>
         ) : (
-          <Button className="font-medium" onClick={joinRoom}>
+          <Button
+            className="font-medium"
+            disabled={room.status !== "lobby"}
+            onClick={joinRoom}
+          >
             Join room
           </Button>
         )}
