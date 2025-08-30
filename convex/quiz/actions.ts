@@ -82,6 +82,10 @@ export const showResults = internalAction({
     )
 
     if (isLastQuestion) {
+      await new Promise((resolve) =>
+        setTimeout(resolve, SHOW_RESULTS_TIME_MILLISECONDS)
+      )
+
       await ctx.runMutation(internal.quiz.mutations.changeRoomToCompleted, {
         roomId,
       })
