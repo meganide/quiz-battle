@@ -24,9 +24,7 @@ export function GameLoop({ room, gameState, currentQuestion }: GameLoopProps) {
     <Container className="flex flex-col gap-6 xl:h-[calc(100svh-96px)]">
       <header className="flex flex-col gap-4">
         <p className="text-center text-lg font-semibold">
-          {isResultsPhase
-            ? "Results"
-            : `Question ${currentQuestionNumber} of ${room.numQuestions}`}
+          Question {currentQuestionNumber} of {room.numQuestions}
         </p>
         <Timer
           duration={room.timePerQuestion}

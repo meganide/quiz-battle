@@ -70,9 +70,6 @@ export function Timer({
 
   return (
     <section className={cn("flex flex-col items-center gap-1")}>
-      {phase === "results" && (
-        <p className="text-muted-foreground mb-1 text-sm">Next question in:</p>
-      )}
       <Progress
         value={progressValue}
         className={cn(
