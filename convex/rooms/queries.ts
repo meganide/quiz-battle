@@ -71,7 +71,12 @@ export const getCurrentRoom = query({
 
     const rooms = await ctx.db
       .query("rooms")
-      .filter((q) => q.eq(q.field("status"), "lobby"))
+      .filter((q) =>
+        q.or(
+          q.eq(q.field("status"), "lobby"),
+          q.eq(q.field("status"), "ongoing")
+        )
+      )
       .collect()
 
     const userRoom = rooms.find((room) => room.gamePlayerIds.includes(userId))

@@ -105,8 +105,6 @@ export function useTimer({ gameState, duration }: UseTimerProps) {
 
   const isLowTime = timeLeft <= 10.5 && timeLeft >= 0
 
-  console.log({ timeLeft, isLowTime })
-
   return {
     progressValue,
     progressDurationMs,
