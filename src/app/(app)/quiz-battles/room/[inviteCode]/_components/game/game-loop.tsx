@@ -1,29 +1,35 @@
 "use client"
 
+import { useQuery } from "convex/react"
+
 import type { Doc } from "~/convex/_generated/dataModel"
-import type { GameState } from "~/convex/quiz/types"
 
 import { Container } from "@/components/container"
 import { useUser } from "@/hooks/use-user"
 import { cn } from "@/lib/utils"
+import { api } from "~/convex/_generated/api"
 
 import { Leaderboard } from "./leaderboard"
 import { QuestionForm } from "./question-form"
 import { Timer } from "./timer"
 import { hasUserJoinedRoom } from "../../_utils/game"
 
-type GameLoopProps = GameState & {
+type GameLoopProps = {
   room: Doc<"rooms">
+  gameState: Doc<"gameStates">
 }
 
-export function GameLoop({ room, gameState, currentQuestion }: GameLoopProps) {
+export function GameLoop({ room, gameState }: GameLoopProps) {
+  const currentQuestion = useQuery(api.quiz.queries.getCurrentQuestion, {
+    gameStateId: gameState._id,
+  })
+
   const user = useUser()
 
-  const currentQuestionNumber = currentQuestion.questionIndex
-    ? currentQuestion.questionIndex + 1
+  const currentQuestionNumber = currentQuestion?.index
+    ? currentQuestion.index + 1
     : 1
 
-  const isResultsPhase = gameState.phase === "results"
   const isSpectating = user?._id
     ? !hasUserJoinedRoom(room.gamePlayerIds, user._id)
     : true
@@ -56,19 +62,8 @@ export function GameLoop({ room, gameState, currentQuestion }: GameLoopProps) {
       )}
 
       <section className="grid h-full min-h-0 grid-cols-1 gap-4 xl:grid-cols-[1fr_325px]">
-        <QuestionForm
-          currentQuestion={currentQuestion}
-          gameState={gameState}
-          room={room}
-        />
-        <Leaderboard
-          currentQuestionId={isResultsPhase ? currentQuestion._id : undefined}
-          gameStateId={gameState._id}
-          showResults={isResultsPhase}
-          currentQuestionNumber={
-            currentQuestionNumber === 0 ? 0 : currentQuestionNumber - 1
-          }
-        />
+        {currentQuestion && <QuestionForm gameState={gameState} room={room} />}
+        <Leaderboard gameState={gameState} />
       </section>
     </Container>
   )

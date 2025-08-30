@@ -47,8 +47,15 @@ export default defineSchema({
     roomId: v.id("rooms"),
     currentQuestionIndex: v.number(),
     currentQuestionId: v.optional(v.id("questions")),
-    phase: v.union(v.literal("question"), v.literal("results")),
+    phase: v.union(
+      v.literal("starting"),
+      v.literal("question"),
+      v.literal("answering"),
+      v.literal("score")
+    ),
     questionStartTime: v.optional(v.number()),
+    answeringStartTime: v.optional(v.number()),
+    scoreStartTime: v.optional(v.number()),
     scheduledFunctionId: v.optional(v.id("_scheduled_functions")),
     updatedAt: v.number(),
   }).index("by_room", ["roomId"]),

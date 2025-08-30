@@ -18,6 +18,21 @@ export const getGameState = query({
       throw QUIZ_ERRORS.GAME_STATE_NOT_FOUND
     }
 
+    return gameState
+  },
+})
+
+export const getCurrentQuestion = query({
+  args: {
+    gameStateId: v.id("gameStates"),
+  },
+  handler: async (ctx, args) => {
+    const gameState = await ctx.db.get(args.gameStateId)
+
+    if (!gameState) {
+      throw QUIZ_ERRORS.GAME_STATE_NOT_FOUND
+    }
+
     const currentQuestion = await ctx.db
       .query("questions")
       .withIndex("by_game_and_index", (q) =>
@@ -32,9 +47,74 @@ export const getGameState = query({
     }
 
     return {
-      gameState,
-      currentQuestion,
+      question: currentQuestion.question,
+      id: currentQuestion._id,
+      index: currentQuestion.questionIndex,
     }
+  },
+})
+
+export const getQuestionAnswers = query({
+  args: {
+    gameStateId: v.id("gameStates"),
+  },
+  handler: async (ctx, args) => {
+    const gameState = await ctx.db.get(args.gameStateId)
+
+    if (!gameState) {
+      throw QUIZ_ERRORS.GAME_STATE_NOT_FOUND
+    }
+
+    if (gameState.phase !== "answering" && gameState.phase !== "score") {
+      throw QUIZ_ERRORS.GAME_STATE_NOT_IN_ANSWERING_PHASE
+    }
+
+    const currentQuestion = await ctx.db
+      .query("questions")
+      .withIndex("by_game_and_index", (q) =>
+        q
+          .eq("gameStateId", gameState._id)
+          .eq("questionIndex", gameState.currentQuestionIndex)
+      )
+      .first()
+
+    if (!currentQuestion) {
+      throw QUIZ_ERRORS.QUESTION_NOT_FOUND
+    }
+
+    return currentQuestion.answers
+  },
+})
+
+export const getQuestionCorrectAnswerIndex = query({
+  args: {
+    gameStateId: v.id("gameStates"),
+  },
+  handler: async (ctx, args) => {
+    const gameState = await ctx.db.get(args.gameStateId)
+
+    if (!gameState) {
+      throw QUIZ_ERRORS.GAME_STATE_NOT_FOUND
+    }
+
+    if (gameState.phase !== "score") {
+      throw QUIZ_ERRORS.GAME_STATE_NOT_IN_SCORE_PHASE
+    }
+
+    const currentQuestion = await ctx.db
+      .query("questions")
+      .withIndex("by_game_and_index", (q) =>
+        q
+          .eq("gameStateId", gameState._id)
+          .eq("questionIndex", gameState.currentQuestionIndex)
+      )
+      .first()
+
+    if (!currentQuestion) {
+      throw QUIZ_ERRORS.QUESTION_NOT_FOUND
+    }
+
+    return currentQuestion.correctAnswerIndex
   },
 })
 

@@ -27,11 +27,13 @@ export function Game({ room }: GameProps) {
     )
   }
 
-  return (
-    <GameLoop
-      currentQuestion={gameState.currentQuestion}
-      gameState={gameState.gameState}
-      room={room}
-    />
-  )
+  if (gameState.phase === "starting") {
+    return (
+      <Container>
+        <p>Starting...</p>
+      </Container>
+    )
+  }
+
+  return <GameLoop gameState={gameState} room={room} />
 }

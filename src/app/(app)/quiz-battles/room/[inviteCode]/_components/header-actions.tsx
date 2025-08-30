@@ -1,6 +1,4 @@
-import React from "react"
-
-import { useAction, useConvexAuth, useMutation } from "convex/react"
+import { useConvexAuth, useMutation } from "convex/react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
@@ -17,11 +15,11 @@ type HeaderActionsProps = {
 }
 
 export function HeaderActions({ room }: HeaderActionsProps) {
-  const [isStarting, setIsStarting] = React.useState(false)
-
   const leaveRoomMutation = useMutation(api.rooms.mutations.leave)
   const joinRoomMutation = useMutation(api.rooms.mutations.join)
-  const startQuizAction = useAction(api.quiz.actions.startQuiz)
+  const startQuizMutation = useMutation(api.quiz.mutations.startQuiz)
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  const isStarting = startQuizMutation === undefined
 
   const user = useUser()
   const { isAuthenticated } = useConvexAuth()
@@ -50,16 +48,9 @@ export function HeaderActions({ room }: HeaderActionsProps) {
   }
 
   async function startQuiz() {
-    try {
-      setIsStarting(true)
-      await startQuizAction({
-        roomId: room._id,
-      })
-    } catch (error) {
-      console.log(error)
-    } finally {
-      setIsStarting(false)
-    }
+    await startQuizMutation({
+      roomId: room._id,
+    })
   }
 
   function renderJoinButton() {

@@ -1,13 +1,13 @@
 import React from "react"
 
-import type { GameState } from "~/convex/quiz/types"
+import type { Doc } from "~/convex/_generated/dataModel"
 
-import { SHOW_RESULTS_TIME_MILLISECONDS } from "~/convex/quiz/constants"
+import { TIMERS_MILLISECONDS } from "~/convex/quiz/constants"
 
-const RESULTS_DURATION = SHOW_RESULTS_TIME_MILLISECONDS / 1000 // seconds
+const SCORE_DURATION = TIMERS_MILLISECONDS.SCORE_PHASE / 1000 // seconds
 
 type UseTimerProps = {
-  gameState: GameState["gameState"]
+  gameState: Doc<"gameStates">
   duration: number
 }
 
@@ -19,19 +19,26 @@ export function useTimer({ gameState, duration }: UseTimerProps) {
   const intervalRef = React.useRef<number | null>(null)
   const lastPhaseKeyRef = React.useRef<string>("")
 
-  const isResultsPhase = gameState.phase === "results"
-  const isQuestionPhase = gameState.phase === "question"
-  const resultsStartTime = isResultsPhase ? gameState.updatedAt : undefined
-  const questionStartTime = gameState.questionStartTime ?? Date.now()
+  const isScorePhase = gameState.phase === "score"
+  const isAnswerPhase = gameState.phase === "answering"
+  const scoreStartTime = gameState.scoreStartTime
+  const answerStartTime = gameState.answeringStartTime
 
   // Start a lightweight interval to update the numeric countdown only
   React.useEffect(() => {
-    if (isQuestionPhase && (duration <= 0 || questionStartTime <= 0)) return
-    if (isResultsPhase && (!resultsStartTime || resultsStartTime <= 0)) return
+    if (
+      isAnswerPhase &&
+      (!answerStartTime || duration <= 0 || answerStartTime <= 0)
+    ) {
+      return
+    }
+    if (isScorePhase && (!scoreStartTime || scoreStartTime <= 0)) {
+      return
+    }
 
-    const totalMs = (isResultsPhase ? RESULTS_DURATION : duration) * 1000
+    const totalMs = (isScorePhase ? SCORE_DURATION : duration) * 1000
     const startMs =
-      isResultsPhase && resultsStartTime ? resultsStartTime : questionStartTime
+      isScorePhase && scoreStartTime ? scoreStartTime : answerStartTime
     if (!startMs) return
 
     const endTime = startMs + totalMs
@@ -55,25 +62,26 @@ export function useTimer({ gameState, duration }: UseTimerProps) {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    isQuestionPhase,
-    isResultsPhase,
-    questionStartTime,
-    resultsStartTime,
-    duration,
-  ])
+  }, [isAnswerPhase, isScorePhase, answerStartTime, scoreStartTime, duration])
 
   // Drive the progress bar via a single CSS transition per phase
   React.useEffect(() => {
-    if (isQuestionPhase && (duration <= 0 || questionStartTime <= 0)) return
-    if (isResultsPhase && (!resultsStartTime || resultsStartTime <= 0)) return
+    if (
+      isAnswerPhase &&
+      (!answerStartTime || duration <= 0 || answerStartTime <= 0)
+    ) {
+      return
+    }
+    if (isScorePhase && (!scoreStartTime || scoreStartTime <= 0)) {
+      return
+    }
 
-    const totalMs = (isResultsPhase ? RESULTS_DURATION : duration) * 1000
+    const totalMs = (isScorePhase ? SCORE_DURATION : duration) * 1000
     const startMs =
-      isResultsPhase && resultsStartTime ? resultsStartTime : questionStartTime
+      isScorePhase && scoreStartTime ? scoreStartTime : answerStartTime
     if (!startMs) return
 
-    const phaseKey = `${isResultsPhase ? "results" : "question"}-${startMs}-${totalMs}`
+    const phaseKey = `${isScorePhase ? "results" : "question"}-${startMs}-${totalMs}`
     if (lastPhaseKeyRef.current === phaseKey) return
     lastPhaseKeyRef.current = phaseKey
 
@@ -95,13 +103,7 @@ export function useTimer({ gameState, duration }: UseTimerProps) {
 
     return () => clearTimeout(timeoutId)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    isQuestionPhase,
-    isResultsPhase,
-    questionStartTime,
-    resultsStartTime,
-    duration,
-  ])
+  }, [isAnswerPhase, isScorePhase, answerStartTime, scoreStartTime, duration])
 
   const isLowTime = timeLeft <= 10.5 && timeLeft >= 0
 

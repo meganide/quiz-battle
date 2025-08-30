@@ -1,5 +1,3 @@
-import type { Doc } from "../_generated/dataModel"
-
 export type QuizDifficulty = "easy" | "medium" | "hard"
 
 type QuizQuestion = {
@@ -9,8 +7,3 @@ type QuizQuestion = {
 }
 
 export type GeneratedQuiz = QuizQuestion[]
-
-export type GameState = {
-  gameState: Doc<"gameStates">
-  currentQuestion: Doc<"questions">
-}
