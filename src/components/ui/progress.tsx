@@ -8,15 +8,21 @@ import { cn } from "@/lib/utils"
 
 type ProgressProps = React.ComponentProps<typeof ProgressPrimitive.Root> & {
   disableAnimation?: boolean
+  durationMs?: number
 }
 
 function Progress({
   className,
-  value,
   disableAnimation = false,
+  durationMs,
+  value,
   ...props
 }: ProgressProps) {
   const clampedValue = Math.max(0, Math.min(100, Number(value ?? 0)))
+  const indicatorClassName = cn(
+    "bg-primary h-full w-full flex-1 transition-transform",
+    disableAnimation && "transition-none"
+  )
   return (
     <ProgressPrimitive.Root
       data-slot="progress"
@@ -27,12 +33,15 @@ function Progress({
       {...props}
     >
       <ProgressPrimitive.Indicator
+        className={indicatorClassName}
         data-slot="progress-indicator"
-        style={{ transform: `translateX(-${100 - clampedValue}%)` }}
-        className={cn(
-          "bg-primary h-full w-full flex-1 transition-all",
-          disableAnimation && "transition-none"
-        )}
+        style={{
+          transform: `translateX(-${100 - clampedValue}%)`,
+          transitionDuration: disableAnimation
+            ? undefined
+            : `${durationMs ?? 0}ms`,
+          transitionTimingFunction: disableAnimation ? undefined : "linear",
+        }}
       />
     </ProgressPrimitive.Root>
   )

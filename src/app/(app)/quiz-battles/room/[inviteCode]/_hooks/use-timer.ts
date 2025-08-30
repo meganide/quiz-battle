@@ -14,75 +14,104 @@ type UseTimerProps = {
 export function useTimer({ gameState, duration }: UseTimerProps) {
   const [timeLeft, setTimeLeft] = React.useState(duration)
   const [disableAnimation, setDisableAnimation] = React.useState(false)
-  const animationFrameRef = React.useRef<number | null>(null)
-  const previousPhaseRef = React.useRef(gameState.phase)
+  const [progressValue, setProgressValue] = React.useState(100)
+  const [progressDurationMs, setProgressDurationMs] = React.useState(0)
+  const intervalRef = React.useRef<number | null>(null)
+  const lastPhaseKeyRef = React.useRef<string>("")
 
   const isResultsPhase = gameState.phase === "results"
   const isQuestionPhase = gameState.phase === "question"
   const resultsStartTime = isResultsPhase ? gameState.updatedAt : undefined
   const questionStartTime = gameState.questionStartTime ?? Date.now()
 
-  // Detect phase changes and handle animation control
-  React.useEffect(() => {
-    if (previousPhaseRef.current !== gameState.phase) {
-      // Phase changed - disable animation and set to max value temporarily
-      setDisableAnimation(true)
-
-      // Re-enable animation after a brief moment
-      const timeoutId = setTimeout(() => {
-        setDisableAnimation(false)
-      }, 50) // 50ms delay before re-enabling animation
-
-      previousPhaseRef.current = gameState.phase
-
-      return () => clearTimeout(timeoutId)
-    }
-  }, [gameState.phase])
-
+  // Start a lightweight interval to update the numeric countdown only
   React.useEffect(() => {
     if (isQuestionPhase && (duration <= 0 || questionStartTime <= 0)) return
     if (isResultsPhase && (!resultsStartTime || resultsStartTime <= 0)) return
 
-    const updateTimer = () => {
-      let elapsed: number
-      let maxDuration: number
+    const totalMs = (isResultsPhase ? RESULTS_DURATION : duration) * 1000
+    const startMs =
+      isResultsPhase && resultsStartTime ? resultsStartTime : questionStartTime
+    if (!startMs) return
 
-      if (isResultsPhase && resultsStartTime) {
-        elapsed = (Date.now() - resultsStartTime) / 1000
-        maxDuration = RESULTS_DURATION
-      } else {
-        // Question phase: countdown from question duration
-        elapsed = (Date.now() - questionStartTime) / 1000
-        maxDuration = duration
+    const endTime = startMs + totalMs
+
+    const tick = () => {
+      const remainingMs = Math.max(0, endTime - Date.now())
+      setTimeLeft(remainingMs / 1000)
+      if (remainingMs <= 0 && intervalRef.current) {
+        window.clearInterval(intervalRef.current)
+        intervalRef.current = null
       }
-
-      const remaining = Math.max(0, maxDuration - elapsed)
-      setTimeLeft(remaining)
-
-      if (remaining <= 0) {
-        return
-      }
-
-      animationFrameRef.current = requestAnimationFrame(updateTimer)
     }
 
-    updateTimer()
+    tick()
+    intervalRef.current = window.setInterval(tick, 200)
 
     return () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current)
+      if (intervalRef.current) {
+        window.clearInterval(intervalRef.current)
+        intervalRef.current = null
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [duration, questionStartTime, gameState.phase, resultsStartTime])
+  }, [
+    isQuestionPhase,
+    isResultsPhase,
+    questionStartTime,
+    resultsStartTime,
+    duration,
+  ])
 
-  // Calculate progress value based on phase
-  const maxDuration = isResultsPhase ? RESULTS_DURATION : duration
-  const progressValue =
-    maxDuration > 0 ? Math.ceil((timeLeft / maxDuration) * 100) : 0
-  const isLowTime = timeLeft <= 10 && timeLeft > 0
+  // Drive the progress bar via a single CSS transition per phase
+  React.useEffect(() => {
+    if (isQuestionPhase && (duration <= 0 || questionStartTime <= 0)) return
+    if (isResultsPhase && (!resultsStartTime || resultsStartTime <= 0)) return
 
-  console.log({ progressValue, timeLeft })
+    const totalMs = (isResultsPhase ? RESULTS_DURATION : duration) * 1000
+    const startMs =
+      isResultsPhase && resultsStartTime ? resultsStartTime : questionStartTime
+    if (!startMs) return
 
-  return { progressValue, isLowTime, timeLeft, disableAnimation }
+    const phaseKey = `${isResultsPhase ? "results" : "question"}-${startMs}-${totalMs}`
+    if (lastPhaseKeyRef.current === phaseKey) return
+    lastPhaseKeyRef.current = phaseKey
+
+    const now = Date.now()
+    const elapsedMs = Math.max(0, now - startMs)
+    const remainingMs = Math.max(0, totalMs - elapsedMs)
+    const startPercent = totalMs > 0 ? (remainingMs / totalMs) * 100 : 0
+
+    // Reset without transition to current percent, then animate to 0 linearly
+    setDisableAnimation(true)
+    setProgressDurationMs(remainingMs)
+    setProgressValue(startPercent)
+
+    // Use a small delay to ensure the DOM has updated before starting animation
+    const timeoutId = setTimeout(() => {
+      setDisableAnimation(false)
+      setProgressValue(0)
+    }, 16) // 16ms ≈ 1 frame
+
+    return () => clearTimeout(timeoutId)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    isQuestionPhase,
+    isResultsPhase,
+    questionStartTime,
+    resultsStartTime,
+    duration,
+  ])
+
+  const isLowTime = timeLeft <= 10.5 && timeLeft >= 0
+
+  console.log({ timeLeft, isLowTime })
+
+  return {
+    progressValue,
+    progressDurationMs,
+    isLowTime,
+    timeLeft,
+    disableAnimation,
+  }
 }

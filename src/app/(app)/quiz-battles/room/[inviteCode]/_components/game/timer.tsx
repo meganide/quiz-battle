@@ -13,7 +13,13 @@ type TimerProps = {
 }
 
 export function Timer({ duration, gameState }: TimerProps) {
-  const { progressValue, isLowTime, timeLeft, disableAnimation } = useTimer({
+  const {
+    progressValue,
+    progressDurationMs,
+    isLowTime,
+    timeLeft,
+    disableAnimation,
+  } = useTimer({
     gameState,
     duration,
   })
@@ -22,18 +28,18 @@ export function Timer({ duration, gameState }: TimerProps) {
     <section className={cn("flex flex-col items-center gap-1")}>
       <Progress
         disableAnimation={disableAnimation}
+        durationMs={progressDurationMs}
         value={progressValue}
-        className={cn(
-          "w-full",
-          isLowTime && "[&>div]:bg-red-500",
-          gameState.phase === "results" && "[&>div]:bg-blue-500"
-        )}
+        className={cn("w-full", {
+          "[&>div]:bg-destructive": isLowTime,
+          "[&>div]:bg-primary": gameState.phase === "results",
+        })}
       />
       <p
         className={cn(
-          "text-2xl font-bold transition-colors",
-          isLowTime && "animate-pulse text-red-500",
-          gameState.phase === "results" && "text-blue-600"
+          "text-2xl font-bold",
+          isLowTime && "text-destructive animate-pulse",
+          gameState.phase === "results" && "text-primary"
         )}
       >
         {Math.floor(timeLeft)}
