@@ -245,3 +245,79 @@ export const isLastQuestion = internalQuery({
     return gameState.currentQuestionIndex === room.numQuestions - 1
   },
 })
+
+export const getGameResults = query({
+  args: {
+    gameStateId: v.id("gameStates"),
+  },
+  handler: async (ctx, args) => {
+    const gameState = await ctx.db.get(args.gameStateId)
+
+    if (!gameState) {
+      throw QUIZ_ERRORS.GAME_STATE_NOT_FOUND
+    }
+
+    const room = await ctx.db.get(gameState.roomId)
+
+    if (!room) {
+      throw ROOM_ERRORS.ROOM_NOT_FOUND
+    }
+
+    const questions = await ctx.db
+      .query("questions")
+      .withIndex("by_game_state", (q) => q.eq("gameStateId", args.gameStateId))
+      .collect()
+
+    const sortedQuestions = questions.sort(
+      (a, b) => a.questionIndex - b.questionIndex
+    )
+
+    const allPlayerAnswers = await ctx.db
+      .query("playerAnswers")
+      .withIndex("by_game_state", (q) => q.eq("gameStateId", args.gameStateId))
+      .collect()
+
+    const answersWithUserInfo = await Promise.all(
+      allPlayerAnswers.map(async (answer) => {
+        const user = await ctx.db.get(answer.userId)
+        return {
+          ...answer,
+          user: {
+            name: user?.name,
+            image: user?.image,
+          },
+        }
+      })
+    )
+
+    const playerScores = await ctx.db
+      .query("playerScores")
+      .withIndex("by_game_state", (q) => q.eq("gameStateId", args.gameStateId))
+      .collect()
+
+    const playerScoresWithUserInfo = await Promise.all(
+      playerScores.map(async (playerScore) => {
+        const user = await ctx.db.get(playerScore.userId)
+        return {
+          ...playerScore,
+          user: {
+            name: user?.name,
+            image: user?.image,
+          },
+        }
+      })
+    )
+
+    const sortedPlayerScores = playerScoresWithUserInfo.sort(
+      (a, b) => b.score - a.score
+    )
+
+    return {
+      room,
+      gameState,
+      questions: sortedQuestions,
+      playerAnswers: answersWithUserInfo,
+      playerScores: sortedPlayerScores,
+    }
+  },
+})

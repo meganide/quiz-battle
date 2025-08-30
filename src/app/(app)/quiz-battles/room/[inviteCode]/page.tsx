@@ -57,6 +57,6 @@ export default function RoomPage({ params }: RoomPageProps) {
 
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (room.status === "completed") {
-    return <Results />
+    return <Results room={room} />
   }
 }
