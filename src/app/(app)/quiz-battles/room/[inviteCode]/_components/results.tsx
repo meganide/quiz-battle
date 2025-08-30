@@ -7,11 +7,10 @@ import {
   Award,
   Calendar,
   CheckCircle,
-  Clock,
-  Copy,
   Crown,
   Medal,
   Target,
+  Timer,
   Trophy,
   Users,
   XCircle,
@@ -24,7 +23,6 @@ import { HeaderTitle } from "@/components/header-title"
 import { Spinner } from "@/components/spinner"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -47,10 +45,15 @@ export function Results({ room }: ResultsProps) {
 
   if (!gameResults) {
     return (
-      <section>
+      <section className="min-h-screen">
         <HeaderTitle href="/quiz-battles" Icon={Trophy} title="Quiz Results" />
-        <Container className="flex flex-col items-center gap-4">
-          <Spinner size="xl" />
+        <Container className="flex flex-col items-center justify-center gap-6 py-20">
+          <div className="animate-pulse">
+            <Spinner size="xl" />
+          </div>
+          <p className="text-muted-foreground animate-pulse text-lg">
+            Loading results...
+          </p>
         </Container>
       </section>
     )
@@ -63,19 +66,17 @@ export function Results({ room }: ResultsProps) {
     return `${minutes}m ${seconds}s`
   }
 
-
-
   function getRankIcon(position: number) {
     switch (position) {
       case 1:
-        return <Trophy className="size-6 text-yellow-500" />
+        return <Trophy className="size-5 text-yellow-500 sm:size-6" />
       case 2:
-        return <Medal className="size-6 text-gray-400" />
+        return <Medal className="size-5 text-gray-400 sm:size-6" />
       case 3:
-        return <Award className="size-6 text-amber-600" />
+        return <Award className="size-5 text-amber-600 sm:size-6" />
       default:
         return (
-          <div className="bg-muted text-muted-foreground flex size-6 items-center justify-center rounded-full text-sm font-bold">
+          <div className="bg-muted text-muted-foreground flex size-5 items-center justify-center rounded-full text-xs font-bold sm:size-6 sm:text-sm">
             {position}
           </div>
         )
@@ -89,147 +90,159 @@ export function Results({ room }: ResultsProps) {
       : "Unknown"
 
   return (
-    <section className="pb-8">
+    <section className="min-h-screen pb-8">
       <HeaderTitle href="/quiz-battles" Icon={Trophy} title="Quiz Results" />
 
-      <Container className="space-y-8">
-        {/* Game Overview */}
-        <Card>
+      <Container className="space-y-6 sm:space-y-8">
+        {/* Game Overview - Simplified */}
+        <Card className="shadow-none">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Crown className="text-primary size-5" />
+            <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl">
+              <Crown className="text-primary size-6" />
               Game Overview
             </CardTitle>
-            <CardDescription>
-              Complete game statistics and details
+            <CardDescription className="text-base">
+              Game statistics and details
             </CardDescription>
           </CardHeader>
-          <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <article className="bg-muted/50 flex items-center gap-3 rounded-lg p-4">
-              <Target className="text-primary size-5" />
-              <div>
-                <p className="text-muted-foreground text-sm">Topic</p>
-                <p className="font-semibold">{room.topics}</p>
-              </div>
-            </article>
-
-            <article className="bg-muted/50 flex items-center gap-3 rounded-lg p-4">
-
-              <div>
-                <p className="text-muted-foreground text-sm">Difficulty</p>
-                <p className="font-semibold capitalize">{room.difficulty}</p>
-              </div>
-            </article>
-
-            <article className="bg-muted/50 flex items-center gap-3 rounded-lg p-4">
-              <Clock className="text-primary size-5" />
-              <div>
-                <p className="text-muted-foreground text-sm">
-                  Time per Question
-                </p>
-                <p className="font-semibold">{room.timePerQuestion}s</p>
-              </div>
-            </article>
-
-            <article className="bg-muted/50 flex items-center gap-3 rounded-lg p-4">
-              <Calendar className="text-primary size-5" />
-              <div>
-                <p className="text-muted-foreground text-sm">Total Duration</p>
-                <p className="font-semibold">{gameDuration}</p>
-              </div>
-            </article>
-
-            <article className="bg-muted/50 flex items-center gap-3 rounded-lg p-4">
-              <Users className="text-primary size-5" />
-              <div>
-                <p className="text-muted-foreground text-sm">Players</p>
-                <p className="font-semibold">
-                  {gameResults.playerScores.length}
-                </p>
-              </div>
-            </article>
-
-            <article className="bg-muted/50 flex items-center gap-3 rounded-lg p-4">
-              <div className="flex items-center gap-2">
-                <div className="bg-primary/10 rounded px-2 py-1 font-mono text-sm">
-                  {room.inviteCode}
+          <CardContent className="p-4 sm:p-6">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+              {/* Topic */}
+              <article className="rounded-lg bg-muted/50 p-4">
+                <div className="flex flex-col gap-2">
+                  <div className="rounded-lg bg-primary p-2 text-primary-foreground w-fit">
+                    <Target className="size-4" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground">Topic</p>
+                    <p className="text-sm font-bold sm:text-base">
+                      {room.topics}
+                    </p>
+                  </div>
                 </div>
-              </div>
-              <div>
-                <p className="text-muted-foreground text-sm">Room Name</p>
-                <p className="font-semibold">{room.name}</p>
-              </div>
-            </article>
+              </article>
+
+              {/* Time per Question */}
+              <article className="rounded-lg bg-muted/50 p-4">
+                <div className="flex flex-col gap-2">
+                  <div className="rounded-lg bg-primary p-2 text-primary-foreground w-fit">
+                    <Timer className="size-4" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground">Time/Question</p>
+                    <p className="text-sm font-bold sm:text-base">
+                      {room.timePerQuestion}s
+                    </p>
+                  </div>
+                </div>
+              </article>
+
+              {/* Duration */}
+              <article className="rounded-lg bg-muted/50 p-4">
+                <div className="flex flex-col gap-2">
+                  <div className="rounded-lg bg-primary p-2 text-primary-foreground w-fit">
+                    <Calendar className="size-4" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground">Duration</p>
+                    <p className="text-sm font-bold sm:text-base">{gameDuration}</p>
+                  </div>
+                </div>
+              </article>
+
+              {/* Players */}
+              <article className="rounded-lg bg-muted/50 p-4">
+                <div className="flex flex-col gap-2">
+                  <div className="rounded-lg bg-primary p-2 text-primary-foreground w-fit">
+                    <Users className="size-4" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground">Players</p>
+                    <p className="text-sm font-bold sm:text-base">
+                      {gameResults.playerScores.length}
+                    </p>
+                  </div>
+                </div>
+              </article>
+            </div>
           </CardContent>
         </Card>
 
-        {/* Final Leaderboard */}
-        <Card>
+        {/* Final Leaderboard - Smaller for mobile */}
+        <Card className="shadow-none">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Trophy className="size-5 text-yellow-500" />
+            <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl">
+              <Trophy className="size-6 text-yellow-500" />
               Final Leaderboard
             </CardTitle>
-            <CardDescription>Final scores and rankings</CardDescription>
+            <CardDescription className="text-base">
+              Final scores and rankings
+            </CardDescription>
           </CardHeader>
-          <CardContent>
-            <section className="space-y-4">
+          <CardContent className="p-4 sm:p-6">
+            <section className="space-y-2 sm:space-y-3">
               {gameResults.playerScores.map((playerScore, index) => {
                 const position = index + 1
                 return (
                   <article
                     key={playerScore.userId}
                     className={cn(
-                      "flex items-center gap-4 rounded-lg border p-4 transition-colors",
+                      "relative flex items-center gap-2 rounded-lg p-3 transition-all duration-200 hover:shadow-sm sm:gap-4 sm:p-4",
                       {
-                        "border-yellow-200 bg-gradient-to-r from-yellow-50 to-yellow-100":
+                        "bg-gradient-to-r from-yellow-50 to-yellow-100":
                           position === 1,
-                        "border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100":
+                        "bg-gradient-to-r from-gray-50 to-gray-100":
                           position === 2,
-                        "border-amber-200 bg-gradient-to-r from-amber-50 to-amber-100":
+                        "bg-gradient-to-r from-amber-50 to-amber-100":
                           position === 3,
-                        "bg-muted/30": position > 3,
+                        "bg-neutral-400/60": position > 3,
                       }
                     )}
                   >
-                    {/* Rank */}
-                    {getRankIcon(position)}
+                    {/* Rank Icon */}
+                    <div className="flex-shrink-0">
+                      {getRankIcon(position)}
+                    </div>
 
                     {/* Avatar */}
                     <Avatar
-                      className={cn("size-12", {
-                        "ring-2 ring-yellow-400 ring-offset-2": position === 1,
-                        "ring-2 ring-gray-400 ring-offset-2": position === 2,
-                        "ring-2 ring-amber-400 ring-offset-2": position === 3,
+                      className={cn("size-8 sm:size-12", {
+                        "ring-2 ring-yellow-400 ring-offset-1": position === 1,
+                        "ring-2 ring-gray-400 ring-offset-1": position === 2,
+                        "ring-2 ring-amber-400 ring-offset-1": position === 3,
                       })}
                     >
                       <AvatarImage
-                        alt={playerScore.user.name || "Player"}
                         src={playerScore.user.image}
+                        alt={playerScore.user.name || "Player"}
                       />
-                      <AvatarFallback className="text-sm font-bold">
+                      <AvatarFallback className="text-xs font-bold sm:text-sm">
                         {playerScore.user.name?.charAt(0).toUpperCase() || "?"}
                       </AvatarFallback>
                     </Avatar>
 
                     {/* Player Info */}
-                    <div className="flex-1">
-                      <p className="text-lg font-semibold">
+                    <div className={cn("min-w-0 flex-1", {
+                      "text-yellow-700": position === 1,
+                      "text-gray-700": position === 2,
+                      "text-amber-700": position === 3,
+                    })}>
+                      <p className="truncate text-sm font-bold sm:text-lg">
                         {playerScore.user.name || "Anonymous"}
                       </p>
-                      <p className="text-muted-foreground text-sm">
+                      <p className="text-xs text-muted-foreground sm:text-sm">
                         {playerScore.correctAnswers}/{room.numQuestions} correct
-                        answers
                       </p>
                     </div>
 
                     {/* Score */}
-                    <div className="text-right">
+                    <div className="flex-shrink-0">
                       <Badge
-                        className={cn("px-4 py-2 text-lg font-bold", {
+                        className={cn("px-2 py-1 text-sm font-bold sm:px-3 sm:py-2 sm:text-lg", {
                           "bg-yellow-500 text-yellow-50": position === 1,
                           "bg-gray-500 text-gray-50": position === 2,
                           "bg-amber-500 text-amber-50": position === 3,
+                          "bg-secondary text-secondary-foreground": position > 3,
                         })}
                       >
                         {playerScore.score.toLocaleString()}
@@ -242,113 +255,116 @@ export function Results({ room }: ResultsProps) {
           </CardContent>
         </Card>
 
-        {/* Questions Breakdown */}
-        <Card>
+        {/* Questions Breakdown - Simplified */}
+        <Card className="shadow-none">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Target className="text-primary size-5" />
-              Questions & Answers Breakdown
+            <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl">
+              <Target className="text-primary size-6" />
+              Questions & Answers
             </CardTitle>
-            <CardDescription>
-              Detailed view of each question and player responses
+            <CardDescription className="text-base">
+              Breakdown of each question and correct answers
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <section className="space-y-8">
+          <CardContent className="p-4 sm:p-6">
+            <section className="space-y-6 sm:space-y-8">
               {gameResults.questions.map((question, index) => {
                 const questionNumber = index + 1
 
                 return (
                   <article key={question._id} className="space-y-4">
-                    <div className="flex items-start gap-4">
-                      <Badge className="text-sm font-bold" variant="outline">
-                        Q{questionNumber}
-                      </Badge>
-                      <div className="flex-1">
-                        <h4 className="mb-2 text-lg font-semibold">
-                          {question.question}
-                        </h4>
+                    <div className="space-y-4">
+                      {/* Question Header */}
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-4">
+                        <Badge 
+                          variant="outline" 
+                          className="w-fit bg-primary/10 px-3 py-2 text-sm font-bold text-primary"
+                        >
+                          Question {questionNumber}
+                        </Badge>
+                        <div className="flex-1">
+                          <h4 className="text-base font-bold leading-relaxed sm:text-lg">
+                            {question.question}
+                          </h4>
+                        </div>
+                      </div>
 
-                        {/* Answer Options */}
-                        <section className="mb-4 grid grid-cols-1 gap-3 md:grid-cols-2">
-                          {question.answers.map((answer, answerIndex) => {
-                            const isCorrect =
-                              answerIndex === question.correctAnswerIndex
-                            const playersWhoChose =
-                              gameResults.playerAnswers.filter(
-                                (playerAnswer) =>
-                                  playerAnswer.questionId === question._id &&
-                                  playerAnswer.answerIndex === answerIndex
-                              )
+                      {/* Answer Options with Player Avatars */}
+                      <section className="space-y-2 sm:space-y-3">
+                        {question.answers.map((answer, answerIndex) => {
+                          const isCorrect = answerIndex === question.correctAnswerIndex
+                          const playersWhoChose = gameResults.playerAnswers.filter(
+                            (playerAnswer) =>
+                              playerAnswer.questionId === question._id &&
+                              playerAnswer.answerIndex === answerIndex
+                          )
 
-                            return (
-                              <article
-                                key={answerIndex}
-                                className={cn(
-                                  "rounded-lg border-2 p-3 transition-colors",
-                                  {
-                                    "bg-green-100 text-green-800": isCorrect,
-                                    "bg-red-100 text-red-800": !isCorrect,
-                                  }
-                                )}
-                              >
-                                <div className="mb-2 flex items-center justify-between">
-                                  <span className="font-medium">{answer}</span>
+                          return (
+                            <article
+                              key={answerIndex}
+                              className={cn(
+                                "rounded-lg p-3 sm:p-4",
+                                {
+                                  "bg-green-100 text-green-800": isCorrect,
+                                  "bg-red-100 text-red-700": !isCorrect,
+                                }
+                              )}
+                            >
+                              <div className="flex items-start justify-between gap-3 mb-2">
+                                <span className="flex-1 font-medium leading-relaxed text-sm sm:text-base">
+                                  {answer}
+                                </span>
+                                {/* Correct/Incorrect Icon */}
+                                <div className="flex-shrink-0">
                                   {isCorrect && (
-                                    <CheckCircle className="size-5 text-green-600" />
+                                    <CheckCircle className="size-4 text-green-600 sm:size-5" />
                                   )}
-                                  {!isCorrect && playersWhoChose.length > 0 && (
-                                    <XCircle className="size-5 text-red-500" />
+                                  {!isCorrect && (
+                                    <XCircle className="size-4 text-red-500 sm:size-5" />
                                   )}
                                 </div>
-
-                                {playersWhoChose.length > 0 && (
-                                  <div className="mt-2 flex items-center gap-2">
-                                    <div className="flex -space-x-2">
-                                      {playersWhoChose
-                                        .slice(0, 10)
-                                        .map((playerAnswer) => (
-                                          <Avatar
-                                            key={playerAnswer.userId}
-                                            className="size-6 border-2 border-white"
-                                          >
-                                            <AvatarImage
-                                              src={playerAnswer.user.image}
-                                              alt={
-                                                playerAnswer.user.name ||
-                                                "Player"
-                                              }
-                                            />
-                                            <AvatarFallback className="text-xs">
-                                              {playerAnswer.user.name
-                                                ?.charAt(0)
-                                                .toUpperCase() || "?"}
-                                            </AvatarFallback>
-                                          </Avatar>
-                                        ))}
-                                      {playersWhoChose.length > 10 && (
-                                        <div className="flex size-6 items-center justify-center rounded-full border-2 border-white bg-gray-500 text-xs text-white">
-                                          +{playersWhoChose.length - 10}
-                                        </div>
-                                      )}
+                              </div>
+                              
+                              {/* Player Avatars - Below answer */}
+                              {playersWhoChose.length > 0 && (
+                                <div className="flex -space-x-2">
+                                  {playersWhoChose.slice(0, 8).map((playerAnswer) => (
+                                    <Avatar
+                                      key={playerAnswer.userId}
+                                      className="size-6 border-2 border-white shadow-sm"
+                                    >
+                                      <AvatarImage
+                                        src={playerAnswer.user.image}
+                                        alt={playerAnswer.user.name || "Player"}
+                                      />
+                                      <AvatarFallback className="text-xs">
+                                        {playerAnswer.user.name?.charAt(0).toUpperCase() || "?"}
+                                      </AvatarFallback>
+                                    </Avatar>
+                                  ))}
+                                  {playersWhoChose.length > 8 && (
+                                    <div className="flex size-6 items-center justify-center rounded-full border-2 border-white bg-muted text-xs font-bold text-muted-foreground shadow-sm">
+                                      +{playersWhoChose.length - 8}
                                     </div>
-                                  </div>
-                                )}
-                              </article>
-                            )
-                          })}
-                        </section>
-                      </div>
+                                  )}
+                                </div>
+                              )}
+                            </article>
+                          )
+                        })}
+                      </section>
                     </div>
 
-                    {index < gameResults.questions.length - 1 && <Separator />}
+                    {index < gameResults.questions.length - 1 && (
+                      <Separator className="my-6 sm:my-8" />
+                    )}
                   </article>
                 )
               })}
             </section>
           </CardContent>
         </Card>
-      </Container>
+    </Container>
     </section>
   )
 }
