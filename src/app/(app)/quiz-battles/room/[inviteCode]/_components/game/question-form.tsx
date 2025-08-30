@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils"
 import { api } from "~/convex/_generated/api"
 
 import { useSubmitAnswer } from "../../_hooks/use-submit-answer"
+import { hasUserJoinedRoom } from "../../_utils/game"
 
 type QuestionFormProps = GameState & {
   room: Doc<"rooms">
@@ -52,7 +53,7 @@ export function QuestionForm({
   }
 
   const hasJoinedRoom = user?._id
-    ? room.gamePlayerIds.includes(user._id)
+    ? hasUserJoinedRoom(room.gamePlayerIds, user._id)
     : false
 
   return (
