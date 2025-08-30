@@ -28,7 +28,13 @@ export function Game({ room }: GameProps) {
   }
 
   if (gameState.gameState.phase === "question") {
-    return <QuestionPhase gameState={gameState} room={room} />
+    return (
+      <QuestionPhase
+        currentQuestion={gameState.currentQuestion}
+        gameState={gameState.gameState}
+        room={room}
+      />
+    )
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
