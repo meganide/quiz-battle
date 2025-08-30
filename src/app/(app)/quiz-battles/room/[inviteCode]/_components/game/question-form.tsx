@@ -23,7 +23,9 @@ export function QuestionForm({
   // Get player answers for results phase
   const playerAnswers = useQuery(
     api.quiz.queries.getPlayerAnswersForQuestion,
-    gameState.phase === "results" ? { questionId: currentQuestion._id } : "skip"
+    gameState.phase === "results"
+      ? { questionId: currentQuestion._id, gameStateId: gameState._id }
+      : "skip"
   )
 
   const isResultsPhase = gameState.phase === "results"

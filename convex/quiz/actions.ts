@@ -73,8 +73,6 @@ export const showResults = internalAction({
       gameStateId,
     })
 
-    console.log("update and go next")
-
     const isLastQuestion = await ctx.runQuery(
       internal.quiz.queries.isLastQuestion,
       {

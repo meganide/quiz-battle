@@ -72,8 +72,19 @@ export const getPlayerScores = query({
 export const getPlayerAnswersForQuestion = query({
   args: {
     questionId: v.id("questions"),
+    gameStateId: v.id("gameStates"),
   },
   handler: async (ctx, args) => {
+    const gameState = await ctx.db.get(args.gameStateId)
+
+    if (!gameState) {
+      throw QUIZ_ERRORS.GAME_STATE_NOT_FOUND
+    }
+
+    if (gameState.phase === "question") {
+      throw QUIZ_ERRORS.GAME_STATE_IN_QUESTION_PHASE
+    }
+
     const playerAnswers = await ctx.db
       .query("playerAnswers")
       .withIndex("by_question", (q) => q.eq("questionId", args.questionId))
@@ -93,6 +104,40 @@ export const getPlayerAnswersForQuestion = query({
     )
 
     return answersWithUserInfo
+  },
+})
+
+export const getSubmittedUserIds = query({
+  args: {
+    gameStateId: v.id("gameStates"),
+  },
+  handler: async (ctx, args) => {
+    const gameState = await ctx.db.get(args.gameStateId)
+
+    if (!gameState) {
+      throw QUIZ_ERRORS.GAME_STATE_NOT_FOUND
+    }
+
+    if (!gameState.currentQuestionId) {
+      return []
+    }
+
+    // Get all answers for the current question
+    const playerAnswers = await ctx.db
+      .query("playerAnswers")
+      .withIndex("by_question", (q) =>
+        q.eq("questionId", gameState.currentQuestionId!)
+      )
+      .collect()
+
+    // Create a map of who has submitted
+    const submittedUserIds = new Set(
+      playerAnswers.map((answer) => answer.userId)
+    )
+
+    const submissionStatus = Array.from(submittedUserIds)
+
+    return submissionStatus
   },
 })
 

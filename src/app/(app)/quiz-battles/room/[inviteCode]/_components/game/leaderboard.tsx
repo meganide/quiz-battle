@@ -1,7 +1,7 @@
 "use client"
 
 import { useQuery } from "convex/react"
-import { Award, CheckCircle, Medal, Trophy, XCircle } from "lucide-react"
+import { Award, CheckCircle, Clock, Medal, Trophy, XCircle } from "lucide-react"
 
 import type { Id } from "~/convex/_generated/dataModel"
 
@@ -50,9 +50,15 @@ export function Leaderboard({
   // Get player answers for the current question when showing results
   const playerAnswers = useQuery(
     api.quiz.queries.getPlayerAnswersForQuestion,
-    showResults && currentQuestionId
-      ? { questionId: currentQuestionId }
+    showResults && currentQuestionId && gameStateId
+      ? { questionId: currentQuestionId, gameStateId }
       : "skip"
+  )
+
+  // Get player submission status for the current question during question phase
+  const submittedUserIds = useQuery(
+    api.quiz.queries.getSubmittedUserIds,
+    !showResults ? { gameStateId } : "skip"
   )
 
   // Helper function to get player's answer status for current question
@@ -63,6 +69,12 @@ export function Leaderboard({
       (answer) => answer.userId === userId
     )
     return playerAnswer?.isCorrect ?? null
+  }
+
+  function hasUserSubmitted(userId: Id<"users">) {
+    if (!submittedUserIds) return false
+
+    return submittedUserIds.includes(userId)
   }
 
   return (
@@ -89,6 +101,7 @@ export function Leaderboard({
             {playerScores?.map((playerScore, index) => {
               const position = index + 1
               const answerStatus = getPlayerAnswerStatus(playerScore.userId)
+              const hasSubmitted = hasUserSubmitted(playerScore.userId)
 
               return (
                 <article
@@ -173,6 +186,21 @@ export function Leaderboard({
                       ) : (
                         <div className="flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white shadow-md">
                           <XCircle className="h-4 w-4" />
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Submission Status Overlay Icon for Question Phase */}
+                  {!showResults && (
+                    <div className="absolute -top-1 -right-1">
+                      {hasSubmitted ? (
+                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-white shadow-md">
+                          <CheckCircle className="h-4 w-4" />
+                        </div>
+                      ) : (
+                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-400 text-white shadow-md">
+                          <Clock className="h-4 w-4" />
                         </div>
                       )}
                     </div>
