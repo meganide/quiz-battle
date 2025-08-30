@@ -1,7 +1,7 @@
 "use client"
 
 import { useQuery } from "convex/react"
-import { Award, Medal, Trophy } from "lucide-react"
+import { Award, CheckCircle, Medal, Trophy, XCircle } from "lucide-react"
 
 import type { Id } from "~/convex/_generated/dataModel"
 
@@ -94,7 +94,7 @@ export function Leaderboard({
                 <article
                   key={playerScore.userId}
                   className={cn(
-                    "flex max-w-sm items-center gap-3 rounded-lg border-2 bg-neutral-400/60 p-3 transition-all duration-200 hover:shadow-sm",
+                    "relative flex max-w-sm items-center gap-3 rounded-lg border-2 bg-neutral-400/60 p-3 transition-all duration-200 hover:shadow-sm",
                     {
                       "border-yellow-200 bg-gradient-to-r from-yellow-50 to-yellow-100 dark:border-yellow-800 dark:from-yellow-950/20 dark:to-yellow-900/20":
                         position === 1,
@@ -102,13 +102,15 @@ export function Leaderboard({
                         position === 2,
                       "border-amber-200 bg-gradient-to-r from-amber-50 to-amber-100 dark:border-amber-800 dark:from-amber-950/20 dark:to-amber-900/20":
                         position === 3,
-                      // Results phase visual feedback
-                      "border-green-500": showResults && answerStatus === true,
-                      "border-red-500": showResults && answerStatus === false,
+                      // Results phase visual feedback - enhanced backgrounds
+                      "border-green-300 bg-gradient-to-r from-green-100 to-green-200 dark:border-green-700":
+                        showResults && answerStatus === true,
+                      "border-red-300 bg-gradient-to-r from-red-100 to-red-200":
+                        showResults && answerStatus === false,
                     }
                   )}
                 >
-                  {/* Rank Icon and Answer Status */}
+                  {/* Rank Icon */}
                   {getRankIcon(position)}
 
                   {/* User Avatar */}
@@ -145,7 +147,7 @@ export function Leaderboard({
                     </p>
                   </div>
 
-                  {/* Score */}
+                  {/* Score and Answer Status */}
                   <div className="flex flex-col items-end gap-1">
                     <Badge
                       className={cn(
@@ -160,6 +162,21 @@ export function Leaderboard({
                       {playerScore.score.toLocaleString()}
                     </Badge>
                   </div>
+
+                  {/* Answer Status Overlay Icon */}
+                  {showResults && answerStatus !== null && (
+                    <div className="absolute -top-1 -right-1">
+                      {answerStatus ? (
+                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-green-500 text-white shadow-md">
+                          <CheckCircle className="h-4 w-4" />
+                        </div>
+                      ) : (
+                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white shadow-md">
+                          <XCircle className="h-4 w-4" />
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </article>
               )
             })}
