@@ -15,6 +15,8 @@ type LeaderboardProps = {
   currentQuestionNumber: number
   className?: string
   gameStateId: Id<"gameStates">
+  showResults?: boolean
+  currentQuestionId?: Id<"questions">
 }
 
 function getRankIcon(position: number) {
@@ -38,10 +40,30 @@ export function Leaderboard({
   currentQuestionNumber,
   className,
   gameStateId,
+  showResults = false,
+  currentQuestionId,
 }: LeaderboardProps) {
   const playerScores = useQuery(api.quiz.queries.getPlayerScores, {
     gameStateId: gameStateId,
   })
+
+  // Get player answers for the current question when showing results
+  const playerAnswers = useQuery(
+    api.quiz.queries.getPlayerAnswersForQuestion,
+    showResults && currentQuestionId
+      ? { questionId: currentQuestionId }
+      : "skip"
+  )
+
+  // Helper function to get player's answer status for current question
+  const getPlayerAnswerStatus = (userId: Id<"users">) => {
+    if (!showResults || !playerAnswers) return null
+
+    const playerAnswer = playerAnswers.find(
+      (answer) => answer.userId === userId
+    )
+    return playerAnswer?.isCorrect ?? null
+  }
 
   return (
     <Card
@@ -63,15 +85,16 @@ export function Leaderboard({
             <p className="text-xs">Be the first to answer!</p>
           </section>
         ) : (
-          <section className="space-y-2">
+          <section className="flex flex-col gap-2">
             {playerScores?.map((playerScore, index) => {
               const position = index + 1
+              const answerStatus = getPlayerAnswerStatus(playerScore.userId)
 
               return (
                 <article
                   key={playerScore.userId}
                   className={cn(
-                    "flex max-w-sm items-center gap-3 rounded-lg border bg-neutral-400/60 p-3 transition-all duration-200 hover:shadow-sm",
+                    "flex max-w-sm items-center gap-3 rounded-lg border-2 bg-neutral-400/60 p-3 transition-all duration-200 hover:shadow-sm",
                     {
                       "border-yellow-200 bg-gradient-to-r from-yellow-50 to-yellow-100 dark:border-yellow-800 dark:from-yellow-950/20 dark:to-yellow-900/20":
                         position === 1,
@@ -79,13 +102,14 @@ export function Leaderboard({
                         position === 2,
                       "border-amber-200 bg-gradient-to-r from-amber-50 to-amber-100 dark:border-amber-800 dark:from-amber-950/20 dark:to-amber-900/20":
                         position === 3,
+                      // Results phase visual feedback
+                      "border-green-500": showResults && answerStatus === true,
+                      "border-red-500": showResults && answerStatus === false,
                     }
                   )}
                 >
-                  {/* Rank Icon */}
-                  <div className="flex items-center justify-center">
-                    {getRankIcon(position)}
-                  </div>
+                  {/* Rank Icon and Answer Status */}
+                  {getRankIcon(position)}
 
                   {/* User Avatar */}
                   <Avatar

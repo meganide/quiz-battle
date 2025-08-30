@@ -4,23 +4,46 @@ import React from "react"
 
 import { Progress } from "@/components/ui/progress"
 import { cn } from "@/lib/utils"
+import { SHOW_RESULTS_TIME_MILLISECONDS } from "~/convex/quiz/constants"
 
 type TimerProps = {
   duration: number
-  timeStartedAt: number
+  questionStartTime: number
+  phase?: "question" | "results"
+  resultsStartTime?: number
 }
 
-export function Timer({ duration, timeStartedAt }: TimerProps) {
+const RESULTS_DURATION = SHOW_RESULTS_TIME_MILLISECONDS / 1000 // seconds
+
+export function Timer({
+  duration,
+  questionStartTime,
+  phase = "question",
+  resultsStartTime,
+}: TimerProps) {
   const [timeLeft, setTimeLeft] = React.useState(duration)
   const animationFrameRef = React.useRef<number | null>(null)
 
   React.useEffect(() => {
-    if (duration <= 0 || timeStartedAt <= 0) return
+    if (phase === "question" && (duration <= 0 || questionStartTime <= 0))
+      return
+    if (phase === "results" && (!resultsStartTime || resultsStartTime <= 0))
+      return
 
     const updateTimer = () => {
-      const elapsed = (Date.now() - timeStartedAt) / 1000
-      const remaining = Math.max(0, duration - elapsed)
+      let elapsed: number
+      let maxDuration: number
 
+      if (phase === "results" && resultsStartTime) {
+        elapsed = (Date.now() - resultsStartTime) / 1000
+        maxDuration = RESULTS_DURATION
+      } else {
+        // Question phase: countdown from question duration
+        elapsed = (Date.now() - questionStartTime) / 1000
+        maxDuration = duration
+      }
+
+      const remaining = Math.max(0, maxDuration - elapsed)
       setTimeLeft(remaining)
 
       if (remaining <= 0) {
@@ -38,27 +61,34 @@ export function Timer({ duration, timeStartedAt }: TimerProps) {
         cancelAnimationFrame(animationFrameRef.current)
       }
     }
-  }, [duration, timeStartedAt])
+  }, [duration, questionStartTime, phase, resultsStartTime])
 
-  const progressValue = duration > 0 ? (timeLeft / duration) * 100 : 0
+  // Calculate progress value based on phase
+  const maxDuration = phase === "results" ? RESULTS_DURATION : duration
+  const progressValue = maxDuration > 0 ? (timeLeft / maxDuration) * 100 : 0
   const isLowTime = timeLeft <= 10 && timeLeft > 0
 
   return (
     <section className={cn("flex flex-col items-center gap-1")}>
+      {phase === "results" && (
+        <p className="text-muted-foreground mb-1 text-sm">Next question in:</p>
+      )}
       <Progress
         value={progressValue}
         className={cn(
           "w-full transition-all duration-75 ease-linear",
-          isLowTime && "[&>div]:bg-red-500"
+          isLowTime && "[&>div]:bg-red-500",
+          phase === "results" && "[&>div]:bg-blue-500"
         )}
       />
       <p
         className={cn(
           "text-2xl font-bold transition-colors",
-          isLowTime && "animate-pulse text-red-500"
+          isLowTime && "animate-pulse text-red-500",
+          phase === "results" && "text-blue-600"
         )}
       >
-        {formatTime(timeLeft)}
+        {phase === "results" ? Math.ceil(timeLeft) : formatTime(timeLeft)}
       </p>
     </section>
   )

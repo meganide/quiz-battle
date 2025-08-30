@@ -69,6 +69,33 @@ export const getPlayerScores = query({
   },
 })
 
+export const getPlayerAnswersForQuestion = query({
+  args: {
+    questionId: v.id("questions"),
+  },
+  handler: async (ctx, args) => {
+    const playerAnswers = await ctx.db
+      .query("playerAnswers")
+      .withIndex("by_question", (q) => q.eq("questionId", args.questionId))
+      .collect()
+
+    const answersWithUserInfo = await Promise.all(
+      playerAnswers.map(async (answer) => {
+        const user = await ctx.db.get(answer.userId)
+        return {
+          ...answer,
+          user: {
+            name: user?.name,
+            image: user?.image,
+          },
+        }
+      })
+    )
+
+    return answersWithUserInfo
+  },
+})
+
 export const isLastQuestion = internalQuery({
   args: {
     roomId: v.id("rooms"),
