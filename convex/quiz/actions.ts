@@ -1,6 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server"
 import { v } from "convex/values"
 
+import { SHOW_RESULTS_TIME_MILLISECONDS } from "./constants"
 import { QuizErrorCodes } from "./errors"
 import { generateQuizQuestions } from "./utils"
 import { api, internal } from "../_generated/api"
@@ -63,5 +64,40 @@ export const showResults = internalAction({
   },
   handler: async (ctx, args) => {
     const { roomId, gameStateId } = args
+
+    await ctx.runMutation(internal.quiz.mutations.updatePlayerScores, {
+      roomId,
+    })
+
+    await ctx.runMutation(internal.quiz.mutations.changeGameStateToResults, {
+      gameStateId,
+    })
+
+    console.log("update and go next")
+
+    const isLastQuestion = await ctx.runQuery(
+      internal.quiz.queries.isLastQuestion,
+      {
+        roomId,
+        gameStateId,
+      }
+    )
+
+    if (isLastQuestion) {
+      await ctx.runMutation(internal.quiz.mutations.changeRoomToCompleted, {
+        roomId,
+      })
+
+      return
+    }
+
+    await ctx.scheduler.runAfter(
+      SHOW_RESULTS_TIME_MILLISECONDS,
+      internal.quiz.mutations.nextQuestion,
+      {
+        roomId,
+        gameStateId,
+      }
+    )
   },
 })

@@ -1,7 +1,8 @@
 import { v } from "convex/values"
 
 import { QUIZ_ERRORS } from "./errors"
-import { query } from "../_generated/server"
+import { internalQuery, query } from "../_generated/server"
+import { ROOM_ERRORS } from "../rooms/errors"
 
 export const getGameState = query({
   args: {
@@ -65,5 +66,27 @@ export const getPlayerScores = query({
     )
 
     return sortedPlayerScoresDescending
+  },
+})
+
+export const isLastQuestion = internalQuery({
+  args: {
+    roomId: v.id("rooms"),
+    gameStateId: v.id("gameStates"),
+  },
+  handler: async (ctx, args) => {
+    const gameState = await ctx.db.get(args.gameStateId)
+
+    if (!gameState) {
+      throw QUIZ_ERRORS.GAME_STATE_NOT_FOUND
+    }
+
+    const room = await ctx.db.get(args.roomId)
+
+    if (!room) {
+      throw ROOM_ERRORS.ROOM_NOT_FOUND
+    }
+
+    return gameState.currentQuestionIndex === room.numQuestions - 1
   },
 })

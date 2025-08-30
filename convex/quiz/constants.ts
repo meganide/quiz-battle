@@ -1,0 +1,1 @@
+export const SHOW_RESULTS_TIME_MILLISECONDS = 6000 as const
