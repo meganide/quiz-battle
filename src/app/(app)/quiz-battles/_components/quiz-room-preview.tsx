@@ -187,15 +187,17 @@ export function QuizRoomPreview({ room }: QuizRoomPreviewProps) {
 
       {/* Actions */}
       <footer className="flex items-center justify-end gap-3">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="secondary" onClick={goToRoom}>
-              <Eye />
-              Spectate
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Spectate room</TooltipContent>
-        </Tooltip>
+        {!isInRoom && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="secondary" onClick={goToRoom}>
+                <Eye />
+                Spectate
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Spectate room</TooltipContent>
+          </Tooltip>
+        )}
 
         {renderJoinButton()}
       </footer>
