@@ -2,22 +2,29 @@
 
 import { useQuery } from "convex/react"
 
+import type { Doc } from "~/convex/_generated/dataModel"
 import type { GameState } from "~/convex/quiz/types"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useUser } from "@/hooks/use-user"
 import { cn } from "@/lib/utils"
 import { api } from "~/convex/_generated/api"
 
 import { useSubmitAnswer } from "../../_hooks/use-submit-answer"
 
-type QuestionFormProps = GameState
+type QuestionFormProps = GameState & {
+  room: Doc<"rooms">
+}
 
 export function QuestionForm({
   gameState,
   currentQuestion,
+  room,
 }: QuestionFormProps) {
+  const user = useUser()
+
   const { selectedAnswerIndex, submitAnswer } = useSubmitAnswer({ gameState })
 
   // Get player answers for results phase
@@ -44,6 +51,10 @@ export function QuestionForm({
     }
   }
 
+  const hasJoinedRoom = user?._id
+    ? room.gamePlayerIds.includes(user._id)
+    : false
+
   return (
     <Card className="h-fit">
       <CardHeader>
@@ -60,7 +71,7 @@ export function QuestionForm({
           return (
             <Button
               key={answer}
-              disabled={isResultsPhase}
+              disabled={isResultsPhase || !hasJoinedRoom}
               variant="outline"
               className={cn(
                 "flex h-full w-full flex-col items-start gap-0 border-none text-base whitespace-pre-line transition-colors disabled:opacity-100 lg:py-5 lg:text-lg",

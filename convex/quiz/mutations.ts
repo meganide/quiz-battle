@@ -159,6 +159,12 @@ export const submitAnswer = mutation({
       throw RoomErrorCodes.ROOM_NOT_FOUND
     }
 
+    const hasUserJoinedRoom = room.gamePlayerIds.includes(userId)
+
+    if (!hasUserJoinedRoom) {
+      throw ROOM_ERRORS.NOT_IN_ROOM
+    }
+
     const GRACE_PERIOD_MILLISECONDS = 3 * 1000
 
     const hasQuestionTimeExpired =

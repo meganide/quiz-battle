@@ -29,7 +29,11 @@ export function GameLoop({ room, gameState, currentQuestion }: GameLoopProps) {
         <Timer duration={room.timePerQuestion} gameState={gameState} />
       </header>
       <section className="grid h-full min-h-0 grid-cols-1 gap-4 xl:grid-cols-[1fr_325px]">
-        <QuestionForm currentQuestion={currentQuestion} gameState={gameState} />
+        <QuestionForm
+          currentQuestion={currentQuestion}
+          gameState={gameState}
+          room={room}
+        />
         <Leaderboard
           currentQuestionId={isResultsPhase ? currentQuestion._id : undefined}
           gameStateId={gameState._id}
