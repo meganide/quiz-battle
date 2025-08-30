@@ -106,7 +106,22 @@ export function Results({ room }: ResultsProps) {
             </CardDescription>
           </CardHeader>
           <CardContent className="p-4 sm:p-6">
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-3">
+              {/* Room Name */}
+              <article className="rounded-lg bg-muted/50 p-4">
+                <div className="flex flex-col gap-2">
+                  <div className="rounded-lg bg-primary p-2 text-primary-foreground w-fit">
+                    <Crown className="size-4" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground">Room</p>
+                    <p className="text-sm font-bold sm:text-base">
+                      {room.name}
+                    </p>
+                  </div>
+                </div>
+              </article>
+
               {/* Topic */}
               <article className="rounded-lg bg-muted/50 p-4">
                 <div className="flex flex-col gap-2">
@@ -160,6 +175,21 @@ export function Results({ room }: ResultsProps) {
                     <p className="text-xs font-medium text-muted-foreground">Players</p>
                     <p className="text-sm font-bold sm:text-base">
                       {gameResults.playerScores.length}
+                    </p>
+                  </div>
+                </div>
+              </article>
+
+              {/* Number of Questions */}
+              <article className="rounded-lg bg-muted/50 p-4">
+                <div className="flex flex-col gap-2">
+                  <div className="rounded-lg bg-primary p-2 text-primary-foreground w-fit">
+                    <Target className="size-4" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground">Questions</p>
+                    <p className="text-sm font-bold sm:text-base">
+                      {room.numQuestions}
                     </p>
                   </div>
                 </div>
