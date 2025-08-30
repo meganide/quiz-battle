@@ -67,7 +67,6 @@ export function useTimer({ gameState, duration }: UseTimerProps) {
     }
 
     updateTimer()
-    animationFrameRef.current = requestAnimationFrame(updateTimer)
 
     return () => {
       if (animationFrameRef.current) {
@@ -79,8 +78,11 @@ export function useTimer({ gameState, duration }: UseTimerProps) {
 
   // Calculate progress value based on phase
   const maxDuration = isResultsPhase ? RESULTS_DURATION : duration
-  const progressValue = maxDuration > 0 ? (timeLeft / maxDuration) * 100 : 0
+  const progressValue =
+    maxDuration > 0 ? Math.ceil((timeLeft / maxDuration) * 100) : 0
   const isLowTime = timeLeft <= 10 && timeLeft > 0
+
+  console.log({ progressValue, timeLeft })
 
   return { progressValue, isLowTime, timeLeft, disableAnimation }
 }

@@ -36,16 +36,8 @@ export function Timer({ duration, gameState }: TimerProps) {
           gameState.phase === "results" && "text-blue-600"
         )}
       >
-        {gameState.phase === "results"
-          ? Math.ceil(timeLeft)
-          : formatTime(timeLeft)}
+        {Math.floor(timeLeft)}
       </p>
     </section>
   )
-}
-
-function formatTime(seconds: number): string {
-  const mins = Math.floor(seconds / 60)
-  const secs = Math.floor(seconds % 60)
-  return `${mins}:${secs.toString().padStart(2, "0")}`
 }

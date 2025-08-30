@@ -16,6 +16,7 @@ function Progress({
   disableAnimation = false,
   ...props
 }: ProgressProps) {
+  const clampedValue = Math.max(0, Math.min(100, Number(value ?? 0)))
   return (
     <ProgressPrimitive.Root
       data-slot="progress"
@@ -26,13 +27,12 @@ function Progress({
       {...props}
     >
       <ProgressPrimitive.Indicator
-        className={cn("bg-primary h-full w-full flex-1 transition-all")}
         data-slot="progress-indicator"
-        style={
-          disableAnimation
-            ? undefined
-            : { transform: `translateX(-${100 - (value || 0)}%)` }
-        }
+        style={{ transform: `translateX(-${100 - clampedValue}%)` }}
+        className={cn(
+          "bg-primary h-full w-full flex-1 transition-all",
+          disableAnimation && "transition-none"
+        )}
       />
     </ProgressPrimitive.Root>
   )
