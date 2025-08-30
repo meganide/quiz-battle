@@ -30,17 +30,15 @@ export function Timer({ duration, gameState }: TimerProps) {
         disableAnimation={disableAnimation}
         durationMs={progressDurationMs}
         value={progressValue}
-        className={cn("w-full", {
+        className={cn("[&>div]:bg-primary w-full", {
           "[&>div]:bg-destructive": isLowTime,
-          "[&>div]:bg-primary": gameState.phase === "results",
         })}
       />
       <p
-        className={cn(
-          "text-2xl font-bold",
-          isLowTime && "text-destructive animate-pulse",
-          gameState.phase === "results" && "text-primary"
-        )}
+        className={cn("text-foreground text-2xl font-bold", {
+          "text-destructive animate-pulse":
+            isLowTime && gameState.phase === "question",
+        })}
       >
         {Math.floor(timeLeft)}
       </p>
