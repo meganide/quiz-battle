@@ -58,7 +58,7 @@ export function Game({ room }: GameProps) {
   }, [gameState?.gameState.currentQuestionIndex])
 
   return (
-    <Container className="flex h-full min-h-0 flex-col gap-6">
+    <Container className="flex flex-col gap-6 xl:h-[calc(100svh-96px)]">
       <header className="flex flex-col gap-4">
         {gameState?.currentQuestion && (
           <p className="text-center text-lg font-semibold">

@@ -41,33 +41,25 @@ function getRankIcon(position: number) {
   }
 }
 
-function getRankBadgeVariant(position: number) {
-  switch (position) {
-    case 1:
-      return "default" as const
-    case 2:
-      return "secondary" as const
-    case 3:
-      return "outline" as const
-    default:
-      return "outline" as const
-  }
-}
-
 export function Leaderboard({
   playerScores,
   currentQuestionNumber,
   className,
 }: LeaderboardProps) {
   return (
-    <Card className={cn("max-h-full", className)}>
+    <Card
+      className={cn(
+        "h-full max-h-[500px] min-h-0 pr-1 xl:max-h-full",
+        className
+      )}
+    >
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
           <Trophy className="size-5 text-yellow-500" />
           Leaderboard
         </CardTitle>
       </CardHeader>
-      <CardContent className="max-h-full space-y-3 overflow-y-auto">
+      <CardContent className="min-h-0 space-y-3 overflow-y-auto pr-2 pl-6">
         {playerScores.length === 0 ? (
           <section className="text-muted-foreground py-8 text-center">
             <p className="text-sm">No scores yet...</p>
@@ -83,7 +75,7 @@ export function Leaderboard({
                 <article
                   key={playerScore.userId}
                   className={cn(
-                    "flex max-w-sm items-center gap-3 rounded-lg border p-3 transition-all duration-200 hover:shadow-sm",
+                    "flex max-w-sm items-center gap-3 rounded-lg border bg-neutral-400/60 p-3 transition-all duration-200 hover:shadow-sm",
                     {
                       "border-yellow-200 bg-gradient-to-r from-yellow-50 to-yellow-100 dark:border-yellow-800 dark:from-yellow-950/20 dark:to-yellow-900/20":
                         position === 1,
@@ -136,11 +128,14 @@ export function Leaderboard({
                   {/* Score */}
                   <div className="flex flex-col items-end gap-1">
                     <Badge
-                      variant={getRankBadgeVariant(position)}
-                      className={cn("text-xs font-bold", {
-                        "bg-yellow-500 text-yellow-50 hover:bg-yellow-600":
-                          position === 1,
-                      })}
+                      className={cn(
+                        "bg-secondary text-secondary-foreground border-none text-sm font-bold",
+                        {
+                          "bg-yellow-500 text-yellow-50": position === 1,
+                          "bg-gray-500 text-gray-50": position === 2,
+                          "bg-amber-500 text-amber-50": position === 3,
+                        }
+                      )}
                     >
                       {playerScore.score.toLocaleString()}
                     </Badge>
