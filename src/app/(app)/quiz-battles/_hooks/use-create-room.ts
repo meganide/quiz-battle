@@ -27,7 +27,7 @@ export function useCreateRoom() {
     defaultValues: {
       name: "",
       isPrivate: false,
-      topic: "",
+      topics: "",
       numQuestions: 10,
       difficulty: "medium" as const,
       timePerQuestion: 30,

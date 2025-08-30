@@ -9,7 +9,7 @@ export default defineSchema({
     name: v.string(),
     hostId: v.id("users"),
     isPrivate: v.boolean(),
-    topic: v.string(),
+    topics: v.string(),
     numQuestions: v.number(),
     difficulty: v.union(
       v.literal("easy"),

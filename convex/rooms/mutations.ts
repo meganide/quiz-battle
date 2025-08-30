@@ -10,7 +10,7 @@ export const create = mutation({
   args: {
     name: v.string(),
     isPrivate: v.boolean(),
-    topic: v.string(),
+    topics: v.string(),
     numQuestions: v.number(),
     difficulty: v.union(
       v.literal("easy"),
@@ -42,7 +42,7 @@ export const create = mutation({
       name: args.name,
       hostId: userId,
       isPrivate: args.isPrivate,
-      topic: args.topic,
+      topics: args.topics,
       numQuestions: args.numQuestions,
       difficulty: args.difficulty,
       timePerQuestion: args.timePerQuestion,

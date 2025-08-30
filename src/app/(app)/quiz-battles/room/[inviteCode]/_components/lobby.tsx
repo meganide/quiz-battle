@@ -130,7 +130,7 @@ export function Lobby({ room }: LobbyProps) {
                   Topic
                 </p>
                 <p className="text-foreground text-sm font-semibold">
-                  {room.topic}
+                  {room.topics}
                 </p>
               </div>
               <div className="flex items-center justify-between">

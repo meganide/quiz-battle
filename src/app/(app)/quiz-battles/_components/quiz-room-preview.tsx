@@ -115,9 +115,9 @@ export function QuizRoomPreview({ room }: QuizRoomPreviewProps) {
 
             <div className="flex flex-col gap-1">
               <h4 className="text-xs font-semibold tracking-wider text-neutral-300 uppercase">
-                Topic
+                Topics
               </h4>
-              <p className="leading-4 text-neutral-100">{room.topic}</p>
+              <p className="leading-4 text-neutral-100">{room.topics}</p>
             </div>
 
             <RoomBadges className="md:hidden" room={room} />

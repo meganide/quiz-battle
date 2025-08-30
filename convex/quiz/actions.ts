@@ -43,7 +43,7 @@ export const startQuiz = action({
     }
 
     const aiQuestions = await generateQuizQuestions(
-      room.topic,
+      room.topics,
       room.numQuestions,
       room.difficulty
     )
