@@ -35,7 +35,7 @@ export function Game({ room }: GameProps) {
 
   const currentQuestionNumber = gameState?.currentQuestion.questionIndex
     ? gameState.currentQuestion.questionIndex + 1
-    : 0
+    : 1
 
   function submitAnswer(answerIndex: number) {
     if (!gameState?.gameState._id) {
@@ -58,7 +58,7 @@ export function Game({ room }: GameProps) {
   }, [gameState?.gameState.currentQuestionIndex])
 
   return (
-    <Container className="flex flex-col gap-6">
+    <Container className="flex h-full min-h-0 flex-col gap-6">
       <header className="flex flex-col gap-4">
         {gameState?.currentQuestion && (
           <p className="text-center text-lg font-semibold">
@@ -70,10 +70,10 @@ export function Game({ room }: GameProps) {
           timeStartedAt={gameState?.gameState.questionStartTime ?? Date.now()}
         />
       </header>
-      <section className="flex flex-col gap-4 xl:flex-row">
-        <Card className="flex-2">
+      <section className="grid h-full min-h-0 grid-cols-1 gap-4 xl:grid-cols-[1fr_325px]">
+        <Card className="h-fit">
           <CardHeader>
-            <CardTitle className="text-center text-xl leading-normal">
+            <CardTitle className="text-center text-lg leading-normal lg:text-xl">
               {gameState?.currentQuestion.question}
             </CardTitle>
           </CardHeader>
@@ -83,7 +83,7 @@ export function Game({ room }: GameProps) {
                 key={answer}
                 variant="outline"
                 className={cn(
-                  "w-full py-8 text-lg transition-colors hover:bg-neutral-400",
+                  "h-full w-full text-base whitespace-pre-line transition-colors hover:bg-neutral-400 lg:py-8 lg:text-lg",
                   {
                     "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground":
                       selectedAnswerIndex === index ||
@@ -98,7 +98,6 @@ export function Game({ room }: GameProps) {
           </CardContent>
         </Card>
         <Leaderboard
-          className="flex-1"
           playerScores={playerScores || []}
           currentQuestionNumber={
             currentQuestionNumber === 0 ? 0 : currentQuestionNumber - 1

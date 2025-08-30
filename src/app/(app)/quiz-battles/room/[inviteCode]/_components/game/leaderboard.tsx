@@ -61,13 +61,13 @@ export function Leaderboard({
 }: LeaderboardProps) {
   return (
     <Card className={cn("h-fit", className)}>
-      <CardHeader className="pb-3">
+      <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
           <Trophy className="size-5 text-yellow-500" />
           Leaderboard
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="max-h-full space-y-3 overflow-y-auto">
         {playerScores.length === 0 ? (
           <section className="text-muted-foreground py-8 text-center">
             <p className="text-sm">No scores yet...</p>
@@ -83,7 +83,7 @@ export function Leaderboard({
                 <article
                   key={playerScore.userId}
                   className={cn(
-                    "flex items-center gap-3 rounded-lg border p-3 transition-all duration-200 hover:shadow-sm",
+                    "flex max-w-sm items-center gap-3 rounded-lg border p-3 transition-all duration-200 hover:shadow-sm",
                     {
                       "border-yellow-200 bg-gradient-to-r from-yellow-50 to-yellow-100 dark:border-yellow-800 dark:from-yellow-950/20 dark:to-yellow-900/20":
                         position === 1,
@@ -118,7 +118,13 @@ export function Leaderboard({
 
                   {/* User Info */}
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium">
+                    <p
+                      className={cn("truncate text-sm font-medium", {
+                        "text-yellow-500": position === 1,
+                        "text-gray-500": position === 2,
+                        "text-amber-500": position === 3,
+                      })}
+                    >
                       {playerScore.user.name || "Anonymous"}
                     </p>
                     <p className="text-muted-foreground text-xs">

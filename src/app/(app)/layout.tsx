@@ -23,7 +23,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <NavSidebar width="w-50" />
         <SidebarInset className="relative flex h-full w-full min-w-0 flex-1">
           <AppNavbar setIsChatSidebarOpen={setIsChatSidebarOpen} />
-          <main className="overflow-y-auto pb-16 lg:pb-0">{children}</main>
+          <main className="flex h-full min-h-0 flex-1 flex-col overflow-y-auto pb-16 lg:pb-0">
+            {children}
+          </main>
         </SidebarInset>
       </SidebarProvider>
       <SidebarProvider
