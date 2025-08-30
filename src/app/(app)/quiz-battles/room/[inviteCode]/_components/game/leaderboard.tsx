@@ -49,7 +49,7 @@ export function Leaderboard({
   return (
     <Card
       className={cn(
-        "h-full max-h-[500px] min-h-0 pr-1 xl:max-h-full",
+        "h-full max-h-[500px] min-h-0 pr-1 xl:h-fit xl:max-h-full",
         className
       )}
     >
