@@ -83,9 +83,10 @@ export function QuestionForm({
                   "hover:bg-neutral-400": !isResultsPhase && !isSelectedByUser,
 
                   // Results phase styling
-                  "bg-green-100 text-green-800":
+                  "bg-green-100 text-green-800 hover:bg-green-100":
                     isResultsPhase && isCorrectAnswer,
-                  "bg-red-100 text-red-800": isResultsPhase && !isCorrectAnswer,
+                  "bg-red-100 text-red-800 hover:bg-red-100":
+                    isResultsPhase && !isCorrectAnswer,
                 }
               )}
               onClick={() => !isResultsPhase && submitAnswer(index)}
