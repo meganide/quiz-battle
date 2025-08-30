@@ -1,9 +1,11 @@
 import { getAuthUserId } from "@convex-dev/auth/server"
 import { v } from "convex/values"
 
+import type { Doc } from "../_generated/dataModel"
+
 import { ROOM_ERRORS } from "./errors"
 import { generateUniqueInviteCode, leaveAllActiveRooms } from "./utils"
-import { mutation } from "../_generated/server"
+import { internalMutation, mutation } from "../_generated/server"
 import { USER_ERRORS } from "../users/errors"
 
 export const create = mutation({
@@ -146,5 +148,29 @@ export const leave = mutation({
     await ctx.db.patch(room._id, {
       gamePlayerIds,
     })
+  },
+})
+
+export const updateStatus = internalMutation({
+  args: {
+    roomId: v.id("rooms"),
+    status: v.union(
+      v.literal("lobby"),
+      v.literal("ongoing"),
+      v.literal("completed")
+    ),
+  },
+  handler: async (ctx, args) => {
+    const { roomId, status } = args
+
+    const updateRoomInfo: Partial<Doc<"rooms">> = {
+      status,
+    }
+
+    if (status === "completed") {
+      updateRoomInfo.completedAt = Date.now()
+    }
+
+    await ctx.db.patch(roomId, updateRoomInfo)
   },
 })

@@ -357,14 +357,13 @@ export const scorePhase = internalMutation({
       gameState.currentQuestionIndex === room.numQuestions - 1
 
     if (isLastQuestion) {
-      await new Promise((resolve) =>
-        setTimeout(resolve, TIMERS_MILLISECONDS.SCORE_PHASE)
+      await ctx.scheduler.runAfter(
+        TIMERS_MILLISECONDS.SCORE_PHASE,
+        internal.quiz.actions.finishQuiz,
+        {
+          roomId,
+        }
       )
-
-      await ctx.db.patch(roomId, {
-        status: "completed",
-        completedAt: Date.now(),
-      })
 
       return
     }

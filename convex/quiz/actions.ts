@@ -39,3 +39,17 @@ export const generateAiQuestions = internalAction({
     })
   },
 })
+
+export const finishQuiz = internalAction({
+  args: {
+    roomId: v.id("rooms"),
+  },
+  handler: async (ctx, args) => {
+    const { roomId } = args
+
+    await ctx.runMutation(internal.rooms.mutations.updateStatus, {
+      roomId,
+      status: "completed",
+    })
+  },
+})
