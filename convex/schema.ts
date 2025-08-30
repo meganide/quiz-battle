@@ -39,12 +39,6 @@ export default defineSchema({
     question: v.string(),
     answers: v.array(v.string()),
     correctAnswerIndex: v.number(),
-    topic: v.string(),
-    difficulty: v.union(
-      v.literal("easy"),
-      v.literal("medium"),
-      v.literal("hard")
-    ),
   })
     .index("by_game_state", ["gameStateId"])
     .index("by_game_and_index", ["gameStateId", "questionIndex"]),
@@ -53,24 +47,17 @@ export default defineSchema({
     roomId: v.id("rooms"),
     currentQuestionIndex: v.number(),
     currentQuestionId: v.optional(v.id("questions")),
-    phase: v.union(
-      v.literal("waiting"),
-      v.literal("question"),
-      v.literal("results"),
-      v.literal("finished")
-    ),
+    phase: v.union(v.literal("question"), v.literal("results")),
     questionStartTime: v.optional(v.number()),
+    scheduledFunctionId: v.optional(v.id("_scheduled_functions")),
     updatedAt: v.number(),
-  })
-    .index("by_room", ["roomId"])
-    .index("by_phase", ["phase"]),
+  }).index("by_room", ["roomId"]),
 
   playerScores: defineTable({
     gameStateId: v.id("gameStates"),
     userId: v.id("users"),
     score: v.number(),
     correctAnswers: v.number(),
-    totalAnswered: v.number(),
     updatedAt: v.number(),
   })
     .index("by_game_state", ["gameStateId"])

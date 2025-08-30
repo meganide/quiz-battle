@@ -23,7 +23,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <NavSidebar width="w-50" />
         <SidebarInset className="relative flex h-full w-full min-w-0 flex-1">
           <AppNavbar setIsChatSidebarOpen={setIsChatSidebarOpen} />
-          <main className="overflow-y-auto pb-16 lg:pb-0">{children}</main>
+          <main className="flex-1 overflow-y-auto pb-14 lg:pb-0">
+            {children}
+          </main>
+          <MobileBottomNavbar
+            onToggleChatSidebar={() => setIsChatSidebarOpen(!isChatSidebarOpen)}
+            onToggleNavSidebar={() => setIsNavSidebarOpen(!isNavSidebarOpen)}
+          />
         </SidebarInset>
       </SidebarProvider>
       <SidebarProvider
@@ -33,11 +39,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       >
         <ChatSidebar width="w-80" onClose={() => setIsChatSidebarOpen(false)} />
       </SidebarProvider>
-
-      <MobileBottomNavbar
-        onToggleChatSidebar={() => setIsChatSidebarOpen(!isChatSidebarOpen)}
-        onToggleNavSidebar={() => setIsNavSidebarOpen(!isNavSidebarOpen)}
-      />
     </section>
   )
 }

@@ -10,7 +10,9 @@ import { HeaderTitle } from "@/components/header-title"
 import { Spinner } from "@/components/spinner"
 import { api } from "~/convex/_generated/api"
 
+import { Game } from "./_components/game/game"
 import { Lobby } from "./_components/lobby"
+import { Results } from "./_components/results"
 import { RoomDoesntExist } from "./_components/room-doesnt-exist"
 
 type RoomPageProps = {
@@ -46,6 +48,15 @@ export default function RoomPage({ params }: RoomPageProps) {
   }
 
   if (room.status === "lobby") {
-    return <Lobby inviteCode={inviteCode} room={room} />
+    return <Lobby room={room} />
+  }
+
+  if (room.status === "ongoing") {
+    return <Game room={room} />
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  if (room.status === "completed") {
+    return <Results />
   }
 }

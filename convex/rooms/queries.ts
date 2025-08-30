@@ -27,35 +27,27 @@ export const list = query({
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx)
 
-    const [publicRooms, myPrivateRooms] = await Promise.all([
-      ctx.db
-        .query("rooms")
-        .filter((q) =>
-          q.and(
-            q.eq(q.field("isPrivate"), false),
-            q.eq(q.field("status"), "lobby")
+    const rooms = await ctx.db
+      .query("rooms")
+      .filter((q) =>
+        q.and(
+          q.or(
+            q.eq(q.field("status"), "lobby"),
+            q.eq(q.field("status"), "ongoing")
           )
         )
-        .collect(),
-      ctx.db
-        .query("rooms")
-        .filter((q) =>
-          q.and(
-            q.eq(q.field("isPrivate"), true),
-            q.eq(q.field("hostId"), userId),
-            q.eq(q.field("status"), "lobby")
-          )
-        )
-        .collect(),
-    ])
+      )
+      .collect()
 
-    const allRooms = [...publicRooms, ...myPrivateRooms]
+    const sortedRooms = sortRoomsByCreationDate(rooms, userId)
 
-    const sortedRooms = sortRoomsByCreationDate(allRooms, userId)
+    const numberOfActiveRooms = rooms.filter(
+      (room) => room.isPrivate === false
+    ).length
 
     return {
       rooms: sortedRooms,
-      numberOfActiveRooms: publicRooms.length,
+      numberOfActiveRooms,
     }
   },
 })
@@ -71,11 +63,26 @@ export const getCurrentRoom = query({
 
     const rooms = await ctx.db
       .query("rooms")
-      .filter((q) => q.eq(q.field("status"), "lobby"))
+      .filter((q) =>
+        q.or(
+          q.eq(q.field("status"), "lobby"),
+          q.eq(q.field("status"), "ongoing")
+        )
+      )
       .collect()
 
     const userRoom = rooms.find((room) => room.gamePlayerIds.includes(userId))
 
     return userRoom || null
+  },
+})
+
+export const getById = query({
+  args: {
+    roomId: v.id("rooms"),
+  },
+  handler: async (ctx, args) => {
+    const room = await ctx.db.get(args.roomId)
+    return room
   },
 })

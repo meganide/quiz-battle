@@ -9,6 +9,7 @@ export enum RoomErrorCodes {
   ALREADY_IN_ROOM = "ALREADY_IN_ROOM",
   NOT_IN_ROOM = "NOT_IN_ROOM",
   CANNOT_LEAVE_ROOM = "CANNOT_LEAVE_ROOM",
+  ROOM_HAS_ALREADY_STARTED = "ROOM_HAS_ALREADY_STARTED",
 }
 
 export const ROOM_ERRORS = {
@@ -39,10 +40,14 @@ export const ROOM_ERRORS = {
   }),
   NOT_IN_ROOM: new ConvexError({
     code: RoomErrorCodes.NOT_IN_ROOM,
-    message: "Not in this room",
+    message: "You are not in this room",
   }),
   CANNOT_LEAVE_ROOM: new ConvexError({
     code: RoomErrorCodes.CANNOT_LEAVE_ROOM,
     message: "Cannot leave room, game is in progress",
+  }),
+  ROOM_HAS_ALREADY_STARTED: new ConvexError({
+    code: RoomErrorCodes.ROOM_HAS_ALREADY_STARTED,
+    message: "Game has already started",
   }),
 } as const

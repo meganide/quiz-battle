@@ -15,7 +15,7 @@ export default function HomePage() {
           <div className="bg-primary/10 absolute -top-20 -right-20 h-40 w-40 rounded-full blur-3xl md:-top-32 md:-right-32 md:h-64 md:w-64" />
           <div className="bg-primary/5 absolute -bottom-10 -left-10 h-32 w-32 rounded-full blur-2xl md:-bottom-16 md:-left-16 md:h-48 md:w-48" />
 
-          <CardContent className="relative px-3 py-8 sm:px-6 sm:py-12 md:py-20">
+          <CardContent className="relative px-3 py-4 md:py-8">
             <article className="grid gap-8 sm:gap-12 md:gap-16">
               {/* Hero Section */}
               <header className="space-y-6 text-center sm:space-y-8">

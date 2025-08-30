@@ -1,24 +1,31 @@
-import { useMutation } from "convex/react"
+import React from "react"
+
+import { useAction, useMutation } from "convex/react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
 import type { Doc } from "~/convex/_generated/dataModel"
 
+import { Spinner } from "@/components/spinner"
 import { Button } from "@/components/ui/button"
 import { useUser } from "@/hooks/use-user"
 import { api } from "~/convex/_generated/api"
 
 type HeaderActionsProps = {
-  inviteCode: string
   room: Doc<"rooms">
 }
 
-export function HeaderActions({ inviteCode, room }: HeaderActionsProps) {
+export function HeaderActions({ room }: HeaderActionsProps) {
+  const [isStarting, setIsStarting] = React.useState(false)
+
   const leaveRoomMutation = useMutation(api.rooms.mutations.leave)
   const joinRoomMutation = useMutation(api.rooms.mutations.join)
+  const startQuizAction = useAction(api.quiz.actions.startQuiz)
+
   const user = useUser()
   const router = useRouter()
   const isInRoom = !!user && room.gamePlayerIds.includes(user._id)
+  const isHost = room.hostId === user?._id
 
   function leaveRoom() {
     const isLastPlayer = room.gamePlayerIds.length === 1
@@ -36,28 +43,51 @@ export function HeaderActions({ inviteCode, room }: HeaderActionsProps) {
 
   async function joinRoom() {
     await joinRoomMutation({
-      inviteCode,
+      inviteCode: room.inviteCode,
     })
   }
 
+  async function startQuiz() {
+    try {
+      setIsStarting(true)
+      await startQuizAction({
+        roomId: room._id,
+      })
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setIsStarting(false)
+    }
+  }
+
   async function invitePlayers() {
-    const inviteUrl = `${window.location.origin}/quiz-battles/room/${inviteCode}`
+    const inviteUrl = `${window.location.origin}/quiz-battles/room/${room.inviteCode}`
     await navigator.clipboard.writeText(inviteUrl)
     toast.success("Invite URL copied to clipboard")
   }
 
   return (
-    <header className="ml-auto flex items-center gap-2">
-      <Button variant="secondary" onClick={invitePlayers}>
-        Invite Players
-      </Button>
-      {isInRoom ? (
-        <Button variant="ghost" onClick={leaveRoom}>
-          Leave Room
+    <header className="flex items-center justify-between gap-2">
+      <section className="flex items-center gap-2">
+        {isInRoom ? (
+          <Button variant="outline" onClick={leaveRoom}>
+            Leave Room
+          </Button>
+        ) : (
+          <Button variant="default" onClick={joinRoom}>
+            Join Room
+          </Button>
+        )}
+        <Button variant="secondary" onClick={invitePlayers}>
+          Invite Players
         </Button>
-      ) : (
-        <Button variant="default" onClick={joinRoom}>
-          Join Room
+      </section>
+      {isHost && (
+        <Button disabled={isStarting} onClick={startQuiz}>
+          {isStarting && (
+            <Spinner className="text-primary-foreground" size="sm" />
+          )}
+          Start Quiz
         </Button>
       )}
     </header>
