@@ -29,9 +29,7 @@ export function Game({ room }: GameProps) {
   }
 
   if (gameState.phase === "starting") {
-    return (
-      <StartingLoader />
-    )
+    return <StartingLoader />
   }
 
   return <GameLoop gameState={gameState} room={room} />

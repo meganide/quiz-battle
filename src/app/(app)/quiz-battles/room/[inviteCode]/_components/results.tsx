@@ -1,7 +1,5 @@
 "use client"
 
-import React from "react"
-
 import { useQuery } from "convex/react"
 import {
   Award,
@@ -16,7 +14,7 @@ import {
   XCircle,
 } from "lucide-react"
 
-import type { Doc, Id } from "~/convex/_generated/dataModel"
+import type { Doc } from "~/convex/_generated/dataModel"
 
 import { Container } from "@/components/container"
 import { HeaderTitle } from "@/components/header-title"
@@ -42,8 +40,6 @@ export function Results({ room }: ResultsProps) {
   const gameResults = useQuery(api.quiz.queries.getGameResults, {
     gameStateId: room.currentGameStateId!,
   })
-
-
 
   function formatDuration(startTime: number, endTime: number) {
     const duration = Math.floor((endTime - startTime) / 1000)
@@ -74,16 +70,16 @@ export function Results({ room }: ResultsProps) {
       ? formatDuration(room.startedAt, room.completedAt)
       : "Unknown"
 
-    if (!gameResults) {
-        return (
-            <section>
-            <HeaderTitle href="/quiz-battles" Icon={Trophy} title="Quiz Results" />
-            <Container className="flex flex-col items-center justify-center gap-3 py-3">
-                <Spinner size="xl" />
-            </Container>
-            </section>
-        )
-    }
+  if (!gameResults) {
+    return (
+      <section>
+        <HeaderTitle href="/quiz-battles" Icon={Trophy} title="Quiz Results" />
+        <Container className="flex flex-col items-center justify-center gap-3 py-3">
+          <Spinner size="xl" />
+        </Container>
+      </section>
+    )
+  }
 
   return (
     <section className="min-h-screen pb-8">
@@ -104,13 +100,15 @@ export function Results({ room }: ResultsProps) {
           <CardContent className="p-4 sm:p-6">
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-3">
               {/* Room Name */}
-              <article className="rounded-lg bg-muted/50 p-4">
+              <article className="bg-muted/50 rounded-lg p-4">
                 <div className="flex flex-col gap-2">
-                  <div className="rounded-lg bg-primary p-2 text-primary-foreground w-fit">
+                  <div className="bg-primary text-primary-foreground w-fit rounded-lg p-2">
                     <Crown className="size-4" />
                   </div>
                   <div>
-                    <p className="text-xs font-medium text-muted-foreground">Room</p>
+                    <p className="text-muted-foreground text-xs font-medium">
+                      Room
+                    </p>
                     <p className="text-sm font-bold sm:text-base">
                       {room.name}
                     </p>
@@ -119,13 +117,15 @@ export function Results({ room }: ResultsProps) {
               </article>
 
               {/* Topic */}
-              <article className="rounded-lg bg-muted/50 p-4">
+              <article className="bg-muted/50 rounded-lg p-4">
                 <div className="flex flex-col gap-2">
-                  <div className="rounded-lg bg-primary p-2 text-primary-foreground w-fit">
+                  <div className="bg-primary text-primary-foreground w-fit rounded-lg p-2">
                     <Target className="size-4" />
                   </div>
                   <div>
-                    <p className="text-xs font-medium text-muted-foreground">Topic</p>
+                    <p className="text-muted-foreground text-xs font-medium">
+                      Topic
+                    </p>
                     <p className="text-sm font-bold sm:text-base">
                       {room.topics}
                     </p>
@@ -134,13 +134,15 @@ export function Results({ room }: ResultsProps) {
               </article>
 
               {/* Time per Question */}
-              <article className="rounded-lg bg-muted/50 p-4">
+              <article className="bg-muted/50 rounded-lg p-4">
                 <div className="flex flex-col gap-2">
-                  <div className="rounded-lg bg-primary p-2 text-primary-foreground w-fit">
+                  <div className="bg-primary text-primary-foreground w-fit rounded-lg p-2">
                     <Timer className="size-4" />
                   </div>
                   <div>
-                    <p className="text-xs font-medium text-muted-foreground">Time/Question</p>
+                    <p className="text-muted-foreground text-xs font-medium">
+                      Time/Question
+                    </p>
                     <p className="text-sm font-bold sm:text-base">
                       {room.timePerQuestion}s
                     </p>
@@ -149,26 +151,32 @@ export function Results({ room }: ResultsProps) {
               </article>
 
               {/* Duration */}
-              <article className="rounded-lg bg-muted/50 p-4">
+              <article className="bg-muted/50 rounded-lg p-4">
                 <div className="flex flex-col gap-2">
-                  <div className="rounded-lg bg-primary p-2 text-primary-foreground w-fit">
+                  <div className="bg-primary text-primary-foreground w-fit rounded-lg p-2">
                     <Calendar className="size-4" />
                   </div>
                   <div>
-                    <p className="text-xs font-medium text-muted-foreground">Duration</p>
-                    <p className="text-sm font-bold sm:text-base">{gameDuration}</p>
+                    <p className="text-muted-foreground text-xs font-medium">
+                      Duration
+                    </p>
+                    <p className="text-sm font-bold sm:text-base">
+                      {gameDuration}
+                    </p>
                   </div>
                 </div>
               </article>
 
               {/* Players */}
-              <article className="rounded-lg bg-muted/50 p-4">
+              <article className="bg-muted/50 rounded-lg p-4">
                 <div className="flex flex-col gap-2">
-                  <div className="rounded-lg bg-primary p-2 text-primary-foreground w-fit">
+                  <div className="bg-primary text-primary-foreground w-fit rounded-lg p-2">
                     <Users className="size-4" />
                   </div>
                   <div>
-                    <p className="text-xs font-medium text-muted-foreground">Players</p>
+                    <p className="text-muted-foreground text-xs font-medium">
+                      Players
+                    </p>
                     <p className="text-sm font-bold sm:text-base">
                       {gameResults.playerScores.length}
                     </p>
@@ -177,13 +185,15 @@ export function Results({ room }: ResultsProps) {
               </article>
 
               {/* Number of Questions */}
-              <article className="rounded-lg bg-muted/50 p-4">
+              <article className="bg-muted/50 rounded-lg p-4">
                 <div className="flex flex-col gap-2">
-                  <div className="rounded-lg bg-primary p-2 text-primary-foreground w-fit">
+                  <div className="bg-primary text-primary-foreground w-fit rounded-lg p-2">
                     <Target className="size-4" />
                   </div>
                   <div>
-                    <p className="text-xs font-medium text-muted-foreground">Questions</p>
+                    <p className="text-muted-foreground text-xs font-medium">
+                      Questions
+                    </p>
                     <p className="text-sm font-bold sm:text-base">
                       {room.numQuestions}
                     </p>
@@ -226,9 +236,7 @@ export function Results({ room }: ResultsProps) {
                     )}
                   >
                     {/* Rank Icon */}
-                    <div className="flex-shrink-0">
-                      {getRankIcon(position)}
-                    </div>
+                    <div className="flex-shrink-0">{getRankIcon(position)}</div>
 
                     {/* Avatar */}
                     <Avatar
@@ -239,8 +247,8 @@ export function Results({ room }: ResultsProps) {
                       })}
                     >
                       <AvatarImage
-                        src={playerScore.user.image}
                         alt={playerScore.user.name || "Player"}
+                        src={playerScore.user.image}
                       />
                       <AvatarFallback className="text-xs font-bold sm:text-sm">
                         {playerScore.user.name?.charAt(0).toUpperCase() || "?"}
@@ -248,19 +256,26 @@ export function Results({ room }: ResultsProps) {
                     </Avatar>
 
                     {/* Player Info */}
-                    <div className={cn("min-w-0 flex-1", {
-                      "text-yellow-700": position === 1,
-                      "text-gray-700": position === 2,
-                      "text-amber-700": position === 3,
-                    })}>
-                      <p className="truncate text-sm font-bold sm:text-lg">
-                        {playerScore.user.name || "Anonymous"}
-                      </p>
-                      <p className={cn("text-xs text-muted-foreground sm:text-sm", {
+                    <div
+                      className={cn("min-w-0 flex-1", {
                         "text-yellow-700": position === 1,
                         "text-gray-700": position === 2,
                         "text-amber-700": position === 3,
-                      })}>
+                      })}
+                    >
+                      <p className="truncate text-sm font-bold sm:text-lg">
+                        {playerScore.user.name || "Anonymous"}
+                      </p>
+                      <p
+                        className={cn(
+                          "text-muted-foreground text-xs sm:text-sm",
+                          {
+                            "text-yellow-700": position === 1,
+                            "text-gray-700": position === 2,
+                            "text-amber-700": position === 3,
+                          }
+                        )}
+                      >
                         {playerScore.correctAnswers}/{room.numQuestions} correct
                       </p>
                     </div>
@@ -268,12 +283,16 @@ export function Results({ room }: ResultsProps) {
                     {/* Score */}
                     <div className="flex-shrink-0">
                       <Badge
-                        className={cn("px-2 py-1 text-sm font-bold sm:px-3 sm:py-2 sm:text-lg", {
-                          "bg-yellow-500 text-yellow-50": position === 1,
-                          "bg-gray-500 text-gray-50": position === 2,
-                          "bg-amber-500 text-amber-50": position === 3,
-                          "bg-secondary text-secondary-foreground": position > 3,
-                        })}
+                        className={cn(
+                          "px-2 py-1 text-sm font-bold sm:px-3 sm:py-2 sm:text-lg",
+                          {
+                            "bg-yellow-500 text-yellow-50": position === 1,
+                            "bg-gray-500 text-gray-50": position === 2,
+                            "bg-amber-500 text-amber-50": position === 3,
+                            "bg-secondary text-secondary-foreground":
+                              position > 3,
+                          }
+                        )}
                       >
                         {playerScore.score.toLocaleString()}
                       </Badge>
@@ -306,14 +325,14 @@ export function Results({ room }: ResultsProps) {
                     <div className="space-y-4">
                       {/* Question Header */}
                       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-4">
-                        <Badge 
-                          variant="outline" 
-                          className="w-fit bg-primary/10 px-3 py-2 text-sm font-bold text-primary"
+                        <Badge
+                          className="bg-primary/10 text-primary w-fit px-3 py-2 text-sm font-bold"
+                          variant="outline"
                         >
                           Question {questionNumber}
                         </Badge>
                         <div className="flex-1">
-                          <h4 className="text-base font-bold leading-relaxed sm:text-lg">
+                          <h4 className="text-base leading-relaxed font-bold sm:text-lg">
                             {question.question}
                           </h4>
                         </div>
@@ -322,26 +341,25 @@ export function Results({ room }: ResultsProps) {
                       {/* Answer Options with Player Avatars */}
                       <section className="space-y-2 sm:space-y-3">
                         {question.answers.map((answer, answerIndex) => {
-                          const isCorrect = answerIndex === question.correctAnswerIndex
-                          const playersWhoChose = gameResults.playerAnswers.filter(
-                            (playerAnswer) =>
-                              playerAnswer.questionId === question._id &&
-                              playerAnswer.answerIndex === answerIndex
-                          )
+                          const isCorrect =
+                            answerIndex === question.correctAnswerIndex
+                          const playersWhoChose =
+                            gameResults.playerAnswers.filter(
+                              (playerAnswer) =>
+                                playerAnswer.questionId === question._id &&
+                                playerAnswer.answerIndex === answerIndex
+                            )
 
                           return (
                             <article
                               key={answerIndex}
-                              className={cn(
-                                "rounded-lg p-3 sm:p-4",
-                                {
-                                  "bg-green-100 text-green-800": isCorrect,
-                                  "bg-red-100 text-red-700": !isCorrect,
-                                }
-                              )}
+                              className={cn("rounded-lg p-3 sm:p-4", {
+                                "bg-green-100 text-green-800": isCorrect,
+                                "bg-red-100 text-red-700": !isCorrect,
+                              })}
                             >
-                              <div className="flex items-start justify-between gap-3 mb-2">
-                                <span className="flex-1 font-medium leading-relaxed text-sm sm:text-base">
+                              <div className="mb-2 flex items-start justify-between gap-3">
+                                <span className="flex-1 text-sm leading-relaxed font-medium sm:text-base">
                                   {answer}
                                 </span>
                                 {/* Correct/Incorrect Icon */}
@@ -354,26 +372,32 @@ export function Results({ room }: ResultsProps) {
                                   )}
                                 </div>
                               </div>
-                              
+
                               {/* Player Avatars - Below answer */}
                               {playersWhoChose.length > 0 && (
                                 <div className="flex -space-x-2">
-                                  {playersWhoChose.slice(0, 8).map((playerAnswer) => (
-                                    <Avatar
-                                      key={playerAnswer.userId}
-                                      className="size-6 border-2 border-white shadow-sm"
-                                    >
-                                      <AvatarImage
-                                        src={playerAnswer.user.image}
-                                        alt={playerAnswer.user.name || "Player"}
-                                      />
-                                      <AvatarFallback className="text-xs">
-                                        {playerAnswer.user.name?.charAt(0).toUpperCase() || "?"}
-                                      </AvatarFallback>
-                                    </Avatar>
-                                  ))}
+                                  {playersWhoChose
+                                    .slice(0, 8)
+                                    .map((playerAnswer) => (
+                                      <Avatar
+                                        key={playerAnswer.userId}
+                                        className="size-6 border-2 border-white shadow-sm"
+                                      >
+                                        <AvatarImage
+                                          src={playerAnswer.user.image}
+                                          alt={
+                                            playerAnswer.user.name || "Player"
+                                          }
+                                        />
+                                        <AvatarFallback className="text-xs">
+                                          {playerAnswer.user.name
+                                            ?.charAt(0)
+                                            .toUpperCase() || "?"}
+                                        </AvatarFallback>
+                                      </Avatar>
+                                    ))}
                                   {playersWhoChose.length > 8 && (
-                                    <div className="flex size-6 items-center justify-center rounded-full border-2 border-white bg-muted text-xs font-bold text-muted-foreground shadow-sm">
+                                    <div className="bg-muted text-muted-foreground flex size-6 items-center justify-center rounded-full border-2 border-white text-xs font-bold shadow-sm">
                                       +{playersWhoChose.length - 8}
                                     </div>
                                   )}
@@ -394,7 +418,7 @@ export function Results({ room }: ResultsProps) {
             </section>
           </CardContent>
         </Card>
-    </Container>
+      </Container>
     </section>
   )
 }
