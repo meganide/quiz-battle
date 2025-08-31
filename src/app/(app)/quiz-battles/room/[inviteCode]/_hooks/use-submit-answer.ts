@@ -2,12 +2,12 @@ import React from "react"
 
 import { useMutation } from "convex/react"
 
-import type { GameState } from "~/convex/quiz/types"
 
 import { api } from "~/convex/_generated/api"
+import { Doc } from "~/convex/_generated/dataModel"
 
 type UseSubmitAnswerProps = {
-  gameState: GameState["gameState"]
+  gameState: Doc<"gameStates">
 }
 
 export function useSubmitAnswer({ gameState }: UseSubmitAnswerProps) {
