@@ -1,15 +1,17 @@
 "use client"
 
 import { useQuery } from "convex/react"
+import { AnimatePresence, LayoutGroup, motion } from "framer-motion"
 import { Award, CheckCircle, Clock, Medal, Trophy, XCircle } from "lucide-react"
 
 import type { Doc, Id } from "~/convex/_generated/dataModel"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { api } from "~/convex/_generated/api"
+
+import { AnimatedScoreCounter } from "./animated-score-counter"
 
 type LeaderboardProps = {
   gameState: Doc<"gameStates">
@@ -58,8 +60,6 @@ export function Leaderboard({ className, gameState }: LeaderboardProps) {
     !isScorePhase ? { gameStateId: gameState._id } : "skip"
   )
 
-  const currentQuestionNumber = getCurrentQuestionNumber()
-
   // Helper function to get player's answer status for current question
   const getPlayerAnswerStatus = (userId: Id<"users">) => {
     if (!isScorePhase || !playerAnswers) return null
@@ -70,16 +70,28 @@ export function Leaderboard({ className, gameState }: LeaderboardProps) {
     return playerAnswer?.isCorrect ?? null
   }
 
+  // Helper function to get player's points earned for current question
+  const getPlayerPointsEarned = (userId: Id<"users">) => {
+    if (!isScorePhase || !playerScores) return null
+
+    const pointsData = playerScores.find((points) => points.userId === userId)
+    return pointsData || null
+  }
+
+  // Helper function to calculate previous score (current score minus points earned this question)
+  const getPreviousScore = (userId: Id<"users">, currentScore: number) => {
+    if (!isScorePhase) return currentScore
+
+    const pointsEarned = getPlayerPointsEarned(userId)
+    return pointsEarned
+      ? currentScore - pointsEarned.lastQuestionPointsEarned
+      : currentScore
+  }
+
   function hasUserSubmitted(userId: Id<"users">) {
     if (!submittedUserIds) return false
 
     return submittedUserIds.includes(userId)
-  }
-
-  function getCurrentQuestionNumber() {
-    if (currentQuestion === undefined) return 0
-    if (currentQuestion.index === 0) return 0
-    return currentQuestion.index - 1
   }
 
   return (
@@ -95,125 +107,147 @@ export function Leaderboard({ className, gameState }: LeaderboardProps) {
           Leaderboard
         </CardTitle>
       </CardHeader>
-      <CardContent className="min-h-0 space-y-3 overflow-y-auto pr-2 pl-6">
+      <CardContent className="relative min-h-0 space-y-3 overflow-y-auto pr-2 pl-6">
         {playerScores?.length === 0 ? (
           <section className="text-muted-foreground py-8 text-center">
             <p className="text-sm">No scores yet...</p>
             <p className="text-xs">Be the first to answer!</p>
           </section>
         ) : (
-          <section className="flex flex-col gap-2 pt-1">
-            {playerScores?.map((playerScore, index) => {
-              const position = index + 1
-              const answerStatus = getPlayerAnswerStatus(playerScore.userId)
-              const hasSubmitted = hasUserSubmitted(playerScore.userId)
+          <LayoutGroup>
+            <section className="relative flex flex-col gap-2 pt-1">
+              <AnimatePresence>
+                {playerScores?.map((playerScore, index) => {
+                  const position = index + 1
+                  const answerStatus = getPlayerAnswerStatus(playerScore.userId)
+                  const hasSubmitted = hasUserSubmitted(playerScore.userId)
 
-              return (
-                <article
-                  key={playerScore.userId}
-                  className={cn(
-                    "relative flex max-w-sm items-center gap-3 rounded-lg bg-neutral-400/60 p-3 transition-all duration-200 hover:shadow-sm",
-                    {
-                      "bg-gradient-to-r from-yellow-50 to-yellow-100":
-                        position === 1,
-                      "bg-gradient-to-r from-gray-50 to-gray-100":
-                        position === 2,
-                      "bg-gradient-to-r from-amber-50 to-amber-100":
-                        position === 3,
-                      // Results phase visual feedback - enhanced backgrounds
-                      "bg-gradient-to-r from-green-100 to-green-200":
-                        isScorePhase && answerStatus === true,
-                      "bg-gradient-to-r from-red-100 to-red-200":
-                        isScorePhase && answerStatus === false,
-                    }
-                  )}
-                >
-                  {/* Rank Icon */}
-                  {getRankIcon(position)}
-
-                  {/* User Avatar */}
-                  <Avatar
-                    className={cn("size-8", {
-                      "ring-2 ring-yellow-400 ring-offset-1": position === 1,
-                      "ring-2 ring-gray-400 ring-offset-1": position === 2,
-                      "ring-2 ring-amber-400 ring-offset-1": position === 3,
-                    })}
-                  >
-                    <AvatarImage
-                      alt={playerScore.user.name || "Player"}
-                      src={playerScore.user.image}
-                    />
-                    <AvatarFallback className="text-xs font-semibold">
-                      {playerScore.user.name?.charAt(0).toUpperCase() || "?"}
-                    </AvatarFallback>
-                  </Avatar>
-
-                  {/* User Info */}
-                  <div
-                    className={cn("min-w-0 flex-1", {
-                      "text-yellow-700": position === 1,
-                      "text-gray-700": position === 2,
-                      "text-amber-700": position === 3,
-                    })}
-                  >
-                    <p className={cn("truncate text-sm font-medium")}>
-                      {playerScore.user.name || "Anonymous"}
-                    </p>
-                    <p className="text-xs">
-                      {playerScore.correctAnswers}/{currentQuestionNumber}{" "}
-                      correct
-                    </p>
-                  </div>
-
-                  {/* Score and Answer Status */}
-                  <div className="flex flex-col items-end gap-1">
-                    <Badge
+                  return (
+                    <motion.article
+                      key={playerScore.userId}
+                      layout
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                      initial={{ opacity: 0, y: 20, scale: 0.95 }}
                       className={cn(
-                        "bg-secondary text-secondary-foreground border-none text-sm font-bold",
+                        "relative flex max-w-sm items-center gap-3 overflow-visible rounded-lg bg-neutral-400/60 p-3 transition-colors duration-200 hover:shadow-sm",
                         {
-                          "bg-yellow-500 text-yellow-50": position === 1,
-                          "bg-gray-500 text-gray-50": position === 2,
-                          "bg-amber-500 text-amber-50": position === 3,
+                          "bg-gradient-to-r from-yellow-50 to-yellow-100":
+                            position === 1,
+                          "bg-gradient-to-r from-gray-50 to-gray-100":
+                            position === 2,
+                          "bg-gradient-to-r from-amber-50 to-amber-100":
+                            position === 3,
+                          // Results phase visual feedback - enhanced backgrounds
+                          "bg-gradient-to-r from-green-100 to-green-200":
+                            isScorePhase && answerStatus === true,
+                          "bg-gradient-to-r from-red-100 to-red-200":
+                            isScorePhase && answerStatus === false,
                         }
                       )}
+                      transition={{
+                        layout: {
+                          type: "spring",
+                          damping: 25,
+                          stiffness: 200,
+                        },
+                        opacity: { duration: 0.3 },
+                        scale: { duration: 0.3 },
+                        y: { duration: 0.3 },
+                      }}
                     >
-                      {playerScore.score.toLocaleString()}
-                    </Badge>
-                  </div>
+                      {/* Rank Icon */}
+                      {getRankIcon(position)}
 
-                  {/* Answer Status Overlay Icon */}
-                  {isScorePhase && answerStatus !== null && (
-                    <div className="absolute -top-1 -right-1">
-                      {answerStatus ? (
-                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-green-500 text-white shadow-md">
-                          <CheckCircle className="h-4 w-4" />
-                        </div>
-                      ) : (
-                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white shadow-md">
-                          <XCircle className="h-4 w-4" />
+                      {/* User Avatar */}
+                      <Avatar
+                        className={cn("size-8", {
+                          "ring-2 ring-yellow-400 ring-offset-1":
+                            position === 1,
+                          "ring-2 ring-gray-400 ring-offset-1": position === 2,
+                          "ring-2 ring-amber-400 ring-offset-1": position === 3,
+                        })}
+                      >
+                        <AvatarImage
+                          alt={playerScore.user.name || "Player"}
+                          src={playerScore.user.image}
+                        />
+                        <AvatarFallback className="text-xs font-semibold">
+                          {playerScore.user.name?.charAt(0).toUpperCase() ||
+                            "?"}
+                        </AvatarFallback>
+                      </Avatar>
+
+                      {/* User Info */}
+                      <div
+                        className={cn("min-w-0 flex-1", {
+                          "text-yellow-700": position === 1,
+                          "text-gray-700": position === 2,
+                          "text-amber-700": position === 3,
+                        })}
+                      >
+                        <p className={cn("truncate text-sm font-medium")}>
+                          {playerScore.user.name || "Anonymous"}
+                        </p>
+                        <p className="text-xs">
+                          {playerScore.correctAnswers}/
+                          {isScorePhase
+                            ? gameState.currentQuestionIndex + 1
+                            : gameState.currentQuestionIndex}{" "}
+                          correct
+                        </p>
+                      </div>
+
+                      {/* Score and Answer Status */}
+                      <div className="flex flex-col items-end gap-1">
+                        <AnimatedScoreCounter
+                          currentScore={playerScore.score}
+                          delay={index * 0.1}
+                          isScorePhase={isScorePhase}
+                          position={position}
+                          wasCorrectAnswer={answerStatus === true}
+                          previousScore={getPreviousScore(
+                            playerScore.userId,
+                            playerScore.score
+                          )}
+                        />
+                      </div>
+
+                      {/* Answer Status Overlay Icon */}
+                      {isScorePhase && answerStatus !== null && (
+                        <div className="absolute -top-1 -right-1">
+                          {answerStatus ? (
+                            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-green-500 text-white shadow-md">
+                              <CheckCircle className="h-4 w-4" />
+                            </div>
+                          ) : (
+                            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white shadow-md">
+                              <XCircle className="h-4 w-4" />
+                            </div>
+                          )}
                         </div>
                       )}
-                    </div>
-                  )}
 
-                  {/* Submission Status Overlay Icon for Question Phase */}
-                  {!isScorePhase && (
-                    <div className="absolute -top-1 -right-1">
-                      {hasSubmitted ? (
-                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-white shadow-md">
-                          <CheckCircle className="h-4 w-4" />
-                        </div>
-                      ) : (
-                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-400 text-white shadow-md">
-                          <Clock className="h-4 w-4" />
+                      {/* Submission Status Overlay Icon for Question Phase */}
+                      {!isScorePhase && (
+                        <div className="absolute -top-1 -right-1">
+                          {hasSubmitted ? (
+                            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-white shadow-md">
+                              <CheckCircle className="h-4 w-4" />
+                            </div>
+                          ) : (
+                            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-400 text-white shadow-md">
+                              <Clock className="h-4 w-4" />
+                            </div>
+                          )}
                         </div>
                       )}
-                    </div>
-                  )}
-                </article>
-              )
-            })}
-          </section>
+                    </motion.article>
+                  )
+                })}
+              </AnimatePresence>
+            </section>
+          </LayoutGroup>
         )}
       </CardContent>
     </Card>

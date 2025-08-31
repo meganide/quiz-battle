@@ -55,6 +55,10 @@ export const startQuiz = mutation({
           userId: playerId,
           score: 0,
           correctAnswers: 0,
+          lastQuestionPointsEarned: 0,
+          lastQuestionBasePoints: 0,
+          lastQuestionTimeBonus: 0,
+          timeBonus: 0,
           updatedAt: Date.now(),
         })
       ),
@@ -305,14 +309,6 @@ export const scorePhase = internalMutation({
           )
           .first()
 
-        if (!playerAnswer) {
-          return // player did not answer the question
-        }
-
-        if (!playerAnswer.isCorrect) {
-          return
-        }
-
         // Get player's current score
         const playerScore = await ctx.db
           .query("playerScores")
@@ -323,6 +319,21 @@ export const scorePhase = internalMutation({
 
         if (!playerScore) {
           throw QUIZ_ERRORS.PLAYER_SCORE_NOT_FOUND
+        }
+
+        if (!playerAnswer) {
+          return // player did not answer the question
+        }
+
+        if (!playerAnswer.isCorrect) {
+          // Reset lastQuestionPointsEarned to 0 for incorrect answers
+          await ctx.db.patch(playerScore._id, {
+            lastQuestionPointsEarned: 0,
+            lastQuestionBasePoints: 0,
+            lastQuestionTimeBonus: 0,
+            updatedAt: Date.now(),
+          })
+          return
         }
 
         // Calculate score: base points for correct answer + time bonus
@@ -342,6 +353,10 @@ export const scorePhase = internalMutation({
         await ctx.db.patch(playerScore._id, {
           score: playerScore.score + pointsEarned,
           correctAnswers: playerScore.correctAnswers + 1,
+          lastQuestionPointsEarned: pointsEarned,
+          lastQuestionBasePoints: basePoints,
+          lastQuestionTimeBonus: timeBonus,
+          timeBonus,
           updatedAt: Date.now(),
         })
       })

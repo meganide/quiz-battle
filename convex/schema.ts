@@ -65,6 +65,10 @@ export default defineSchema({
     userId: v.id("users"),
     score: v.number(),
     correctAnswers: v.number(),
+    lastQuestionPointsEarned: v.number(),
+    lastQuestionBasePoints: v.number(),
+    lastQuestionTimeBonus: v.number(),
+    timeBonus: v.number(),
     updatedAt: v.number(),
   })
     .index("by_game_state", ["gameStateId"])
