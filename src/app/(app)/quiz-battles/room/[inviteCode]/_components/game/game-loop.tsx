@@ -38,6 +38,7 @@ export function GameLoop({ room, gameState }: GameLoopProps) {
   return (
     <motion.div
       animate={{ opacity: 1 }}
+      className="overflow-x-hidden"
       initial={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
     >
