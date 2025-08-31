@@ -59,8 +59,6 @@ export function Leaderboard({ className, gameState }: LeaderboardProps) {
     !isScorePhase ? { gameStateId: gameState._id } : "skip"
   )
 
-  const currentQuestionNumber = getCurrentQuestionNumber()
-
   // Helper function to get player's answer status for current question
   const getPlayerAnswerStatus = (userId: Id<"users">) => {
     if (!isScorePhase || !playerAnswers) return null
@@ -75,12 +73,6 @@ export function Leaderboard({ className, gameState }: LeaderboardProps) {
     if (!submittedUserIds) return false
 
     return submittedUserIds.includes(userId)
-  }
-
-  function getCurrentQuestionNumber() {
-    if (currentQuestion === undefined) return 0
-    if (currentQuestion.index === 0) return 0
-    return currentQuestion.index - 1
   }
 
   return (
@@ -179,7 +171,10 @@ export function Leaderboard({ className, gameState }: LeaderboardProps) {
                           {playerScore.user.name || "Anonymous"}
                         </p>
                         <p className="text-xs">
-                          {playerScore.correctAnswers}/{currentQuestionNumber}{" "}
+                          {playerScore.correctAnswers}/
+                          {isScorePhase
+                            ? gameState.currentQuestionIndex + 1
+                            : gameState.currentQuestionIndex}{" "}
                           correct
                         </p>
                       </div>
