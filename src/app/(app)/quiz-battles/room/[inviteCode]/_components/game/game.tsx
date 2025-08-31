@@ -9,6 +9,7 @@ import { Spinner } from "@/components/spinner"
 import { api } from "~/convex/_generated/api"
 
 import { GameLoop } from "./game-loop"
+import { StartingLoader } from "./starting-loader"
 
 type GameProps = {
   room: Doc<"rooms">
@@ -27,11 +28,9 @@ export function Game({ room }: GameProps) {
     )
   }
 
-  return (
-    <GameLoop
-      currentQuestion={gameState.currentQuestion}
-      gameState={gameState.gameState}
-      room={room}
-    />
-  )
+  if (gameState.phase === "starting") {
+    return <StartingLoader />
+  }
+
+  return <GameLoop gameState={gameState} room={room} />
 }

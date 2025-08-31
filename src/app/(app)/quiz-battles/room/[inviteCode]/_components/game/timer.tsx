@@ -1,6 +1,6 @@
 "use client"
 
-import type { GameState } from "~/convex/quiz/types"
+import type { Doc } from "~/convex/_generated/dataModel"
 
 import { Progress } from "@/components/ui/progress"
 import { cn } from "@/lib/utils"
@@ -9,7 +9,7 @@ import { useTimer } from "../../_hooks/use-timer"
 
 type TimerProps = {
   duration: number
-  gameState: GameState["gameState"]
+  gameState: Doc<"gameStates">
 }
 
 export function Timer({ duration, gameState }: TimerProps) {
@@ -30,17 +30,16 @@ export function Timer({ duration, gameState }: TimerProps) {
         disableAnimation={disableAnimation}
         durationMs={progressDurationMs}
         value={progressValue}
-        className={cn("w-full", {
-          "[&>div]:bg-destructive": isLowTime,
-          "[&>div]:bg-primary": gameState.phase === "results",
+        className={cn("[&>div]:bg-primary w-full", {
+          "[&>div]:bg-destructive":
+            isLowTime && gameState.phase === "answering",
         })}
       />
       <p
-        className={cn(
-          "text-2xl font-bold",
-          isLowTime && "text-destructive animate-pulse",
-          gameState.phase === "results" && "text-primary"
-        )}
+        className={cn("text-foreground text-2xl font-bold", {
+          "text-destructive animate-pulse":
+            isLowTime && gameState.phase === "answering",
+        })}
       >
         {Math.floor(timeLeft)}
       </p>

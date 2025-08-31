@@ -2,18 +2,18 @@ import type { QuizDifficulty } from "./types"
 
 export const generateAiQuizPrompt = ({
   numQuestions,
-  topic,
+  topics,
   difficulty,
   currentDifficultyInfo,
 }: {
   numQuestions: number
-  topic: string
+  topics: string
   difficulty: QuizDifficulty
   currentDifficultyInfo: DifficultyInfo
 }) => `<role>You are an expert quiz creator specializing in educational content. Your task is to generate high-quality, accurate, and engaging multiple-choice questions.</role>
   
   <task>
-  Generate exactly ${numQuestions} multiple-choice quiz questions about "${topic}" at ${difficulty} difficulty level.
+  Generate exactly ${numQuestions} multiple-choice quiz questions about "${topics}" at ${difficulty} difficulty level.
   </task>
   
   <difficulty_guidelines>
@@ -43,34 +43,21 @@ export const generateAiQuizPrompt = ({
   6. Incorrect answers should be plausible but definitively wrong
   7. Vary the position of correct answers (don't put all correct answers in position A or B)
   8. Ensure questions are appropriate for ${difficulty} difficulty level
-  9. Stay strictly within the topic of "${topic}"
+  9. Stay strictly within the topics of "${topics}"
   10. Avoid questions with multiple potentially correct interpretations
+  11. The language of the questions should be in the same language as the topics
+  12. the language of the answers should be in the same language as the topics
   </requirements>
   
   <thinking_process>
   Before generating each question, think through:
-  1. What specific aspect of "${topic}" should this question test?
+  1. What specific aspect of "${topics}" should this question test?
   2. What level of knowledge does this require for ${difficulty} difficulty?
   3. What are 3 plausible but incorrect answers?
   4. Is the correct answer unambiguous and factual?
   5. Does this question add value and not duplicate previous questions?
   </thinking_process>
-  
-  <output_format>
-  Return the quiz in the specified JSON structure:
-  {
-    "questions": [
-      {
-        "question": "Your question text here",
-        "answers": ["Option 1", "Option 2", "Option 3", "Option 4"],
-        "correctAnswerIndex": 0
-      }
-    ],
-    "topic": "${topic}",
-    "difficulty": "${difficulty}"
-  }
-  </output_format>
-  
+    
   Generate exactly ${numQuestions} questions now.`
 
 type DifficultyInfo = {

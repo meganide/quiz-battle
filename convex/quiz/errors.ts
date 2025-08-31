@@ -1,20 +1,17 @@
 import { ConvexError } from "convex/values"
 
 export enum QuizErrorCodes {
-  NOT_HOST = "NOT_HOST",
   GAME_STATE_NOT_FOUND = "GAME_STATE_NOT_FOUND",
   QUESTION_NOT_FOUND = "QUESTION_NOT_FOUND",
   QUESTION_TIME_EXPIRED = "QUESTION_TIME_EXPIRED",
   PLAYER_SCORE_NOT_FOUND = "PLAYER_SCORE_NOT_FOUND",
-  PLAYER_ANSWER_NOT_FOUND = "PLAYER_ANSWER_NOT_FOUND",
   GAME_STATE_IN_QUESTION_PHASE = "GAME_STATE_IN_QUESTION_PHASE",
+  GAME_STATE_NOT_IN_QUESTION_PHASE = "GAME_STATE_NOT_IN_QUESTION_PHASE",
+  GAME_STATE_NOT_IN_ANSWERING_PHASE = "GAME_STATE_NOT_IN_ANSWERING_PHASE",
+  GAME_STATE_NOT_IN_SCORE_PHASE = "GAME_STATE_NOT_IN_SCORE_PHASE",
 }
 
 export const QUIZ_ERRORS = {
-  NOT_HOST: new ConvexError({
-    code: QuizErrorCodes.NOT_HOST,
-    message: "You are not the host of this room",
-  }),
   GAME_STATE_NOT_FOUND: new ConvexError({
     code: QuizErrorCodes.GAME_STATE_NOT_FOUND,
     message: "Game state not found",
@@ -31,12 +28,20 @@ export const QUIZ_ERRORS = {
     code: QuizErrorCodes.PLAYER_SCORE_NOT_FOUND,
     message: "Player score not found",
   }),
-  PLAYER_ANSWER_NOT_FOUND: new ConvexError({
-    code: QuizErrorCodes.PLAYER_ANSWER_NOT_FOUND,
-    message: "Player answer not found",
-  }),
   GAME_STATE_IN_QUESTION_PHASE: new ConvexError({
     code: QuizErrorCodes.GAME_STATE_IN_QUESTION_PHASE,
     message: "Game state is in question phase",
+  }),
+  GAME_STATE_NOT_IN_QUESTION_PHASE: new ConvexError({
+    code: QuizErrorCodes.GAME_STATE_NOT_IN_QUESTION_PHASE,
+    message: "Game state is not in question phase",
+  }),
+  GAME_STATE_NOT_IN_ANSWERING_PHASE: new ConvexError({
+    code: QuizErrorCodes.GAME_STATE_NOT_IN_ANSWERING_PHASE,
+    message: "Game state is not in answering phase",
+  }),
+  GAME_STATE_NOT_IN_SCORE_PHASE: new ConvexError({
+    code: QuizErrorCodes.GAME_STATE_NOT_IN_SCORE_PHASE,
+    message: "Game state is not in score phase",
   }),
 } as const

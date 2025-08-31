@@ -73,7 +73,7 @@ export function CreateRoomDialog() {
                   <FormItem>
                     <FormLabel>Room Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter room name..." {...field} />
+                      <Input placeholder="John Doe's Quiz Battle" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -82,12 +82,15 @@ export function CreateRoomDialog() {
 
               <FormField
                 control={form.control}
-                name="topic"
+                name="topics"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Topic</FormLabel>
+                    <FormLabel>Topics</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter quiz topic..." {...field} />
+                      <Input
+                        placeholder="Programming, Science, History..."
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

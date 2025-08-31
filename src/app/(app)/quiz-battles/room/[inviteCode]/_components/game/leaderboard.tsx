@@ -3,7 +3,7 @@
 import { useQuery } from "convex/react"
 import { Award, CheckCircle, Clock, Medal, Trophy, XCircle } from "lucide-react"
 
-import type { Id } from "~/convex/_generated/dataModel"
+import type { Doc, Id } from "~/convex/_generated/dataModel"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -12,11 +12,8 @@ import { cn } from "@/lib/utils"
 import { api } from "~/convex/_generated/api"
 
 type LeaderboardProps = {
-  currentQuestionNumber: number
+  gameState: Doc<"gameStates">
   className?: string
-  gameStateId: Id<"gameStates">
-  showResults?: boolean
-  currentQuestionId?: Id<"questions">
 }
 
 function getRankIcon(position: number) {
@@ -36,34 +33,36 @@ function getRankIcon(position: number) {
   }
 }
 
-export function Leaderboard({
-  currentQuestionNumber,
-  className,
-  gameStateId,
-  showResults = false,
-  currentQuestionId,
-}: LeaderboardProps) {
+export function Leaderboard({ className, gameState }: LeaderboardProps) {
   const playerScores = useQuery(api.quiz.queries.getPlayerScores, {
-    gameStateId: gameStateId,
+    gameStateId: gameState._id,
+  })
+
+  const isScorePhase = gameState.phase === "score"
+
+  const currentQuestion = useQuery(api.quiz.queries.getCurrentQuestion, {
+    gameStateId: gameState._id,
   })
 
   // Get player answers for the current question when showing results
   const playerAnswers = useQuery(
     api.quiz.queries.getPlayerAnswersForQuestion,
-    showResults && currentQuestionId && gameStateId
-      ? { questionId: currentQuestionId, gameStateId }
+    isScorePhase && currentQuestion?.id
+      ? { questionId: currentQuestion.id, gameStateId: gameState._id }
       : "skip"
   )
 
   // Get player submission status for the current question during question phase
   const submittedUserIds = useQuery(
     api.quiz.queries.getSubmittedUserIds,
-    !showResults ? { gameStateId } : "skip"
+    !isScorePhase ? { gameStateId: gameState._id } : "skip"
   )
+
+  const currentQuestionNumber = getCurrentQuestionNumber()
 
   // Helper function to get player's answer status for current question
   const getPlayerAnswerStatus = (userId: Id<"users">) => {
-    if (!showResults || !playerAnswers) return null
+    if (!isScorePhase || !playerAnswers) return null
 
     const playerAnswer = playerAnswers.find(
       (answer) => answer.userId === userId
@@ -75,6 +74,12 @@ export function Leaderboard({
     if (!submittedUserIds) return false
 
     return submittedUserIds.includes(userId)
+  }
+
+  function getCurrentQuestionNumber() {
+    if (currentQuestion === undefined) return 0
+    if (currentQuestion.index === 0) return 0
+    return currentQuestion.index - 1
   }
 
   return (
@@ -117,9 +122,9 @@ export function Leaderboard({
                         position === 3,
                       // Results phase visual feedback - enhanced backgrounds
                       "bg-gradient-to-r from-green-100 to-green-200":
-                        showResults && answerStatus === true,
+                        isScorePhase && answerStatus === true,
                       "bg-gradient-to-r from-red-100 to-red-200":
-                        showResults && answerStatus === false,
+                        isScorePhase && answerStatus === false,
                     }
                   )}
                 >
@@ -177,7 +182,7 @@ export function Leaderboard({
                   </div>
 
                   {/* Answer Status Overlay Icon */}
-                  {showResults && answerStatus !== null && (
+                  {isScorePhase && answerStatus !== null && (
                     <div className="absolute -top-1 -right-1">
                       {answerStatus ? (
                         <div className="flex h-6 w-6 items-center justify-center rounded-full bg-green-500 text-white shadow-md">
@@ -192,7 +197,7 @@ export function Leaderboard({
                   )}
 
                   {/* Submission Status Overlay Icon for Question Phase */}
-                  {!showResults && (
+                  {!isScorePhase && (
                     <div className="absolute -top-1 -right-1">
                       {hasSubmitted ? (
                         <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-white shadow-md">

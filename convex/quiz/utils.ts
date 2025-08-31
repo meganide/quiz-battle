@@ -7,7 +7,7 @@ import { difficultyExamples, generateAiQuizPrompt } from "./prompts"
 import { GeneratedQuizSchema } from "./schemas"
 
 export async function generateQuizQuestions(
-  topic: string,
+  topics: string,
   numQuestions: number,
   difficulty: QuizDifficulty
 ): Promise<GeneratedQuiz> {
@@ -32,7 +32,7 @@ export async function generateQuizQuestions(
   try {
     const promptText = generateAiQuizPrompt({
       numQuestions,
-      topic,
+      topics,
       difficulty,
       currentDifficultyInfo,
     })

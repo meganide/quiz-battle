@@ -1,11 +1,10 @@
-import React from "react"
-
-import { useAction, useMutation } from "convex/react"
+import { useConvexAuth, useMutation } from "convex/react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
 import type { Doc } from "~/convex/_generated/dataModel"
 
+import { SignInDialog } from "@/components/sign-in-dialog"
 import { Spinner } from "@/components/spinner"
 import { Button } from "@/components/ui/button"
 import { useUser } from "@/hooks/use-user"
@@ -16,13 +15,14 @@ type HeaderActionsProps = {
 }
 
 export function HeaderActions({ room }: HeaderActionsProps) {
-  const [isStarting, setIsStarting] = React.useState(false)
-
   const leaveRoomMutation = useMutation(api.rooms.mutations.leave)
   const joinRoomMutation = useMutation(api.rooms.mutations.join)
-  const startQuizAction = useAction(api.quiz.actions.startQuiz)
+  const startQuizMutation = useMutation(api.quiz.mutations.startQuiz)
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  const isStarting = startQuizMutation === undefined
 
   const user = useUser()
+  const { isAuthenticated } = useConvexAuth()
   const router = useRouter()
   const isInRoom = !!user && room.gamePlayerIds.includes(user._id)
   const isHost = room.hostId === user?._id
@@ -48,16 +48,39 @@ export function HeaderActions({ room }: HeaderActionsProps) {
   }
 
   async function startQuiz() {
-    try {
-      setIsStarting(true)
-      await startQuizAction({
-        roomId: room._id,
-      })
-    } catch (error) {
-      console.log(error)
-    } finally {
-      setIsStarting(false)
+    await startQuizMutation({
+      roomId: room._id,
+    })
+  }
+
+  function renderJoinButton() {
+    if (isInRoom) {
+      return (
+        <Button
+          className="flex-1 sm:w-auto"
+          variant="outline"
+          onClick={leaveRoom}
+        >
+          Leave Room
+        </Button>
+      )
     }
+
+    if (!isAuthenticated) {
+      return (
+        <SignInDialog>
+          <Button className="flex-1 sm:w-auto" variant="default">
+            Join Room
+          </Button>
+        </SignInDialog>
+      )
+    }
+
+    return (
+      <Button className="flex-1 sm:w-auto" variant="default" onClick={joinRoom}>
+        Join Room
+      </Button>
+    )
   }
 
   async function invitePlayers() {
@@ -67,23 +90,23 @@ export function HeaderActions({ room }: HeaderActionsProps) {
   }
 
   return (
-    <header className="flex items-center justify-between gap-2">
-      <section className="flex items-center gap-2">
-        {isInRoom ? (
-          <Button variant="outline" onClick={leaveRoom}>
-            Leave Room
-          </Button>
-        ) : (
-          <Button variant="default" onClick={joinRoom}>
-            Join Room
-          </Button>
-        )}
-        <Button variant="secondary" onClick={invitePlayers}>
+    <header className="flex flex-col items-center justify-between gap-2 sm:flex-row">
+      <section className="flex w-full items-center gap-2 sm:w-auto">
+        {renderJoinButton()}
+        <Button
+          className="flex-1 sm:w-auto"
+          variant="secondary"
+          onClick={invitePlayers}
+        >
           Invite Players
         </Button>
       </section>
       {isHost && (
-        <Button disabled={isStarting} onClick={startQuiz}>
+        <Button
+          className="w-full sm:w-auto"
+          disabled={isStarting}
+          onClick={startQuiz}
+        >
           {isStarting && (
             <Spinner className="text-primary-foreground" size="sm" />
           )}

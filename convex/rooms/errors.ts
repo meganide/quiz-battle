@@ -1,7 +1,6 @@
 import { ConvexError } from "convex/values"
 
 export enum RoomErrorCodes {
-  ACTIVE_ROOM_EXISTS = "ACTIVE_ROOM_EXISTS",
   INVALID_TIME_PER_QUESTION = "INVALID_TIME_PER_QUESTION",
   INVALID_NUMBER_OF_QUESTIONS = "INVALID_NUMBER_OF_QUESTIONS",
   ROOM_NOT_FOUND = "ROOM_NOT_FOUND",
@@ -10,14 +9,10 @@ export enum RoomErrorCodes {
   NOT_IN_ROOM = "NOT_IN_ROOM",
   CANNOT_LEAVE_ROOM = "CANNOT_LEAVE_ROOM",
   ROOM_HAS_ALREADY_STARTED = "ROOM_HAS_ALREADY_STARTED",
+  NOT_HOST = "NOT_HOST",
 }
 
 export const ROOM_ERRORS = {
-  ACTIVE_ROOM_EXISTS: new ConvexError({
-    code: RoomErrorCodes.ACTIVE_ROOM_EXISTS,
-    message:
-      "You already have an active room. Complete or leave your current room before creating a new one.",
-  }),
   INVALID_TIME_PER_QUESTION: new ConvexError({
     code: RoomErrorCodes.INVALID_TIME_PER_QUESTION,
     message: "Time per question must be between 10 and 60 seconds",
@@ -49,5 +44,9 @@ export const ROOM_ERRORS = {
   ROOM_HAS_ALREADY_STARTED: new ConvexError({
     code: RoomErrorCodes.ROOM_HAS_ALREADY_STARTED,
     message: "Game has already started",
+  }),
+  NOT_HOST: new ConvexError({
+    code: RoomErrorCodes.NOT_HOST,
+    message: "You are not the host of this room",
   }),
 } as const

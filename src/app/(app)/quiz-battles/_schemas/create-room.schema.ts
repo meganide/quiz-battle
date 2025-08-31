@@ -6,7 +6,7 @@ export const createRoomSchema = z.object({
     .min(3, "Room name must be at least 3 characters")
     .max(50, "Room name must be less than 50 characters"),
   isPrivate: z.boolean(),
-  topic: z.string().min(1, "Please enter a topic"),
+  topics: z.string().min(1, "Please enter a topic"),
   numQuestions: z
     .number()
     .min(5, "Minimum 5 questions")

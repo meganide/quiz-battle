@@ -1,136 +1,72 @@
 import { getAuthUserId } from "@convex-dev/auth/server"
 import { v } from "convex/values"
 
+import { TIMERS_MILLISECONDS } from "./constants"
 import { QUIZ_ERRORS } from "./errors"
 import { internal } from "../_generated/api"
 import { internalMutation, mutation } from "../_generated/server"
 import { ROOM_ERRORS, RoomErrorCodes } from "../rooms/errors"
-import { UserErrorCodes } from "../users/errors"
+import { USER_ERRORS, UserErrorCodes } from "../users/errors"
 
-export const startQuiz = internalMutation({
+export const startQuiz = mutation({
   args: {
     roomId: v.id("rooms"),
-    questions: v.array(
-      v.object({
-        question: v.string(),
-        answers: v.array(v.string()),
-        correctAnswerIndex: v.number(),
-      })
-    ),
   },
   handler: async (ctx, args) => {
-    const room = await ctx.db.get(args.roomId)
+    const { roomId } = args
+
+    const userId = await getAuthUserId(ctx)
+
+    if (!userId) {
+      throw USER_ERRORS.NOT_AUTHENTICATED
+    }
+
+    const room = await ctx.db.get(roomId)
 
     if (!room) {
       throw ROOM_ERRORS.ROOM_NOT_FOUND
     }
 
+    if (room.status !== "lobby") {
+      throw ROOM_ERRORS.ROOM_HAS_ALREADY_STARTED
+    }
+
+    const isHost = userId === room.hostId
+
+    if (!isHost) {
+      throw ROOM_ERRORS.NOT_HOST
+    }
+
+    if (!room.gamePlayerIds.includes(userId)) {
+      throw ROOM_ERRORS.NOT_IN_ROOM
+    }
+
     const gameStateId = await ctx.db.insert("gameStates", {
-      roomId: args.roomId,
-      phase: "question",
-      currentQuestionIndex: 0,
+      roomId,
+      phase: "starting",
       updatedAt: Date.now(),
-      questionStartTime: Date.now(),
+      currentQuestionIndex: -1, // We start at -1 because we don't have any questions yet
     })
 
     await Promise.all([
       room.gamePlayerIds.map((playerId) =>
         ctx.db.insert("playerScores", {
-          gameStateId: gameStateId,
+          gameStateId,
           userId: playerId,
           score: 0,
           correctAnswers: 0,
           updatedAt: Date.now(),
         })
       ),
-      args.questions.map(async (question, index) => {
-        await ctx.db.insert("questions", {
-          gameStateId: gameStateId,
-          answers: question.answers,
-          correctAnswerIndex: question.correctAnswerIndex,
-          questionIndex: index,
-          question: question.question,
-        })
+      ctx.db.patch(roomId, {
+        currentGameStateId: gameStateId,
+        startedAt: Date.now(),
+        status: "ongoing",
       }),
     ])
 
-    const scheduledId = await ctx.scheduler.runAfter(
-      room.timePerQuestion * 1000,
-      internal.quiz.actions.showResults,
-      {
-        roomId: args.roomId,
-        gameStateId,
-      }
-    )
-
-    const firstQuestion = await ctx.db
-      .query("questions")
-      .withIndex("by_game_and_index", (q) =>
-        q.eq("gameStateId", gameStateId).eq("questionIndex", 0)
-      )
-      .first()
-
-    await ctx.db.patch(gameStateId, {
-      currentQuestionId: firstQuestion?._id,
-      questionStartTime: Date.now(),
-      scheduledFunctionId: scheduledId,
-    })
-
-    await ctx.db.patch(args.roomId, {
-      status: "ongoing",
-      startedAt: Date.now(),
-      currentGameStateId: gameStateId,
-    })
-  },
-})
-
-export const nextQuestion = internalMutation({
-  args: {
-    roomId: v.id("rooms"),
-    gameStateId: v.id("gameStates"),
-  },
-  handler: async (ctx, args) => {
-    const { gameStateId, roomId } = args
-
-    const room = await ctx.db.get(roomId)
-    if (!room) {
-      throw ROOM_ERRORS.ROOM_NOT_FOUND
-    }
-
-    const gameState = await ctx.db.get(gameStateId)
-    if (!gameState) {
-      throw QUIZ_ERRORS.GAME_STATE_NOT_FOUND
-    }
-
-    const nextQuestionIndex = gameState.currentQuestionIndex + 1
-
-    const nextQuestion = await ctx.db
-      .query("questions")
-      .withIndex("by_game_and_index", (q) =>
-        q.eq("gameStateId", gameStateId).eq("questionIndex", nextQuestionIndex)
-      )
-      .first()
-
-    if (!nextQuestion) {
-      throw QUIZ_ERRORS.QUESTION_NOT_FOUND
-    }
-
-    const scheduledId = await ctx.scheduler.runAfter(
-      room.timePerQuestion * 1000,
-      internal.quiz.actions.showResults,
-      {
-        roomId,
-        gameStateId,
-      }
-    )
-
-    // Update game state to the next question
-    await ctx.db.patch(args.gameStateId, {
-      phase: "question",
-      currentQuestionId: nextQuestion._id,
-      currentQuestionIndex: nextQuestionIndex,
-      scheduledFunctionId: scheduledId,
-      questionStartTime: Date.now(),
+    await ctx.scheduler.runAfter(0, internal.quiz.actions.generateAiQuestions, {
+      roomId,
     })
   },
 })
@@ -248,19 +184,66 @@ export const submitAnswer = mutation({
 
     await ctx.scheduler.cancel(scheduledFunction._id)
 
-    await ctx.scheduler.runAfter(0, internal.quiz.actions.showResults, {
+    await ctx.scheduler.runAfter(0, internal.quiz.mutations.scorePhase, {
       roomId: room._id,
       gameStateId,
     })
   },
 })
 
-export const updatePlayerScores = internalMutation({
+export const questionPhase = internalMutation({
   args: {
     roomId: v.id("rooms"),
+    gameStateId: v.id("gameStates"),
   },
   handler: async (ctx, args) => {
-    const { roomId } = args
+    const { roomId, gameStateId } = args
+
+    const gameState = await ctx.db.get(gameStateId)
+
+    if (!gameState) {
+      throw ROOM_ERRORS.ROOM_NOT_FOUND
+    }
+
+    const nextQuestionIndex = gameState.currentQuestionIndex! + 1
+
+    const nextQuestion = await ctx.db
+      .query("questions")
+      .withIndex("by_game_and_index", (q) =>
+        q.eq("gameStateId", gameStateId).eq("questionIndex", nextQuestionIndex)
+      )
+      .first()
+
+    if (!nextQuestion) {
+      throw QUIZ_ERRORS.QUESTION_NOT_FOUND
+    }
+
+    await ctx.db.patch(gameStateId, {
+      phase: "question",
+      questionStartTime: Date.now(),
+      currentQuestionId: nextQuestion._id,
+      currentQuestionIndex: nextQuestionIndex,
+      updatedAt: Date.now(),
+    })
+
+    await ctx.scheduler.runAfter(
+      TIMERS_MILLISECONDS.QUESTION_PHASE,
+      internal.quiz.mutations.answerPhase,
+      {
+        roomId,
+        gameStateId,
+      }
+    )
+  },
+})
+
+export const answerPhase = internalMutation({
+  args: {
+    roomId: v.id("rooms"),
+    gameStateId: v.id("gameStates"),
+  },
+  handler: async (ctx, args) => {
+    const { roomId, gameStateId } = args
 
     const room = await ctx.db.get(roomId)
 
@@ -268,7 +251,33 @@ export const updatePlayerScores = internalMutation({
       throw ROOM_ERRORS.ROOM_NOT_FOUND
     }
 
-    const gameState = await ctx.db.get(room.currentGameStateId!)
+    const scheduledId = await ctx.scheduler.runAfter(
+      room.timePerQuestion * 1000,
+      internal.quiz.mutations.scorePhase,
+      {
+        roomId,
+        gameStateId,
+      }
+    )
+
+    await ctx.db.patch(gameStateId, {
+      scheduledFunctionId: scheduledId,
+      answeringStartTime: Date.now(),
+      updatedAt: Date.now(),
+      phase: "answering",
+    })
+  },
+})
+
+export const scorePhase = internalMutation({
+  args: {
+    roomId: v.id("rooms"),
+    gameStateId: v.id("gameStates"),
+  },
+  handler: async (ctx, args) => {
+    const { roomId, gameStateId } = args
+
+    const gameState = await ctx.db.get(args.gameStateId)
 
     if (!gameState) {
       throw QUIZ_ERRORS.GAME_STATE_NOT_FOUND
@@ -276,6 +285,12 @@ export const updatePlayerScores = internalMutation({
 
     if (!gameState.currentQuestionId) {
       throw QUIZ_ERRORS.QUESTION_NOT_FOUND
+    }
+
+    const room = await ctx.db.get(args.roomId)
+
+    if (!room) {
+      throw ROOM_ERRORS.ROOM_NOT_FOUND
     }
 
     await Promise.all(
@@ -331,33 +346,63 @@ export const updatePlayerScores = internalMutation({
         })
       })
     )
-  },
-})
-
-export const changeGameStateToResults = internalMutation({
-  args: {
-    gameStateId: v.id("gameStates"),
-  },
-  handler: async (ctx, args) => {
-    const { gameStateId } = args
 
     await ctx.db.patch(gameStateId, {
-      phase: "results",
+      phase: "score",
+      scoreStartTime: Date.now(),
       updatedAt: Date.now(),
     })
+
+    const isLastQuestion =
+      gameState.currentQuestionIndex === room.numQuestions - 1
+
+    if (isLastQuestion) {
+      await ctx.scheduler.runAfter(
+        TIMERS_MILLISECONDS.SCORE_PHASE,
+        internal.quiz.actions.finishQuiz,
+        {
+          roomId,
+        }
+      )
+
+      return
+    }
+
+    await ctx.scheduler.runAfter(
+      TIMERS_MILLISECONDS.SCORE_PHASE,
+      internal.quiz.mutations.questionPhase,
+      {
+        roomId,
+        gameStateId,
+      }
+    )
   },
 })
 
-export const changeRoomToCompleted = internalMutation({
+export const saveQuestions = internalMutation({
   args: {
-    roomId: v.id("rooms"),
+    gameStateId: v.id("gameStates"),
+    questions: v.array(
+      v.object({
+        question: v.string(),
+        answers: v.array(v.string()),
+        correctAnswerIndex: v.number(),
+      })
+    ),
   },
   handler: async (ctx, args) => {
-    const { roomId } = args
+    const { gameStateId, questions } = args
 
-    await ctx.db.patch(roomId, {
-      status: "completed",
-      completedAt: Date.now(),
-    })
+    await Promise.all([
+      questions.map(async (question, index) => {
+        await ctx.db.insert("questions", {
+          gameStateId: gameStateId,
+          answers: question.answers,
+          correctAnswerIndex: question.correctAnswerIndex,
+          questionIndex: index,
+          question: question.question,
+        })
+      }),
+    ])
   },
 })

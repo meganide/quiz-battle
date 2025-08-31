@@ -1,4 +1,4 @@
-import { useMutation } from "convex/react"
+import { useConvexAuth, useMutation } from "convex/react"
 import { ConvexError } from "convex/values"
 import { formatDistanceToNow } from "date-fns"
 import {
@@ -14,6 +14,7 @@ import { toast } from "sonner"
 
 import type { Doc } from "~/convex/_generated/dataModel"
 
+import { SignInDialog } from "@/components/sign-in-dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -31,6 +32,7 @@ type QuizRoomPreviewProps = {
 }
 
 export function QuizRoomPreview({ room }: QuizRoomPreviewProps) {
+  const { isAuthenticated } = useConvexAuth()
   const user = useUser()
   const joinRoomMutation = useMutation(api.rooms.mutations.join)
   const router = useRouter()
@@ -61,6 +63,36 @@ export function QuizRoomPreview({ room }: QuizRoomPreviewProps) {
     }
   }
 
+  function renderJoinButton() {
+    if (isInRoom) {
+      return (
+        <Button className="font-medium" onClick={goToRoom}>
+          Go to room
+        </Button>
+      )
+    }
+
+    if (!isAuthenticated) {
+      return (
+        <SignInDialog>
+          <Button className="font-medium" disabled={room.status !== "lobby"}>
+            Join room
+          </Button>
+        </SignInDialog>
+      )
+    }
+
+    return (
+      <Button
+        className="font-medium"
+        disabled={room.status !== "lobby"}
+        onClick={joinRoom}
+      >
+        Join room
+      </Button>
+    )
+  }
+
   return (
     <article
       className={cn(
@@ -83,9 +115,9 @@ export function QuizRoomPreview({ room }: QuizRoomPreviewProps) {
 
             <div className="flex flex-col gap-1">
               <h4 className="text-xs font-semibold tracking-wider text-neutral-300 uppercase">
-                Topic
+                Topics
               </h4>
-              <p className="leading-4 text-neutral-100">{room.topic}</p>
+              <p className="leading-4 text-neutral-100">{room.topics}</p>
             </div>
 
             <RoomBadges className="md:hidden" room={room} />
@@ -155,29 +187,19 @@ export function QuizRoomPreview({ room }: QuizRoomPreviewProps) {
 
       {/* Actions */}
       <footer className="flex items-center justify-end gap-3">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="secondary" onClick={goToRoom}>
-              <Eye />
-              Spectate
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Spectate room</TooltipContent>
-        </Tooltip>
-
-        {isInRoom ? (
-          <Button className="font-medium" onClick={goToRoom}>
-            Go to room
-          </Button>
-        ) : (
-          <Button
-            className="font-medium"
-            disabled={room.status !== "lobby"}
-            onClick={joinRoom}
-          >
-            Join room
-          </Button>
+        {!isInRoom && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="secondary" onClick={goToRoom}>
+                <Eye />
+                Spectate
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Spectate room</TooltipContent>
+          </Tooltip>
         )}
+
+        {renderJoinButton()}
       </footer>
     </article>
   )
