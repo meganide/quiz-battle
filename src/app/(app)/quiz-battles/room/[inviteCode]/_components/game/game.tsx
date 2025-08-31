@@ -9,6 +9,7 @@ import { Spinner } from "@/components/spinner"
 import { api } from "~/convex/_generated/api"
 
 import { GameLoop } from "./game-loop"
+import { StartingLoader } from "./starting-loader"
 
 type GameProps = {
   room: Doc<"rooms">
@@ -29,9 +30,7 @@ export function Game({ room }: GameProps) {
 
   if (gameState.phase === "starting") {
     return (
-      <Container>
-        <p>Starting...</p>
-      </Container>
+      <StartingLoader />
     )
   }
 

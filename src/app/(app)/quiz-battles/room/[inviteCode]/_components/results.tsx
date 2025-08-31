@@ -43,21 +43,7 @@ export function Results({ room }: ResultsProps) {
     gameStateId: room.currentGameStateId!,
   })
 
-  if (!gameResults) {
-    return (
-      <section className="min-h-screen">
-        <HeaderTitle href="/quiz-battles" Icon={Trophy} title="Quiz Results" />
-        <Container className="flex flex-col items-center justify-center gap-6 py-20">
-          <div className="animate-pulse">
-            <Spinner size="xl" />
-          </div>
-          <p className="text-muted-foreground animate-pulse text-lg">
-            Loading results...
-          </p>
-        </Container>
-      </section>
-    )
-  }
+
 
   function formatDuration(startTime: number, endTime: number) {
     const duration = Math.floor((endTime - startTime) / 1000)
@@ -83,11 +69,21 @@ export function Results({ room }: ResultsProps) {
     }
   }
 
-
   const gameDuration =
     room.startedAt && room.completedAt
       ? formatDuration(room.startedAt, room.completedAt)
       : "Unknown"
+
+    if (!gameResults) {
+        return (
+            <section>
+            <HeaderTitle href="/quiz-battles" Icon={Trophy} title="Quiz Results" />
+            <Container className="flex flex-col items-center justify-center gap-3 py-3">
+                <Spinner size="xl" />
+            </Container>
+            </section>
+        )
+    }
 
   return (
     <section className="min-h-screen pb-8">
@@ -260,7 +256,11 @@ export function Results({ room }: ResultsProps) {
                       <p className="truncate text-sm font-bold sm:text-lg">
                         {playerScore.user.name || "Anonymous"}
                       </p>
-                      <p className="text-xs text-muted-foreground sm:text-sm">
+                      <p className={cn("text-xs text-muted-foreground sm:text-sm", {
+                        "text-yellow-700": position === 1,
+                        "text-gray-700": position === 2,
+                        "text-amber-700": position === 3,
+                      })}>
                         {playerScore.correctAnswers}/{room.numQuestions} correct
                       </p>
                     </div>

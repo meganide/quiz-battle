@@ -78,6 +78,20 @@
 
   /* Remove 2xl breakpoint (96rem/1536px) entirely */
   --breakpoint-2xl: initial;
+
+  /* Custom animations */
+  --animate-shimmer: shimmer 2s infinite ease-in-out;
+
+  /* Custom keyframes */
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(200%);
+    }
+  }
+
 }
 
 :root {
