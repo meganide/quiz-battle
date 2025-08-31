@@ -7,10 +7,11 @@ import { Award, CheckCircle, Clock, Medal, Trophy, XCircle } from "lucide-react"
 import type { Doc, Id } from "~/convex/_generated/dataModel"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { api } from "~/convex/_generated/api"
+
+import { AnimatedScoreCounter } from "./animated-score-counter"
 
 type LeaderboardProps = {
   gameState: Doc<"gameStates">
@@ -69,6 +70,24 @@ export function Leaderboard({ className, gameState }: LeaderboardProps) {
     return playerAnswer?.isCorrect ?? null
   }
 
+  // Helper function to get player's points earned for current question
+  const getPlayerPointsEarned = (userId: Id<"users">) => {
+    if (!isScorePhase || !playerScores) return null
+
+    const pointsData = playerScores.find((points) => points.userId === userId)
+    return pointsData || null
+  }
+
+  // Helper function to calculate previous score (current score minus points earned this question)
+  const getPreviousScore = (userId: Id<"users">, currentScore: number) => {
+    if (!isScorePhase) return currentScore
+
+    const pointsEarned = getPlayerPointsEarned(userId)
+    return pointsEarned
+      ? currentScore - pointsEarned.lastQuestionPointsEarned
+      : currentScore
+  }
+
   function hasUserSubmitted(userId: Id<"users">) {
     if (!submittedUserIds) return false
 
@@ -88,7 +107,7 @@ export function Leaderboard({ className, gameState }: LeaderboardProps) {
           Leaderboard
         </CardTitle>
       </CardHeader>
-      <CardContent className="min-h-0 space-y-3 overflow-y-auto pr-2 pl-6">
+      <CardContent className="relative min-h-0 space-y-3 overflow-y-auto pr-2 pl-6">
         {playerScores?.length === 0 ? (
           <section className="text-muted-foreground py-8 text-center">
             <p className="text-sm">No scores yet...</p>
@@ -96,7 +115,7 @@ export function Leaderboard({ className, gameState }: LeaderboardProps) {
           </section>
         ) : (
           <LayoutGroup>
-            <section className="flex flex-col gap-2 pt-1">
+            <section className="relative flex flex-col gap-2 pt-1">
               <AnimatePresence>
                 {playerScores?.map((playerScore, index) => {
                   const position = index + 1
@@ -111,7 +130,7 @@ export function Leaderboard({ className, gameState }: LeaderboardProps) {
                       exit={{ opacity: 0, y: -20, scale: 0.95 }}
                       initial={{ opacity: 0, y: 20, scale: 0.95 }}
                       className={cn(
-                        "relative flex max-w-sm items-center gap-3 rounded-lg bg-neutral-400/60 p-3 transition-colors duration-200 hover:shadow-sm",
+                        "relative flex max-w-sm items-center gap-3 overflow-visible rounded-lg bg-neutral-400/60 p-3 transition-colors duration-200 hover:shadow-sm",
                         {
                           "bg-gradient-to-r from-yellow-50 to-yellow-100":
                             position === 1,
@@ -181,18 +200,17 @@ export function Leaderboard({ className, gameState }: LeaderboardProps) {
 
                       {/* Score and Answer Status */}
                       <div className="flex flex-col items-end gap-1">
-                        <Badge
-                          className={cn(
-                            "bg-secondary text-secondary-foreground border-none text-sm font-bold",
-                            {
-                              "bg-yellow-500 text-yellow-50": position === 1,
-                              "bg-gray-500 text-gray-50": position === 2,
-                              "bg-amber-500 text-amber-50": position === 3,
-                            }
+                        <AnimatedScoreCounter
+                          currentScore={playerScore.score}
+                          delay={index * 0.1}
+                          isScorePhase={isScorePhase}
+                          position={position}
+                          wasCorrectAnswer={answerStatus === true}
+                          previousScore={getPreviousScore(
+                            playerScore.userId,
+                            playerScore.score
                           )}
-                        >
-                          {playerScore.score.toLocaleString()}
-                        </Badge>
+                        />
                       </div>
 
                       {/* Answer Status Overlay Icon */}
