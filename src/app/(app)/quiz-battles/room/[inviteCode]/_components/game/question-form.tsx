@@ -1,6 +1,7 @@
 "use client"
 
 import { useQuery } from "convex/react"
+import { AnimatePresence, motion } from "framer-motion"
 
 import type { Doc } from "~/convex/_generated/dataModel"
 
@@ -22,17 +23,42 @@ export function QuestionForm({ gameState, room }: QuestionFormProps) {
   if (!currentQuestion) return null
 
   return (
-    <Card className="h-fit">
-      <CardHeader>
-        <CardTitle className="text-center text-lg leading-normal lg:text-xl">
-          {currentQuestion.question}
-        </CardTitle>
-      </CardHeader>
-      {(gameState.phase === "answering" || gameState.phase === "score") && (
-        <CardContent className="flex flex-col gap-2">
-          <QuestionAnswers gameState={gameState} room={room} />
-        </CardContent>
-      )}
-    </Card>
+    <motion.div
+      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: 20 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+    >
+      <Card className="h-fit">
+        <CardHeader>
+          <CardTitle className="text-center text-lg leading-normal lg:text-xl">
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={currentQuestion.question}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                initial={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+              >
+                {currentQuestion.question}
+              </motion.span>
+            </AnimatePresence>
+          </CardTitle>
+        </CardHeader>
+        <AnimatePresence>
+          {(gameState.phase === "answering" || gameState.phase === "score") && (
+            <motion.div
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              initial={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.4, ease: "easeInOut" }}
+            >
+              <CardContent className="flex flex-col gap-2">
+                <QuestionAnswers gameState={gameState} room={room} />
+              </CardContent>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </Card>
+    </motion.div>
   )
 }
