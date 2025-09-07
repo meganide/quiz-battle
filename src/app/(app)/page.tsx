@@ -11,20 +11,16 @@ export default function HomePage() {
     <section className="flex min-h-full items-center justify-center px-2 sm:px-4">
       <Container className="py-2 sm:py-4">
         <Card className="border-primary/20 relative mx-auto max-w-5xl overflow-hidden bg-gradient-to-br from-neutral-500/50 via-neutral-600/30 to-neutral-700/50 shadow-2xl backdrop-blur-sm">
-          {/* Decorative background elements */}
           <div className="bg-primary/10 absolute -top-20 -right-20 h-40 w-40 rounded-full blur-3xl md:-top-32 md:-right-32 md:h-64 md:w-64" />
           <div className="bg-primary/5 absolute -bottom-10 -left-10 h-32 w-32 rounded-full blur-2xl md:-bottom-16 md:-left-16 md:h-48 md:w-48" />
 
           <CardContent className="relative px-3 py-4 md:py-8">
             <article className="grid gap-8 sm:gap-12 md:gap-16">
-              {/* Hero Section */}
               <header className="space-y-6 text-center sm:space-y-8">
-                {/* Logo and Icon Cluster */}
                 <div className="space-y-4 sm:space-y-6">
                   <div className="mx-auto">
                     <Logo showTitle linkClassName="mx-auto w-fit" />
                   </div>
-                  {/* Icon decorations */}
                   <div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4">
                     <div className="bg-primary/20 flex h-8 w-8 items-center justify-center rounded-full backdrop-blur-sm sm:h-10 sm:w-10 md:h-12 md:w-12">
                       <Brain className="text-primary h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6" />
@@ -38,7 +34,6 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                {/* Value Proposition */}
                 <div className="space-y-3 sm:space-y-4">
                   <p className="mx-auto max-w-3xl text-base leading-relaxed text-balance text-neutral-100 sm:text-lg md:text-xl lg:text-2xl">
                     Create AI-powered quizzes on any topic and challenge friends
@@ -50,7 +45,6 @@ export default function HomePage() {
                 </div>
               </header>
 
-              {/* Feature Grid */}
               <section className="mx-auto w-full max-w-4xl">
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-6">
                   <div className="rounded-lg bg-neutral-700/30 p-4 text-center backdrop-blur-sm sm:p-6">
@@ -91,7 +85,6 @@ export default function HomePage() {
                 </div>
               </section>
 
-              {/* Call to Action */}
               <footer className="text-center">
                 <Button
                   asChild
